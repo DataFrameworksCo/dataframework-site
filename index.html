@@ -4827,7 +4827,7 @@ function renderDsList(){
   DS.forEach((_, i) => G('dsc-'+i)?.classList.toggle('on', i === ACT));
 }
 function renameDs(idx){const el=G('dsn-'+idx);if(!el)return;const old=DS[idx].name;el.innerHTML='';const inp=document.createElement('input');inp.className='dsc-ren';inp.value=old;el.appendChild(inp);inp.focus();inp.select();const done=()=>{const v=inp.value.trim()||old;DS[idx].name=v;renderDsList();syncDDs();toast('"'+v+'" renamed','success');};inp.addEventListener('blur',done);inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();if(e.key==='Escape'){inp.value=old;inp.blur();}});}
-function dupeDs(idx){const s=DS[idx];addDataset(JSON.parse(JSON.stringify(s.data)),s.columns.map(c=>c.name),s.name+' (copy)');renderTable();toast('Duplicated','success');}
+function dupeDs(idx){const s=DS[idx];addDataset(JSON.parse(JSON.stringify(s.data)),s.columns.map(c=>c.name),s.name+' (copy)');if(s.group)DS[DS.length-1].group=s.group;renderDsList();syncDDs();renderTable();toast('Duplicated','success');}
 function deleteDs(idx){if(DS.length<=1)return toast('Cannot delete the only dataset','error');openModal('Delete Dataset','Remove "'+DS[idx].name+'"? Cannot be undone.','',()=>{DS.splice(idx,1);if(ACT>=DS.length)ACT=Math.max(0,DS.length-1);renderDsList();syncDDs();renderTable();toast('Deleted','info');});}
 function syncDDs(){const opts=DS.map((d,i)=>`<option value="${i}" ${i===ACT?'selected':''}>${d.name}</option>`).join('');['active-ds','clean-ds','pv-ds','cb-ds'].forEach(id=>{const el=G(id);if(!el)return;el.innerHTML=opts||'<option value="">No datasets</option>';});}
 
@@ -15620,6 +15620,7 @@ function autosaveProject() {
         columns: d.columns,
         data: d.data,
         color: d.color,
+        group: d.group || '',
       })),
       dashboard: typeof DASH !== 'undefined' ? DASH : [],
       chartState: typeof CB !== 'undefined' ? CB : null,
@@ -15652,13 +15653,15 @@ function restoreAutosave() {
     // Restore datasets
     DS.length = 0; ACT = 0;
     data.datasets.forEach(d => {
-      DS.push({
+      const ds = {
         id: genId(),
         name: d.name,
         columns: d.columns,
         data: d.data,
         color: d.color || DSC[DS.length % DSC.length],
-      });
+      };
+      if (d.group) ds.group = d.group;
+      DS.push(ds);
     });
     if (DS.length) {
       unlock();
@@ -17020,7 +17023,7 @@ function showDsCtxMenu(e, idx, isGroup, groupKey) {
             }
           });
           _dsGroupOpen[nv] = _dsGroupOpen[cur]; delete _dsGroupOpen[cur];
-          renderDsList(); syncDDs(); toast(`Group renamed to "${nv}"`, 'success');
+          renderDsList(); syncDDs(); autosaveProject(); toast(`Group renamed to "${nv}"`, 'success');
         }
       );
       setTimeout(() => { const i = G('grp-ren-inp'); if(i){i.focus();i.select();} }, 80);
@@ -17029,7 +17032,7 @@ function showDsCtxMenu(e, idx, isGroup, groupKey) {
     _ctxMeta['collapse-group']= () => { _dsGroupOpen[groupKey] = false; renderDsList(); };
     _ctxMeta['ungroup']       = () => {
       openModal('Ungroup Datasets', `Remove grouping from "${groupKey}"? Datasets stay but will appear ungrouped.`, '',
-        () => { DS.filter(d => d.group === groupKey).forEach(d => delete d.group); renderDsList(); syncDDs(); toast('Ungrouped', 'info'); }
+        () => { DS.filter(d => d.group === groupKey).forEach(d => delete d.group); renderDsList(); syncDDs(); autosaveProject(); toast('Ungrouped', 'info'); }
       );
     };
     _ctxMeta['delete-group']  = () => {
@@ -17038,7 +17041,7 @@ function showDsCtxMenu(e, idx, isGroup, groupKey) {
         () => {
           DS = DS.filter(d => d.group !== groupKey);
           if (ACT >= DS.length) ACT = Math.max(0, DS.length - 1);
-          renderDsList(); syncDDs(); renderTable(); toast(`Deleted group "${groupKey}"`, 'info');
+          renderDsList(); syncDDs(); renderTable(); autosaveProject(); toast(`Deleted group "${groupKey}"`, 'info');
         }
       );
     };
