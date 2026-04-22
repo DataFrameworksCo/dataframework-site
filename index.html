@@ -2668,7 +2668,7 @@ button, input, select { letter-spacing: 0; }
     <div class="sbp-head">
       <span class="sbp-title">Datasets</span>
       <div style="position:relative">
-        <button class="sbp-add" onclick="toggleAddMenu()" id="add-menu-btn" title="Add dataset">
+        <button class="sbp-add" onclick="openImportWizard()" id="add-menu-btn" title="Add dataset">
           <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Add
         </button>
@@ -17165,7 +17165,6 @@ function gpqlGetACItems(ta) {
 
   // After FETCH → suggest dataset names
   if (/^FETCH\s+\S*$/i.test(trimmed)) {
-    const partial = trimmed.replace(/^FETCH\s+/i, '').toLowerCase();
     _acInsertStart = lineStart + currentLine.search(/\S(?=\s*$)/i);
     // Recalc: start of last word after FETCH
     const afterFetch = currentLine.replace(/^FETCH\s+/i, '');
@@ -17174,18 +17173,20 @@ function gpqlGetACItems(ta) {
     const afterCmd = currentLine.slice(cmdLen + 'FETCH '.length);
     _acInsertStart = lineStart + cmdLen + 'FETCH '.length;
     _acInsertEnd = pos;
-    DS.forEach(d => {
-      if (d.name.toLowerCase().startsWith(afterCmd.toLowerCase().trimStart())) {
-        // For grouped datasets, also show the group
-        const label = d.group ? `${d.name} [${d.group}]` : d.name;
-        items.push({ text: d.name, display: label, type: 'dataset' });
+    const q = afterCmd.toLowerCase().trimStart();
+    const grouped = new Map();
+    DS.filter(d => d.group).forEach(d => {
+      if (!grouped.has(d.group)) grouped.set(d.group, []);
+      grouped.get(d.group).push(d);
+    });
+    grouped.forEach((members, groupName) => {
+      if (groupName.toLowerCase().startsWith(q)) {
+        items.push({ text: groupName, display: `${groupName} (${members.length} sheet${members.length!==1?'s':''})`, type: 'database' });
       }
     });
-    // Also show unique group names
-    const groups = [...new Set(DS.filter(d=>d.group).map(d=>d.group))];
-    groups.forEach(g => {
-      if (g.toLowerCase().startsWith(afterCmd.toLowerCase().trimStart()) && !items.find(x=>x.text===g)) {
-        items.push({ text: g, type: 'group' });
+    DS.filter(d => !d.group).forEach(d => {
+      if (d.name.toLowerCase().startsWith(q)) {
+        items.push({ text: d.name, type: 'dataset' });
       }
     });
   }
