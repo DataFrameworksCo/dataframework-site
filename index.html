@@ -14799,12 +14799,22 @@ function atRenderStepExtended(s, i, a) {
 // ═══════════════════════════════════════════════════════════════
 // DARK / LIGHT THEME QUICK TOGGLE
 // ═══════════════════════════════════════════════════════════════
+var _themePrefVersion = localStorage.getItem('df_theme_pref_v2');
 var _storedLightMode = localStorage.getItem('df_light_mode');
-var _isLightMode = _storedLightMode == null ? true : _storedLightMode === '1'; // default: light
+var _isLightMode = _themePrefVersion ? _storedLightMode !== '0' : true; // default: light
+if (!_themePrefVersion) {
+  try {
+    localStorage.setItem('df_light_mode', '1');
+    localStorage.setItem('df_theme_pref_v2', '1');
+  } catch(e) {}
+}
 
 function quickToggleTheme() {
   _isLightMode = !_isLightMode;
-  try { localStorage.setItem('df_light_mode', _isLightMode ? '1' : '0'); } catch(e) {}
+  try {
+    localStorage.setItem('df_light_mode', _isLightMode ? '1' : '0');
+    localStorage.setItem('df_theme_pref_v2', '1');
+  } catch(e) {}
   _applyQuickTheme();
 }
 
