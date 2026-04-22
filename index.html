@@ -1513,6 +1513,16 @@ td.editing .td-inp { display: block; }
 .kpi-trend-up   { color: #4ade80; }
 .kpi-trend-down { color: #f87171; }
 
+/* ── Single metric cards ── */
+.metric-card {
+  padding: 16px 18px 18px; min-height: 126px;
+  display: flex; flex-direction: column; justify-content: space-between;
+}
+.metric-label { font-size: 10px; font-weight: 800; color: var(--text-3); letter-spacing: .08em; text-transform: uppercase; }
+.metric-value { font-size: 34px; font-weight: 800; color: var(--text); font-family: var(--mono); line-height: 1.05; margin-top: 8px; }
+.metric-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 12px; font-size: 11px; color: var(--text-3); }
+.metric-pill { border: 1px solid var(--border); background: var(--surface-2); border-radius: 999px; padding: 2px 8px; color: var(--text-2); font-family: var(--mono); }
+
 /* ── Text / empty cards ── */
 .tc-body { padding: 14px; font-size: 13px; color: var(--text-2); line-height: 1.5; }
 
@@ -3137,8 +3147,10 @@ button, input, select { letter-spacing: 0; }
       </div>
     </div>
   </div>
+</div>
 
-id="v-dashboard">
+<!-- DASHBOARD -->
+<div class="view" id="v-dashboard">
   <div class="dash-bar">
     <div class="dash-bar-left">
       <span class="dash-title">Dashboard</span>
@@ -3147,7 +3159,9 @@ id="v-dashboard">
     <div class="dash-bar-right">
       <button class="tbtn" onclick="refreshDashboard()" title="Re-render all charts">🔄</button>
       <div class="dash-sep"></div>
+      <button class="tbtn grn" onclick="autoBuildDashboard()">⚡ Auto</button>
       <button class="tbtn grn" onclick="addKPICard()">＋ KPI</button>
+      <button class="tbtn grn" onclick="addMetricCard()">＋ Metric</button>
       <button class="tbtn grn" onclick="addTextCard()">＋ Text</button>
       <div class="dash-sep"></div>
       <select class="ti" id="dash-cols-sel" style="width:112px;font-size:11px" title="Grid columns" onchange="applyDashPref('cols',this.value)">
@@ -3233,6 +3247,7 @@ id="v-merge">
     <div class="tsp"></div>
     <span id="clean-stats" style="font-size:11px;color:var(--text-3);font-family:var(--mono)"></span>
     <div class="tsp"></div>
+    <button class="tbtn grn" onclick="quickPrepData()" title="Trim text, parse numbers/dates, remove duplicates, and refresh column types">⚡ Quick Prep</button>
     <button class="tbtn" onclick="undoClean()" id="clean-undo-btn" disabled title="Undo last operation">↩ Undo</button>
     <button class="tbtn" onclick="cleanApplyAll()" style="border-color:var(--ok);color:var(--ok)">✓ Apply All</button>
     <button class="tbtn" onclick="clearLog()">Clear Log</button>
@@ -5784,9 +5799,9 @@ function syncCBUI() {
   CB.y2 = {en:G('y2-en')?.checked, min:G('y2-min')?.value||'', max:G('y2-max')?.value||'', label:G('y2-label')?.value||''};
 }
 
-function aggData(xCol, yCol, fn, dsIdx) {
+function aggData(xCol, yCol, fn, dsIdx, cbOpts) {
   const src = (dsIdx!==undefined ? DS[dsIdx] : ds())?.data || [];
-  const skip = CB.skip || 0;
+  const skip = cbOpts?.skip ?? CB.skip ?? 0;
   const groups = {}, order = [];
   src.forEach(row => {
     const k = String(row[xCol] ?? 'null');
@@ -5796,10 +5811,12 @@ function aggData(xCol, yCol, fn, dsIdx) {
     else { const n=+v; if(!isNaN(n)) groups[k].push(n); }
   });
   let labels = [...new Set(order)];
-  if (CB.sortX && !CB.sortXDesc) labels.sort((a,b)=>a.localeCompare(a,undefined,{numeric:true}));
-  if (CB.sortX && CB.sortXDesc) labels.sort((a,b)=>b.localeCompare(a,undefined,{numeric:true}));
+  const sortX = cbOpts?.sortX ?? CB.sortX;
+  const sortXDesc = cbOpts?.sortXDesc ?? CB.sortXDesc;
+  if (sortX && !sortXDesc) labels.sort((a,b)=>a.localeCompare(a,undefined,{numeric:true}));
+  if (sortX && sortXDesc) labels.sort((a,b)=>b.localeCompare(a,undefined,{numeric:true}));
   if (skip > 0) labels = labels.slice(skip);
-  const lim = +(G('cb-limit')?.value ?? CB.limit ?? 0);
+  const lim = +(cbOpts?.limit ?? G('cb-limit')?.value ?? CB.limit ?? 0);
   if (lim > 0) labels = labels.slice(0, lim);
   const values = labels.map(k => {
     const arr = groups[k]||[];
@@ -5934,7 +5951,7 @@ function buildConfig(cb, forDash) {
   }
 
   // ─── STANDARD CHARTS ───
-  const base=aggData(cb.xCol,cb.series[0].col,cb.agg,cb.dsIdx);
+  const base=aggData(cb.xCol,cb.series[0].col,cb.agg,cb.dsIdx,cb);
   const rawLabels=base.labels;
   const tickLabels=rawLabels.map(l=>fmtTick(l,cb.tickFmt||''));
 
@@ -5942,17 +5959,17 @@ function buildConfig(cb, forDash) {
 
   if (isPie) {
     const s=cb.series[0];
-    const {values}=aggData(cb.xCol,s.col,cb.agg,cb.dsIdx);
+    const {values}=aggData(cb.xCol,s.col,cb.agg,cb.dsIdx,cb);
     const colors=rawLabels.map((_,i)=>pal[i%pal.length]);
     datasets.push({label:s.label||s.col,data:values,backgroundColor:colors.map(c=>hexA(c,(s.opacity||85)/100)),borderColor:colors,borderWidth:s.bw||2});
   } else if (isWfall) {
     const s=cb.series[0];
-    const {values}=aggData(cb.xCol,s.col,cb.agg,cb.dsIdx);
+    const {values}=aggData(cb.xCol,s.col,cb.agg,cb.dsIdx,cb);
     const {data,colors}=buildWaterfallData(rawLabels,values);
     datasets.push({label:s.label||s.col,data:data.map(d=>d.value),base:data.map(d=>d.base),backgroundColor:colors,borderColor:colors.map(c=>c.replace(/[\d.]+\)$/,'1)')),borderWidth:1,borderRadius:3});
   } else {
     cb.series.forEach((s,si)=>{
-      const {values}=aggData(cb.xCol,s.col,cb.agg,cb.dsIdx);
+      const {values}=aggData(cb.xCol,s.col,cb.agg,cb.dsIdx,cb);
       const color=s.color||pal[si%pal.length];
       const alpha=(s.opacity||85)/100;
       const st=s.chartType||cb.type;
@@ -6146,15 +6163,42 @@ function renderAnnotList() {
 
 
 // ═══════════════════════════ DASHBOARD ═══════════════════════════
-const dcharts={};
+let dcharts={};
 function addToDash(){if(!ds())return toast('No data','error');if(!CB.series.length)return toast('Add a Y series first','error');syncCBUI();const id='c_'+Date.now();DASH.push({id,cb:JSON.parse(JSON.stringify(CB)),size:'md'});renderDashboard();show('dashboard');toast('Chart added to dashboard!','success');}
 function dupLastChart(){if(!DASH.length)return toast('No charts yet','error');const last=DASH[DASH.length-1];DASH.push({id:'c_'+Date.now(),cb:last.cb?JSON.parse(JSON.stringify(last.cb)):null,cardType:last.cardType,title:last.title,content:last.content,size:last.size||'md'});renderDashboard();toast('Duplicated','success');}
+function dashEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+function dashSeries(col,i=0,extra={}){return Object.assign({col,label:col,color:SC[i%SC.length],chartType:'',yAxis:'y1',showTrend:false,trendType:'linear',opacity:85,bw:2,dashed:false},extra);}
+function dashBaseChart(type,xCol,yCol,title,extra={}){
+  return Object.assign({type,dsIdx:ACT,xCol,agg:'sum',limit:0,skip:0,series:[dashSeries(yCol,0)],y1:{min:'',max:'',label:''},y2:{en:false,min:'',max:'',label:''},refLines:[],title,subtitle:'',legend:'top',grid:true,smooth:true,fill:false,brad:4,bg:'surface',datalabels:false,showPoints:true,animate:false},extra);
+}
+function dashDetectFields(d){
+  const nums=d.columns.filter(c=>c.type==='number');
+  const dates=d.columns.filter(c=>c.type==='date'||d.data.slice(0,40).filter(r=>!isNaN(Date.parse(String(r[c.name]??'')))&&String(r[c.name]??'').length>4).length>Math.max(3,d.data.slice(0,40).length*.55));
+  const cats=d.columns.filter(c=>c.type!=='number'&&!dates.find(x=>x.name===c.name)).map(c=>({col:c,uniq:new Set(d.data.slice(0,500).map(r=>String(r[c.name]??'')).filter(Boolean)).size})).filter(x=>x.uniq>1&&x.uniq<=80).sort((a,b)=>a.uniq-b.uniq).map(x=>x.col);
+  return {nums,dates,cats};
+}
+function dashFmtMetric(v){const n=+v;if(isNaN(n))return String(v??'');const a=Math.abs(n);if(a>=1e9)return (n/1e9).toFixed(2)+'B';if(a>=1e6)return (n/1e6).toFixed(2)+'M';if(a>=1e3)return (n/1e3).toFixed(1)+'K';return n.toLocaleString(undefined,{maximumFractionDigits:2});}
+function dashMetricStats(card){
+  const d=DS[card.dsIdx]||ds();if(!d)return {value:0,count:0};
+  const col=card.col||d.columns.find(c=>c.type==='number')?.name;
+  const vals=d.data.map(r=>+r[col]).filter(v=>!isNaN(v));
+  const agg=card.agg||'sum';
+  if(!vals.length)return {value:0,count:0,col,agg};
+  let value=vals.reduce((a,b)=>a+b,0);
+  if(agg==='avg')value=value/vals.length;
+  if(agg==='min')value=Math.min(...vals);
+  if(agg==='max')value=Math.max(...vals);
+  if(agg==='count')value=vals.length;
+  if(agg==='median'){const s=[...vals].sort((a,b)=>a-b),m=Math.floor(s.length/2);value=s.length%2?s[m]:(s[m-1]+s[m])/2;}
+  return {value,count:vals.length,col,agg};
+}
 function renderDashboard(){
   const canvas=G('dcanvas'); if(!canvas) return;
   Object.values(dcharts).forEach(c=>{try{c.destroy();}catch(e){}});
   dcharts={};
   const colMap={'auto':'repeat(auto-fill,minmax(440px,1fr))','1':'1fr','2':'repeat(2,1fr)','3':'repeat(3,1fr)','4':'repeat(4,1fr)'};
   canvas.style.gridTemplateColumns=colMap[appPrefs.dashCols]||colMap.auto;
+  canvas.style.gap=appPrefs.dashGap||'12px';
   if(!DASH.length){
     canvas.innerHTML=`<div class="dash-empty"><div class="dash-empty-icon"><svg viewBox="0 0 64 64" fill="none"><rect x="4" y="28" width="14" height="32" rx="3" fill="currentColor" opacity=".25"/><rect x="25" y="16" width="14" height="44" rx="3" fill="currentColor" opacity=".5"/><rect x="46" y="36" width="14" height="24" rx="3" fill="currentColor" opacity=".35"/></svg></div><div class="dash-empty-title">No charts yet</div><div class="dash-empty-sub">Build a chart and click <strong>＋ Add to Dashboard</strong></div></div>`;
     if(G('dash-card-count'))G('dash-card-count').textContent='';
@@ -6163,28 +6207,33 @@ function renderDashboard(){
   const cardH=appPrefs.dashHeight||'220px';
   canvas.innerHTML=DASH.map(card=>{
     const sz=card.size||'md';
-    const title=card.cb?card.cb.title||card.cb.series?.map(s=>s.label).join(', ')||'Chart':card.title||'Card';
-    const sub=card.cb?`${card.cb.type} · ${card.cb.xCol}${card.cb.agg&&card.cb.agg!=='none'?' · '+card.cb.agg:''}`:card.cardType||'';
+    const title=card.titleOverride||card.title||(card.cb?card.cb.title||card.cb.series?.map(s=>s.label).join(', ')||'Chart':'Card');
+    const sub=card.subtitleOverride??(card.cb?`${card.cb.type} · ${card.cb.xCol}${card.cb.agg&&card.cb.agg!=='none'?' · '+card.cb.agg:''}`:card.cardType||'');
+    const showSub=appPrefs.dashSub!==false&&!card.hideSub&&sub;
+    const h=card.height||cardH;
     return `<div class="dc" id="${card.id}" data-size="${sz}" draggable="true"
       ondragstart="dcDragStart(event,'${card.id}')" ondragover="dcDragOver(event,'${card.id}')"
       ondragleave="dcDragLeave(event,'${card.id}')" ondrop="dcDrop(event,'${card.id}')">
       <div class="dc-head">
         <div style="flex:1;min-width:0">
-          <div class="dc-title">${title}</div>
-          <div class="dc-sub">${sub}</div>
+          <div class="dc-title">${dashEsc(title)}</div>
+          <div class="dc-sub" style="${showSub?'':'display:none'}">${dashEsc(sub)}</div>
         </div>
         <div class="dc-acts">
           ${card.cb?`<button class="dc-act edit" onclick="editCard('${card.id}')" title="Edit">✏</button>`:''}
+          <button class="dc-act edit" onclick="customizeCard('${card.id}')" title="Customize">⚙</button>
           <button class="dc-act size" onclick="cycleCardSize('${card.id}')" title="Resize">⊞</button>
           <button class="dc-act" onclick="duplicateCard('${card.id}')" title="Duplicate" style="font-size:12px">⧉</button>
           <button class="dc-act" onclick="removeCard('${card.id}')" title="Remove">✕</button>
         </div>
       </div>
       ${card.cb
-        ? `<div class="cbox" style="height:${cardH}"><canvas id="ch_${card.id}"></canvas></div>`
+        ? `<div class="cbox" style="height:${h}"><canvas id="ch_${card.id}"></canvas></div>`
+        : card.cardType==='metric'
+          ? `<div class="metric-card" id="metric_${card.id}"></div>`
         : card.cardType==='kpi'
           ? `<div class="kpi-grid" id="kg_${card.id}"></div>`
-          : `<div class="tc-body">${card.content||''}</div>`
+          : `<div class="tc-body" style="white-space:pre-wrap">${dashEsc(card.content||'')}</div>`
       }
     </div>`;
   }).join('');
@@ -6204,10 +6253,10 @@ function renderDashboard(){
   DASH.forEach(card=>{
     if(card.cardType!=='kpi') return;
     const grid=G('kg_'+card.id); if(!grid) return;
-    const d=ds(); if(!d) return;
+    const d=DS[card.dsIdx]||ds(); if(!d) return;
     const nc=d.columns.filter(c=>c.type==='number');
     grid.innerHTML=nc.slice(0,8).map(col=>{
-      const vals=data().map(r=>+r[col.name]).filter(v=>!isNaN(v));
+      const vals=d.data.map(r=>+r[col.name]).filter(v=>!isNaN(v));
       const tot=vals.reduce((a,b)=>a+b,0);
       const avg=vals.length?tot/vals.length:0;
       const fmt=v=>Math.abs(v)>=1e6?(v/1e6).toFixed(1)+'M':Math.abs(v)>=1e3?(v/1e3).toFixed(1)+'K':v.toFixed(1);
@@ -6217,6 +6266,12 @@ function renderDashboard(){
         <div class="kpi-sub">avg ${fmt(avg)} · n=${vals.length}</div>
       </div>`;
     }).join('');
+  });
+  DASH.forEach(card=>{
+    if(card.cardType!=='metric')return;
+    const el=G('metric_'+card.id);if(!el)return;
+    const m=dashMetricStats(card);
+    el.innerHTML=`<div><div class="metric-label">${dashEsc(card.label||m.col||'Metric')}</div><div class="metric-value">${dashFmtMetric(m.value)}</div></div><div class="metric-foot"><span>${dashEsc((m.agg||'sum').toUpperCase())} · ${dashEsc(m.col||'')}</span><span class="metric-pill">n=${(m.count||0).toLocaleString()}</span></div>`;
   });
 
   if(G('dash-card-count'))G('dash-card-count').textContent=DASH.length+' card'+(DASH.length!==1?'s':'');
@@ -6285,7 +6340,7 @@ function refreshDashboard(){
 function duplicateCard(id){
   const card=DASH.find(c=>c.id===id);
   if(!card) return;
-  const copy={id:'c_'+Date.now(),size:card.size||'md',cardType:card.cardType,title:card.title,content:card.content};
+  const copy={id:'c_'+Date.now(),size:card.size||'md',cardType:card.cardType,title:card.title,content:card.content,titleOverride:card.titleOverride,subtitleOverride:card.subtitleOverride,hideSub:card.hideSub,height:card.height,dsIdx:card.dsIdx,col:card.col,agg:card.agg,label:card.label};
   if(card.cb) copy.cb=JSON.parse(JSON.stringify(card.cb));
   DASH.push(copy);
   renderDashboard();
@@ -6296,12 +6351,81 @@ function editCard(id){const card=DASH.find(c=>c.id===id);if(!card)return;CB=JSON
 function addKPICard(){
   if(!ds())return;
   const id='kpi_'+Date.now();
-  DASH.push({id,cardType:'kpi',title:'KPI Summary',size:'full'});
+  DASH.push({id,cardType:'kpi',title:'KPI Summary',size:'full',dsIdx:ACT});
   renderDashboard();
   show('dashboard');
   toast('KPI card added','success');
 }
+function addMetricCard(){
+  const d=ds();if(!d)return toast('Load data first','error');
+  const nums=d.columns.filter(c=>c.type==='number');if(!nums.length)return toast('No numeric columns','error');
+  const opts=nums.map(c=>`<option value="${dashEsc(c.name)}">${dashEsc(c.name)}</option>`).join('');
+  openModal('Metric Card','Create a focused KPI tile from one numeric column.',`
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <div><div class="fin-label">Metric column</div><select class="fsel" id="mt-col" style="width:100%">${opts}</select></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <div><div class="fin-label">Aggregation</div><select class="fsel" id="mt-agg" style="width:100%"><option value="sum">Sum</option><option value="avg">Average</option><option value="median">Median</option><option value="min">Min</option><option value="max">Max</option><option value="count">Count</option></select></div>
+        <div><div class="fin-label">Size</div><select class="fsel" id="mt-size" style="width:100%"><option value="sm">Small</option><option value="md" selected>Medium</option><option value="lg">Large</option></select></div>
+      </div>
+      <div><div class="fin-label">Label</div><input class="fin" id="mt-label" placeholder="Optional display label" style="width:100%"></div>
+    </div>`,()=>{
+      const col=G('mt-col').value,agg=G('mt-agg').value,label=G('mt-label').value.trim()||col;
+      DASH.push({id:'metric_'+Date.now(),cardType:'metric',title:label,label,col,agg,dsIdx:ACT,size:G('mt-size').value});
+      renderDashboard();show('dashboard');toast('Metric card added','success');
+    });
+}
+function autoBuildDashboard(){
+  const d=ds();if(!d)return toast('Load data first','error');
+  const f=dashDetectFields(d);
+  if(!f.nums.length)return toast('Auto dashboard needs at least one numeric column','error');
+  const body=`<div style="display:flex;flex-direction:column;gap:8px">
+    <label style="display:flex;align-items:center;gap:7px;font-size:12px"><input type="checkbox" id="ad-clear" checked style="accent-color:var(--highlight)"> Replace current dashboard</label>
+    <label style="display:flex;align-items:center;gap:7px;font-size:12px"><input type="checkbox" id="ad-prep" checked style="accent-color:var(--highlight)"> Run Quick Prep first</label>
+    <div style="font-size:11px;color:var(--text-3);line-height:1.6">Will add summary KPIs, metric cards, and ready-to-use charts from detected number, category, and date columns.</div>
+  </div>`;
+  openModal('Auto-build Dashboard','Generate a usable dashboard from the active dataset.',body,()=>{
+    if(G('ad-prep')?.checked) quickPrepData(true);
+    const d2=ds(), ff=dashDetectFields(d2);
+    if(G('ad-clear')?.checked) DASH=[];
+    DASH.push({id:'kpi_'+Date.now(),cardType:'kpi',title:'KPI Summary',size:'full',dsIdx:ACT});
+    ff.nums.slice(0,3).forEach((n,i)=>DASH.push({id:'metric_'+Date.now()+'_'+i,cardType:'metric',title:n.name,label:n.name,col:n.name,agg:'sum',dsIdx:ACT,size:'sm'}));
+    const primaryNum=ff.nums[0]?.name;
+    if(ff.cats[0]&&primaryNum)DASH.push({id:'c_'+Date.now()+'_top',size:'lg',cb:dashBaseChart('bar',ff.cats[0].name,primaryNum,'Top '+ff.cats[0].name+' by '+primaryNum,{limit:10,sortX:true,sortXDesc:true})});
+    if(ff.dates[0]&&primaryNum)DASH.push({id:'c_'+Date.now()+'_trend',size:'lg',cb:dashBaseChart('line',ff.dates[0].name,primaryNum,primaryNum+' Trend',{agg:'sum',smooth:true,fill:false,series:[dashSeries(primaryNum,0,{showTrend:true})]})});
+    if(ff.cats[1]&&primaryNum)DASH.push({id:'c_'+Date.now()+'_share',size:'md',cb:dashBaseChart('doughnut',ff.cats[1].name,primaryNum,primaryNum+' Share',{limit:8,legend:'right'})});
+    DASH.push({id:'c_'+Date.now()+'_dist',size:'md',cb:dashBaseChart('histogram',ff.nums[0].name,ff.nums[0].name,ff.nums[0].name+' Distribution',{agg:'none',bins:20})});
+    renderDashboard();show('dashboard');toast('Auto dashboard built','success');saveConfig();
+  });
+}
 function addTextCard(){openModal('Text Card','',`<input class="fin" id="tc-t" placeholder="Title" style="display:block;width:100%;margin-bottom:7px"><textarea class="fin" id="tc-b" placeholder="Content…" rows="4" style="display:block;width:100%;resize:vertical"></textarea>`,()=>{const title=G('tc-t').value||'Note',body=G('tc-b').value;const id='txt_'+Date.now();DASH.push({id,cardType:'text',title,content:body,size:'md'});renderDashboard();show('dashboard');toast('Text card added','success');});}
+function customizeCard(id){
+  const card=DASH.find(c=>c.id===id);if(!card)return;
+  const isMetric=card.cardType==='metric';
+  const d=DS[card.dsIdx]||ds();
+  const nums=d?d.columns.filter(c=>c.type==='number'):[];
+  const metricControls=isMetric?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+    <div><div class="fin-label">Metric</div><select class="fsel" id="cc-col">${nums.map(c=>`<option value="${dashEsc(c.name)}" ${c.name===card.col?'selected':''}>${dashEsc(c.name)}</option>`).join('')}</select></div>
+    <div><div class="fin-label">Aggregation</div><select class="fsel" id="cc-agg"><option value="sum" ${card.agg==='sum'?'selected':''}>Sum</option><option value="avg" ${card.agg==='avg'?'selected':''}>Average</option><option value="median" ${card.agg==='median'?'selected':''}>Median</option><option value="min" ${card.agg==='min'?'selected':''}>Min</option><option value="max" ${card.agg==='max'?'selected':''}>Max</option><option value="count" ${card.agg==='count'?'selected':''}>Count</option></select></div>
+  </div>`:'';
+  openModal('Customize Card','',`<div style="display:flex;flex-direction:column;gap:9px">
+    <div><div class="fin-label">Title</div><input class="fin" id="cc-title" value="${dashEsc(card.titleOverride||card.title||card.cb?.title||'')}" style="width:100%"></div>
+    <div><div class="fin-label">Subtitle</div><input class="fin" id="cc-sub" value="${dashEsc(card.subtitleOverride||'')}" placeholder="Leave blank for generated subtitle" style="width:100%"></div>
+    ${metricControls}
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div><div class="fin-label">Size</div><select class="fsel" id="cc-size"><option value="sm" ${card.size==='sm'?'selected':''}>Small</option><option value="md" ${(!card.size||card.size==='md')?'selected':''}>Medium</option><option value="lg" ${card.size==='lg'?'selected':''}>Large</option><option value="full" ${card.size==='full'?'selected':''}>Full width</option></select></div>
+      <div><div class="fin-label">Chart height</div><select class="fsel" id="cc-height"><option value="">Dashboard default</option><option value="160px" ${card.height==='160px'?'selected':''}>Compact</option><option value="220px" ${card.height==='220px'?'selected':''}>Default</option><option value="300px" ${card.height==='300px'?'selected':''}>Tall</option><option value="400px" ${card.height==='400px'?'selected':''}>X-Tall</option></select></div>
+    </div>
+    <label style="display:flex;align-items:center;gap:7px;font-size:12px"><input type="checkbox" id="cc-hide-sub" ${card.hideSub?'checked':''} style="accent-color:var(--highlight)"> Hide subtitle</label>
+  </div>`,()=>{
+    card.titleOverride=G('cc-title').value.trim();
+    card.subtitleOverride=G('cc-sub').value.trim();
+    card.size=G('cc-size').value;
+    card.height=G('cc-height').value;
+    card.hideSub=G('cc-hide-sub').checked;
+    if(isMetric){card.col=G('cc-col').value;card.agg=G('cc-agg').value;card.label=card.titleOverride||card.col;card.title=card.label;}
+    renderDashboard();saveConfig();toast('Card updated','success');
+  });
+}
 function clearDash(){openModal('Clear Dashboard','Remove all cards?','',()=>{DASH=[];renderDashboard();toast('Cleared','info');});}
 function exportDashHTML(){const cards=document.querySelectorAll('.dc');let ch='';cards.forEach(card=>{const title=card.querySelector('.dc-title')?.textContent||'';const cv=card.querySelector('canvas'),kpi=card.querySelector('.kpi-grid'),txt=card.querySelector('[style*="pre-wrap"]');let inner='';if(cv)inner=`<img src="${cv.toDataURL()}" style="width:100%;height:200px;object-fit:contain">`;else if(kpi)inner=kpi.outerHTML;else if(txt)inner=`<div>${txt.textContent}</div>`;ch+=`<div style="background:#161b28;border:1px solid #2a3350;border-radius:10px;padding:14px;margin-bottom:12px"><h3 style="margin:0 0 10px;color:#f0f4ff">${title}</h3>${inner}</div>`;});dl(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dashboard</title><style>body{background:#0d0f17;padding:24px;font-family:sans-serif;color:#f0f4ff}h1{color:#5b9cf6;margin-bottom:20px}.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.kpi-cell{background:#1d2436;border-radius:6px;padding:11px;border:1px solid #2a3350}.kpi-lbl{font-size:10px;color:#b8c8e8;margin-bottom:3px}.kpi-v{font-size:20px;font-weight:800;color:#5b9cf6}
 /* [Patch: Keyboard Shortcuts — Finder, Merge, Column Inspector] */
@@ -6966,8 +7090,57 @@ function opReorderCols() {
 function cleanApplyAll() { renderTable(); toast('Changes applied to dataset', 'success'); }
 
 function undoClean(){if(!cleanHist.length)return toast('Nothing to undo','error');const d=ds();d.data=cleanHist.pop();renderTable();buildProfile();renderDsList();toast('Undone','info');}
-function logOp(msg,t='ok'){const el=G('oplog');el.innerHTML+=`<div class="oe ${t}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;el.scrollTop=el.scrollHeight;}
-function clearLog(){G('oplog').innerHTML='<div class="oe" style="color:var(--text-3)">// Log cleared</div>';}
+function logOp(msg,t='ok'){const el=G('op-log')||G('oplog');if(!el)return;el.innerHTML+=`<div class="oe ${t}">[${new Date().toLocaleTimeString()}] ${msg}</div>`;el.scrollTop=el.scrollHeight;}
+function clearLog(){const el=G('op-log')||G('oplog');if(el)el.innerHTML='<div class="oe" style="color:var(--text-3)">// Log cleared</div>';}
+function quickPrepData(silent=false){
+  const d=ds();if(!d)return toast('Load data first','error');
+  pushH();
+  let trimmed=0,parsedNums=0,parsedDates=0;
+  d.data=d.data.map(r=>{
+    const nr={...r};
+    d.columns.forEach(c=>{
+      const v=nr[c.name];
+      if(typeof v==='string'){
+        const t=v.replace(/\s+/g,' ').trim();
+        if(t!==v){nr[c.name]=t;trimmed++;}
+      }
+    });
+    return nr;
+  });
+  d.columns.forEach(col=>{
+    const sample=d.data.slice(0,80).map(r=>r[col.name]).filter(v=>v!=null&&v!=='');
+    if(!sample.length)return;
+    const numeric=sample.filter(v=>!isNaN(+String(v).replace(/[$,%\s,]/g,''))).length;
+    if(col.type!=='number'&&numeric>=Math.max(3,sample.length*.72)){
+      d.data=d.data.map(r=>{
+        const raw=String(r[col.name]??'').trim();
+        if(raw==='')return r;
+        const pct=raw.includes('%');
+        const n=+raw.replace(/[$,%\s,]/g,'');
+        if(!isNaN(n)){r[col.name]=pct?n/100:n;parsedNums++;}
+        return r;
+      });
+      col.type='number';
+      return;
+    }
+    const dateish=sample.filter(v=>{const s=String(v);const dt=new Date(s);return s.length>4&&!isNaN(dt);}).length;
+    if(col.type!=='date'&&dateish>=Math.max(3,sample.length*.72)){
+      d.data=d.data.map(r=>{
+        const raw=r[col.name];if(raw==null||raw==='')return r;
+        const dt=new Date(String(raw));
+        if(!isNaN(dt)){r[col.name]=dt.toISOString().slice(0,10);parsedDates++;}
+        return r;
+      });
+      col.type='date';
+    }
+  });
+  const before=d.data.length,seen=new Set();
+  d.data=d.data.filter(r=>{const k=JSON.stringify(r);if(seen.has(k))return false;seen.add(k);return true;});
+  d.columns.forEach(c=>{c.type=inferType(d.data,c.name);});
+  logOp(`Quick Prep: ${trimmed} text cells cleaned, ${parsedNums} numbers parsed, ${parsedDates} dates parsed, ${before-d.data.length} duplicate rows removed`);
+  renderTable();buildProfile();renderDsList();syncDDs();if(G('clean-grid'))cleanRefresh();
+  if(!silent)toast('Quick Prep complete','success');
+}
 function opRemNulls(){const d=ds();pushH();const b=d.data.length;d.data=d.data.filter(r=>d.columns.every(c=>r[c.name]!=null&&r[c.name]!==''));logOp('Remove nulls: −'+(b-d.data.length)+' rows');renderTable();buildProfile();renderDsList();}
 function opRemNullCol(){const opts=ds().columns.map(c=>`<option>${c.name}</option>`).join('');openModal('Remove Nulls by Column','',`<select class="fsel" id="rnc">${opts}</select>`,()=>{const d=ds();pushH();const col=G('rnc').value,b=d.data.length;d.data=d.data.filter(r=>r[col]!=null&&r[col]!=='');logOp('Remove null "'+col+'": −'+(b-d.data.length)+' rows','warn');renderTable();buildProfile();renderDsList();});}
 function opRemDups(){const d=ds();pushH();const b=d.data.length,seen=new Set();d.data=d.data.filter(r=>{const k=JSON.stringify(r);if(seen.has(k))return false;seen.add(k);return true;});logOp('Duplicates: −'+(b-d.data.length)+' rows');renderTable();buildProfile();renderDsList();}
