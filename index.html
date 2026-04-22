@@ -11475,6 +11475,7 @@ function iwRenderStep(n){
   }
   G('iw-btn-back').style.display=n>1?'':'none';
   const nextBtn=G('iw-btn-next');
+  if(nextBtn) nextBtn.style.display='';
   if(n===5){ nextBtn.textContent='✅ Import Dataset'; nextBtn.onclick=iwDoImport; }
   else { nextBtn.textContent='Next →'; nextBtn.onclick=()=>iwStep(1); }
   G('iw-status').textContent='';
@@ -11615,7 +11616,7 @@ function iwHandleFile(inp){
   }
 }
 function iwLoadSheet(){
-  if(!IW.wb){ G('iw-p1-info').innerHTML='<span style="color:var(--err)">No workbook loaded — please re-select your file</span>'; return; }
+  if(!IW.wb){ G('iw-p1-info').innerHTML='<span style="color:var(--err)">No workbook loaded — please re-select your file</span>'; return false; }
   const sel=G('iw-sheet-sel');
   // Use numeric index to look up the actual SheetNames entry (avoids any string encoding issues)
   const idx = sel ? (parseInt(sel.value) >= 0 ? parseInt(sel.value) : 0) : 0;
@@ -11628,7 +11629,7 @@ function iwLoadSheet(){
       const keys = Object.keys(IW.wb.Sheets);
       ws = IW.wb.Sheets[keys[idx]] || IW.wb.Sheets[keys[0]];
     }
-    if(!ws){ G('iw-p1-info').innerHTML=`<span style="color:var(--err)">Could not open sheet at position ${idx+1}. Please try re-uploading the file.</span>`; return; }
+    if(!ws){ G('iw-p1-info').innerHTML=`<span style="color:var(--err)">Could not open sheet at position ${idx+1}. Please try re-uploading the file.</span>`; return false; }
     const sn = snKey; // for logging below
 
     // Try header=1 (object rows) first
@@ -11715,14 +11716,15 @@ function iwLoadSheet(){
         <span style="color:var(--text-2)"><strong>This file may be a CSV saved as .xlsx — click below to try:</strong></span><br>
         <button class="tbtn" style="margin-top:6px" onclick="iwTryAsCSV()">📄 Retry as CSV / Text</button>
       </div>`;
-      return;
+      return false;
     }
     iwSetData(rows, Object.keys(rows[0]));
-  }catch(err){ G('iw-p1-info').innerHTML='<span style="color:var(--err)">'+err.message+'</span>'; }
+    return true;
+  }catch(err){ G('iw-p1-info').innerHTML='<span style="color:var(--err)">'+err.message+'</span>'; return false; }
 }
 function iwLoadSheetByIdx(idx) {
   // Temporarily set up the selector value then call iwLoadSheet
-  if (!IW.wb) return;
+  if (!IW.wb) return false;
   // Create or update a hidden select for iwLoadSheet to read
   let sel = G('iw-sheet-sel');
   if (!sel) {
@@ -11733,7 +11735,7 @@ function iwLoadSheetByIdx(idx) {
   }
   sel.innerHTML = IW.sheetNames.map((_,i) => `<option value="${i}">${IW.sheetNames[i]}</option>`).join('');
   sel.value = String(idx);
-  iwLoadSheet();
+  return iwLoadSheet();
 }
 
 function iwTryAsCSV(){
@@ -16789,7 +16791,7 @@ function iwRenderSheetTree() {
     <!-- ── All sheets panel ── -->
     <div id="iw-tree-all-panel" style="display:none">
       <div style="color:var(--text-3);font-size:11px;margin-bottom:8px">
-        Check the sheets to import. Each becomes a separate dataset named <code style="font-size:10px">${fname}_SheetName</code>.
+        Check the sheets to import as grouped datasets, or continue through the wizard with the selected sheet rows as raw data.
       </div>
 
       <!-- File node (collapsible header) -->
@@ -16816,7 +16818,10 @@ function iwRenderSheetTree() {
 
       <div style="display:flex;align-items:center;gap:10px;margin-top:10px;flex-wrap:wrap">
         <button class="sql-run" style="background:var(--highlight);border-color:var(--highlight)" onclick="iwImportAllSheets()">
-          ⬇ Import Selected Sheets
+          ⬇ Import Selected as Group
+        </button>
+        <button class="tbtn" onclick="iwContinueSelectedSheetsRaw()">
+          Continue Wizard with Selected Raw Data
         </button>
         <span style="font-size:11px;color:var(--text-3)" id="iw-tree-sel-count">
           ${sheetMeta.filter(s=>!s.empty).length} of ${sheets.length} selected
@@ -16836,7 +16841,7 @@ function iwRenderSheetTree() {
       const idx = sel ? parseInt(sel.value) : 0;
       // Fake the sheet selector for iwLoadSheet
       IW._singleIdx = idx;
-      iwLoadSheetByIdx(idx);
+      if (iwLoadSheetByIdx(idx)) iwRenderStep(2);
     };
   }
 }
@@ -16876,8 +16881,99 @@ function iwTreeUpdateCount() {
   if (cnt) cnt.textContent = checked + ' of ' + total + ' selected';
 }
 
+function iwParseWorkbookSheet(idx) {
+  if (!IW.wb) return null;
+  const sn = IW.wb.SheetNames[idx];
+  const ws = IW.wb.Sheets[sn];
+  if (!ws) return null;
+  const opts = [{defval:'',raw:false},{defval:'',raw:true},{defval:null,raw:false}];
+  for (const o of opts) {
+    try {
+      const rows = XLSX.utils.sheet_to_json(ws, o);
+      if (rows.length) return { name: sn, rows };
+    } catch(e) {}
+  }
+  const cellKeys = Object.keys(ws).filter(k => !k.startsWith('!'));
+  if (!cellKeys.length) return null;
+  let minR=Infinity,maxR=-Infinity,minC=Infinity,maxC=-Infinity;
+  cellKeys.forEach(addr => {
+    try {
+      const d = XLSX.utils.decode_cell(addr);
+      minR = Math.min(minR, d.r); maxR = Math.max(maxR, d.r);
+      minC = Math.min(minC, d.c); maxC = Math.max(maxC, d.c);
+    } catch(e) {}
+  });
+  if (maxR < 0) return null;
+  const fixedWs = Object.assign({}, ws, {'!ref': XLSX.utils.encode_range({s:{r:minR,c:minC},e:{r:maxR,c:maxC}})});
+  const rows = XLSX.utils.sheet_to_json(fixedWs, {defval:'',raw:false});
+  return rows.length ? { name: sn, rows } : null;
+}
+
+function iwSelectedSheetChecks() {
+  return [...document.querySelectorAll('.iw-sheet-chk:checked')];
+}
+
+function iwContinueSelectedSheetsRaw() {
+  const checked = iwSelectedSheetChecks();
+  if (!checked.length) { toast('Select at least one sheet', 'info'); return; }
+
+  const fname = IW.fileName || 'Workbook';
+  const prog = G('iw-tree-progress');
+  if (prog) {
+    prog.style.display = '';
+    prog.innerHTML = '<span style="color:var(--highlight)">⏳ Loading selected raw data…</span>';
+  }
+
+  const selected = [];
+  checked.forEach(chk => {
+    const idx = parseInt(chk.dataset.idx);
+    const parsed = iwParseWorkbookSheet(idx);
+    const badge = G('iw-trow-' + idx)?.querySelector('.iw-tree-sheet-badge');
+    if (!parsed || !parsed.rows.length) {
+      if (badge) { badge.textContent = 'skipped (empty)'; badge.className = 'iw-tree-sheet-badge err'; }
+      return;
+    }
+    selected.push(parsed);
+    if (badge) { badge.textContent = 'ready · ' + parsed.rows.length + ' rows'; badge.className = 'iw-tree-sheet-badge ok'; }
+  });
+
+  if (!selected.length) {
+    if (prog) prog.innerHTML = '<span style="color:var(--err)">No readable rows found in selected sheets</span>';
+    toast('No readable rows found in selected sheets', 'error');
+    return;
+  }
+
+  const colSet = new Set();
+  selected.forEach(s => s.rows.forEach(r => Object.keys(r).forEach(c => colSet.add(c))));
+  let sourceCol = '_sheet';
+  if (selected.length > 1) {
+    while (colSet.has(sourceCol)) sourceCol = '_' + sourceCol;
+    colSet.add(sourceCol);
+  }
+  const colNames = [...colSet];
+  const rows = selected.flatMap(s => s.rows.map(r => {
+    const nr = {};
+    colNames.forEach(c => {
+      nr[c] = selected.length > 1 && c === sourceCol ? s.name : (r[c] ?? '');
+    });
+    return nr;
+  }));
+
+  IW.rawData = rows;
+  IW.cols = colNames.map(name => ({ name, type: iwGuessType(rows, name), include: true }));
+  IW.rowFilters = [];
+  IW.cleanData = JSON.parse(JSON.stringify(rows));
+  IW.cleanHistory = [];
+  IW._multiSheetMode = false;
+  IW.fileName = selected.length === 1 ? fname + '_' + selected[0].name : fname + '_selected_sheets';
+  if (G('iw-ds-name')) G('iw-ds-name').value = IW.fileName;
+
+  if (prog) prog.innerHTML = '✓ Loaded ' + rows.length.toLocaleString() + ' raw row' + (rows.length!==1?'s':'') + ' from ' + selected.length + ' sheet' + (selected.length!==1?'s':'');
+  iwRenderStep(2);
+}
+
 function iwImportAllSheets() {
-  const checked = [...document.querySelectorAll('.iw-sheet-chk:checked')];
+  const checked = iwSelectedSheetChecks();
   if (!checked.length) { toast('Select at least one sheet', 'info'); return; }
 
   const fname = IW.fileName || 'Sheet';
