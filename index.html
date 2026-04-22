@@ -14799,7 +14799,8 @@ function atRenderStepExtended(s, i, a) {
 // ═══════════════════════════════════════════════════════════════
 // DARK / LIGHT THEME QUICK TOGGLE
 // ═══════════════════════════════════════════════════════════════
-var _isLightMode = localStorage.getItem('df_light_mode') === '1'; // default: dark
+var _storedLightMode = localStorage.getItem('df_light_mode');
+var _isLightMode = _storedLightMode == null ? true : _storedLightMode === '1'; // default: light
 
 function quickToggleTheme() {
   _isLightMode = !_isLightMode;
