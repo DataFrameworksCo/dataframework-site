@@ -16353,6 +16353,9 @@ SHOW WHERE Country = "USA" AND Active = "true"<button class="kb-copy-btn" onclic
 <pre>-- IN is shorthand for multiple OR equals
 FETCH Leads
 SHOW WHERE Status IN (New, Open, Pending)<button class="kb-copy-btn" onclick="kbCopy(this)">Copy</button></pre>
+<pre>-- Comma-separated values: match any of the listed values
+FETCH History
+SHOW WHERE Year = 1990,1991,1992 AND WHERE Country = USA<button class="kb-copy-btn" onclick="kbCopy(this)">Copy</button></pre>
 <pre>FETCH Products
 SHOW WHERE Name CONTAINS "pro" AND Price < 100<button class="kb-copy-btn" onclick="kbCopy(this)">Copy</button></pre>
 <pre>-- Find rows with missing emails
@@ -18447,7 +18450,11 @@ function executeGPQL(raw) {
     // ── SHOW WHERE <expr> ────────────────────────────────────
     else if (up.startsWith('SHOW WHERE ')) {
       requireRows();
-      const expr = line.replace(/^SHOW WHERE /i, '').trim();
+      const expr = line.replace(/^SHOW WHERE /i, '').trim()
+        .replace(/\bAND\s+WHERE\b/gi, 'AND')
+        .replace(/\bOR\s+WHERE\b/gi, 'OR')
+        .replace(/\s*&\s*WHERE\b/gi, ' AND')
+        .replace(/\s*&\s*/g, ' AND ');
       rows = rows.filter(row => { try { return gpqlEvalExpr(row, expr); } catch(e) { return false; } });
     }
 
@@ -18911,8 +18918,22 @@ function gpqlEvalExpr(row, expr) {
     const cmpM = e.match(/^(\S+)\s*(>=|<=|!=|<>|>|<|=)\s*(.+)$/);
     if (cmpM) {
       const lv = rowVal(row, cmpM[1]);
-      const rv = cmpM[3].trim().replace(/^['"]|['"]$/g, '');
+      const rawRv = cmpM[3].trim();
+      const isQuoted = /^(['"]).*\1$/.test(rawRv);
+      const rv = rawRv.replace(/^['"]|['"]$/g, '');
       const op = cmpM[2];
+      // Comma-separated multi-value: Year = 1990,1991  →  Year=1990 OR Year=1991
+      if (!isQuoted && rv.includes(',') && (op === '=' || op === '==' || op === '!=' || op === '<>')) {
+        const vals = rv.split(',').map(x => x.trim().replace(/^['"]|['"]$/g, ''));
+        const matches = vals.some(val => {
+          const lvStr = String(lv ?? '').toLowerCase();
+          const valStr = val.toLowerCase();
+          const ln2 = parseFloat(lv), rn2 = parseFloat(val);
+          const bothNum2 = !isNaN(ln2) && !isNaN(rn2) && String(lv).trim() !== '' && val.trim() !== '';
+          return bothNum2 ? ln2 === rn2 : lvStr === valStr;
+        });
+        return (op === '=' || op === '==') ? matches : !matches;
+      }
       const lvStr = String(lv ?? '').toLowerCase();
       const rvStr = rv.toLowerCase();
       const ln = parseFloat(lv), rn = parseFloat(rv);
