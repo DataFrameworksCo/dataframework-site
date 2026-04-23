@@ -2504,24 +2504,24 @@ button, input, select { letter-spacing: 0; }
   height: 28px !important;
   font-size: 11px !important;
   font-weight: 600 !important;
-  background: #f3f2f1 !important;
-  color: #323130 !important;
+  background: var(--surface-2) !important;
+  color: var(--text-2) !important;
   letter-spacing: 0 !important;
   text-transform: none !important;
-  border-right: 1px solid #e1dfdd !important;
-  border-bottom: 2px solid #c8c6c4 !important;
+  border-right: 1px solid var(--border) !important;
+  border-bottom: 2px solid var(--border-2) !important;
   padding: 0 8px !important;
 }
 .dtbl td {
   height: 28px;
   padding: 0 8px;
   font-size: 12.5px;
-  border-bottom: 1px solid #f3f2f1;
-  border-right: 1px solid #f3f2f1;
-  color: #201f1e;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  color: var(--text);
 }
-[data-theme="light"] .dtbl tr:hover td { background: #f0f6ff !important; }
-[data-theme="light"] .dtbl th { background: #f3f2f1 !important; color: #323130 !important; }
+[data-theme="light"] .dtbl tr:hover td { background: rgba(0,120,212,.05) !important; }
+[data-theme="light"] .dtbl th { background: var(--surface-2) !important; color: var(--text-2) !important; }
 
 /* ── Toolbar buttons — flat, no shadow ── */
 .tbtn {
@@ -2530,15 +2530,17 @@ button, input, select { letter-spacing: 0; }
   height: 26px;
   padding: 0 10px !important;
   box-shadow: none !important;
-  border-color: #e1dfdd !important;
+  border-color: var(--border) !important;
 }
-.tbtn:hover { background: #edebe9 !important; }
+.tbtn:hover { background: var(--surface-3) !important; }
 
 /* ── Form controls — clean PowerBI inputs ── */
 .fin, .fsel, input[type="text"], input[type="number"], input[type="search"], select, textarea {
   border-radius: 2px !important;
-  border-color: #605e5c !important;
+  border-color: var(--border-2) !important;
   font-size: 12.5px !important;
+  background-color: var(--surface) !important;
+  color: var(--text) !important;
 }
 .fin:focus, .fsel:focus { 
   border-color: var(--highlight) !important; 
@@ -2552,21 +2554,21 @@ button, input, select { letter-spacing: 0; }
   border-radius: 2px !important;
   box-shadow: 0 8px 24px rgba(0,0,0,.2), 0 0 0 1px rgba(0,0,0,.06) !important;
 }
-.modal-box h2, .iw-step h2 { font-size: 16px !important; font-weight: 600 !important; color: #201f1e !important; }
+.modal-box h2, .iw-step h2 { font-size: 16px !important; font-weight: 600 !important; color: var(--text) !important; }
 
 /* ── Buttons — flat, PowerBI style ── */
 .mbtn { border-radius: 2px !important; font-size: 12.5px !important; }
 .mbtn.pri { box-shadow: none !important; }
 
-/* ── View areas — white canvas ── */
-.view { background: #ffffff; }
-#v-home { background: #f3f2f1; }
-#v-dashboard { background: #f3f2f1; }
+/* ── View areas ── */
+.view { background: var(--surface); }
+#v-home { background: var(--bg); }
+#v-dashboard { background: var(--bg); }
 
 /* ── Toolbar strip ── */
 .tbar {
-  background: #ffffff !important;
-  border-bottom: 1px solid #e1dfdd !important;
+  background: var(--surface) !important;
+  border-bottom: 1px solid var(--border) !important;
   padding: 4px 10px !important;
   min-height: 40px;
   gap: 4px;
@@ -2574,14 +2576,14 @@ button, input, select { letter-spacing: 0; }
 
 /* ── Formula bar ── */
 .fbar {
-  background: #ffffff !important;
-  border-bottom: 1px solid #e1dfdd !important;
+  background: var(--surface) !important;
+  border-bottom: 1px solid var(--border) !important;
   height: 32px !important;
 }
 
 /* ── Status bar ── */
 .sbar {
-  background: #0078d4 !important;
+  background: var(--highlight) !important;
   border-top: none !important;
   color: #ffffff !important;
   font-size: 11px !important;
@@ -2597,24 +2599,24 @@ button, input, select { letter-spacing: 0; }
   text-transform: uppercase !important;
   letter-spacing: .04em !important;
 }
-.tbg.number  { background: #dce8f8 !important; color: #0f548c !important; border: none !important; }
-.tbg.string  { background: #dff6dd !important; color: #0e7a0d !important; border: none !important; }
-.tbg.date    { background: #fff4ce !important; color: #8a5c00 !important; border: none !important; }
-.tbg.boolean { background: #f4e0ff !important; color: #6b21a8 !important; border: none !important; }
+[data-theme="light"] .tbg.number  { background: #dce8f8 !important; color: #0f548c !important; border: none !important; }
+[data-theme="light"] .tbg.string  { background: #dff6dd !important; color: #0e7a0d !important; border: none !important; }
+[data-theme="light"] .tbg.date    { background: #fff4ce !important; color: #8a5c00 !important; border: none !important; }
+[data-theme="light"] .tbg.boolean { background: #f4e0ff !important; color: #6b21a8 !important; border: none !important; }
 
 /* ── KB reference panels ── */
-.kb-layout { background: #ffffff; }
-.kb-sidebar { background: #faf9f8 !important; border-right: 1px solid #e1dfdd !important; }
+.kb-layout { background: var(--surface); }
+.kb-sidebar { background: var(--surface-2) !important; border-right: 1px solid var(--border) !important; }
 .kb-item { border-radius: 2px !important; font-size: 12.5px !important; }
-.kb-item.on { background: #dce8f8 !important; color: #0078d4 !important; font-weight: 600 !important; }
+.kb-item.on { background: var(--highlight-dim) !important; color: var(--highlight) !important; font-weight: 600 !important; }
 
 /* ── Clean op cards ── */
 .cop {
   border-radius: 2px !important;
-  border: 1px solid #e1dfdd !important;
+  border: 1px solid var(--border) !important;
   box-shadow: none !important;
 }
-.cop:hover { border-color: #0078d4 !important; background: #f0f6ff !important; }
+.cop:hover { border-color: var(--highlight) !important; background: var(--highlight-dim) !important; }
 
 /* ── Toast notifications ── */
 .toast {
@@ -2626,30 +2628,30 @@ button, input, select { letter-spacing: 0; }
 
 /* ── Scrollbars ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #f3f2f1; }
-::-webkit-scrollbar-thumb { background: #c8c6c4; border-radius: 0; }
-::-webkit-scrollbar-thumb:hover { background: #a19f9d; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
 
 /* ── Chart panel ── */
 
 /* ── Pivot table ── */
-[data-theme="light"] .ptbl th { background: #f3f2f1 !important; color: #323130 !important; }
+[data-theme="light"] .ptbl th { background: var(--surface-2) !important; color: var(--text-2) !important; }
 
 /* ── SQL / Python editor panels ── */
 .sql-in { font-family: var(--mono) !important; font-size: 12.5px !important; }
 
 /* ── Row number col ── */
-.dtbl td:first-child { 
-  color: #a19f9d !important; 
-  font-size: 11px !important; 
-  background: #faf9f8 !important; 
-  border-right: 1px solid #e1dfdd !important;
+.dtbl td:first-child {
+  color: var(--text-3) !important;
+  font-size: 11px !important;
+  background: var(--surface-2) !important;
+  border-right: 1px solid var(--border) !important;
   text-align: right !important;
 }
 .dtbl th:first-child {
-  background: #f3f2f1 !important;
-  border-right: 1px solid #e1dfdd !important;
-  color: #a19f9d !important;
+  background: var(--surface-2) !important;
+  border-right: 1px solid var(--border) !important;
+  color: var(--text-3) !important;
   text-transform: none !important;
 }
 
@@ -2657,14 +2659,14 @@ button, input, select { letter-spacing: 0; }
 [data-theme="light"] .num { color: #0f548c !important; }
 
 /* ── Felix AI panel ── */
-[data-theme="light"] .felix-bubble { background: #f3f2f1 !important; }
-[data-theme="light"] .felix-bubble.user { background: #0078d4 !important; color: #fff !important; }
+[data-theme="light"] .felix-bubble { background: var(--surface-2) !important; }
+[data-theme="light"] .felix-bubble.user { background: var(--highlight) !important; color: #fff !important; }
 
 /* ── Merge panel ── */
-[data-theme="light"] .mg-h { background: #f3f2f1 !important; }
+[data-theme="light"] .mg-h { background: var(--surface-2) !important; }
 
 /* ── Header proj name ── */
-#proj-name { font-weight: 600 !important; color: #201f1e !important; }
+#proj-name { font-weight: 600 !important; color: var(--text) !important; }
 
 /* ── Highlight color for selected tab active indicator ── */
 .htab.on { font-weight: 600 !important; }
