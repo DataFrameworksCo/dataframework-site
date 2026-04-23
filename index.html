@@ -1304,14 +1304,14 @@ td.editing .td-inp { display: block; }
 .imp-btn.dfp { border-color: rgba(124,101,206,.5); color: #7c65ce; }
 .imp-btn.dfp:hover { border-color: #7c65ce; background: rgba(124,101,206,.08); }
 
-/* ═══ VISUALIZATION ═══ */
-/* ═══ VISUALIZATION + DASHBOARD ═══ */
+/* ═══ CHARTS ═══ */
+/* ═══ CHARTS + DASHBOARD ═══ */
 
-/* ── Visualization Layout ── */
+/* ── Chart Builder Layout ── */
 #v-charts { flex-direction: row; background: var(--bg); }
 
 .vz-rail {
-  width: 320px; min-width: 320px; background: var(--surface);
+  width: 300px; min-width: 300px; background: var(--surface);
   border-right: 1px solid var(--border);
   display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0;
 }
@@ -1406,7 +1406,6 @@ td.editing .td-inp { display: block; }
 /* ── Chart Stage (right side) ── */
 .vz-stage {
   flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg);
-  min-width: 360px;
 }
 .vz-stage-head {
   display: flex; align-items: center; gap: 8px;
@@ -1433,111 +1432,139 @@ td.editing .td-inp { display: block; }
 }
 .vz-canvas-card canvas { display: block; width: 100% !important; max-height: 70vh; }
 
-/* ── PowerBI-style field wells and data pane ── */
-.vz-wells { display: grid; gap: 7px; }
-.vz-well {
-  border: 1px dashed var(--border-2);
-  background: var(--surface-2);
-  border-radius: var(--radius);
-  min-height: 34px;
-  padding: 7px 8px;
-}
-.vz-well-label {
-  display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  font-size: 9px; font-weight: 700; color: var(--text-3);
-  text-transform: uppercase; letter-spacing: .08em; margin-bottom: 5px;
-}
-.vz-pill {
-  display: inline-flex; align-items: center; gap: 5px; max-width: 100%;
-  padding: 3px 7px; border-radius: 4px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-2);
-  font-size: 11px; font-weight: 600;
-}
-.vz-pill span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.vz-pill button {
-  border: none; background: none; color: var(--text-3);
-  cursor: pointer; font-size: 12px; line-height: 1; padding: 0;
-}
-.vz-pill button:hover { color: var(--err); }
-.vz-empty {
-  color: var(--text-3); font-size: 11px; font-style: italic;
-}
-.vz-filter-row {
-  display: grid; grid-template-columns: minmax(0,1fr) 74px minmax(0,1fr) 20px;
-  gap: 5px; align-items: center; margin-bottom: 5px;
-}
-.vz-data-pane {
-  width: 280px; min-width: 260px; max-width: 340px;
-  background: var(--surface);
-  border-left: 1px solid var(--border);
-  display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0;
-}
-.vz-data-head {
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
-}
-.vz-data-title {
-  font-size: 12px; font-weight: 700; color: var(--text);
-  letter-spacing: .04em; text-transform: uppercase; margin-bottom: 8px;
-}
-.vz-field-search {
-  width: 100%;
-  padding: 6px 8px;
-  border-radius: var(--radius);
-  border: 1px solid var(--border);
-  background: var(--surface-2);
-  color: var(--text);
-  outline: none;
-  font-size: 12px;
-}
-.vz-data-scroll { flex: 1; overflow-y: auto; padding: 8px; }
-.vz-ds-card {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--surface-2);
-  margin-bottom: 8px;
-  overflow: hidden;
-}
-.vz-ds-head {
-  display: flex; align-items: center; gap: 7px;
-  padding: 7px 8px;
-  border-bottom: 1px solid var(--border);
-  color: var(--text-2);
-  font-size: 11px; font-weight: 700;
-}
-.vz-ds-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-.vz-ds-meta { margin-left: auto; color: var(--text-3); font-size: 9px; font-family: var(--mono); }
-.vz-field {
-  display: flex; align-items: center; gap: 7px;
-  padding: 6px 8px;
-  color: var(--text-2);
-  font-size: 11.5px;
-  cursor: pointer;
-  border-top: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
-}
-.vz-field:first-child { border-top: none; }
-.vz-field:hover { background: var(--highlight-dim); color: var(--highlight); }
-.vz-field.on { color: var(--highlight); font-weight: 700; }
-.vz-field-type {
-  width: 18px; height: 18px; border-radius: 3px;
-  display: flex; align-items: center; justify-content: center;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  color: var(--text-3);
-  font-size: 10px; font-family: var(--mono); flex-shrink: 0;
-}
-.vz-field-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.vz-field-hint { margin-left: auto; color: var(--text-3); font-size: 9px; }
-
 /* ── OLD cb-* compatibility shims (series list uses these) ── */
 .cb-panel { display: block; }
 .cb-left { display: none; }
 .cb-right { display: none; }
 .cbtab { display: none; }
 .ctgrid { display: none; }
+
+/* ══ POWER BI-STYLE VISUALIZATION TAB ══ */
+#v-charts { flex-direction: row; background: var(--bg); }
+
+/* Canvas area (left / main) */
+.vz-canvas-area {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg); min-width: 0;
+}
+.vz-toolbar {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; background: var(--surface);
+  border-bottom: 1px solid var(--border); flex-shrink: 0;
+}
+.vz-toolbar-info { font-size: 11px; color: var(--text-3); font-family: var(--mono); flex: 1; }
+
+/* Right panel */
+.vz-panel {
+  width: 330px; min-width: 330px; max-width: 330px;
+  background: var(--surface); border-left: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0;
+}
+
+/* Visualization type grid */
+.vz-viz-section {
+  background: var(--surface-2); border-bottom: 2px solid var(--border);
+  padding: 10px 10px 8px; flex-shrink: 0;
+}
+.vz-viz-header {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--text-3); margin-bottom: 8px;
+}
+.vz-viz-grid {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px;
+}
+.vz-viz-btn {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 7px 2px 5px; border-radius: 5px; border: 1.5px solid transparent;
+  background: var(--surface); color: var(--text-3);
+  cursor: pointer; font-size: 8.5px; font-weight: 500; gap: 4px;
+  transition: all .1s; line-height: 1;
+}
+.vz-viz-btn svg {
+  width: 24px; height: 24px; stroke: currentColor; fill: none; overflow: visible;
+}
+.vz-viz-btn svg rect, .vz-viz-btn svg circle, .vz-viz-btn svg polygon, .vz-viz-btn svg path { fill: currentColor; }
+.vz-viz-btn svg polyline, .vz-viz-btn svg line { fill: none; }
+.vz-viz-btn:hover { border-color: var(--highlight); color: var(--highlight); background: var(--highlight-dim); }
+.vz-viz-btn.on { border-color: var(--highlight); color: var(--highlight); background: var(--highlight-dim); font-weight: 700; }
+
+/* Tab bar */
+.vz-tabs {
+  display: flex; border-bottom: 1px solid var(--border);
+  background: var(--surface); flex-shrink: 0;
+}
+.vz-tab {
+  flex: 1; padding: 9px 4px; font-size: 11.5px; font-weight: 600;
+  color: var(--text-3); cursor: pointer; border-bottom: 2px solid transparent;
+  text-align: center; transition: color .12s; margin-bottom: -1px;
+}
+.vz-tab:hover { color: var(--text); }
+.vz-tab.on { color: var(--highlight); border-bottom-color: var(--highlight); }
+
+/* Panel body / panes */
+.vz-panel-body { flex: 1; overflow: hidden; position: relative; }
+.vz-pane { display: none; height: 100%; overflow-y: auto; }
+.vz-pane.on { display: block; }
+
+/* Accordion sections */
+.vz-acc { border-bottom: 1px solid var(--border); }
+.vz-acc-head {
+  display: flex; align-items: center; padding: 9px 14px;
+  cursor: pointer; user-select: none;
+  font-size: 12px; font-weight: 600; color: var(--text-2);
+  transition: background .1s;
+}
+.vz-acc-head:hover { background: var(--surface-2); }
+.vz-acc-chevron {
+  margin-left: auto; font-size: 9px; color: var(--text-3);
+  transition: transform .15s; display: inline-block;
+}
+.vz-acc.open > .vz-acc-head .vz-acc-chevron { transform: rotate(90deg); }
+.vz-acc-body { display: none; padding: 4px 14px 12px; }
+.vz-acc.open > .vz-acc-body { display: block; }
+
+/* Section labels inside acc */
+.vz-field-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .07em; color: var(--text-3); margin: 8px 0 4px;
+}
+
+/* Field well */
+.vz-well {
+  background: var(--bg); border: 1px dashed var(--border-2);
+  border-radius: 5px; padding: 4px 6px; min-height: 30px;
+  display: flex; flex-direction: column; gap: 3px; margin-bottom: 6px;
+}
+.vz-well-hint { font-size: 10px; color: var(--text-3); font-style: italic; padding: 2px 2px; }
+
+/* Misc panel helpers */
+.vz-panel .vz-row { display: flex; flex-direction: column; gap: 3px; margin-bottom: 7px; }
+.vz-panel .vz-row:last-child { margin-bottom: 0; }
+.vz-panel .vz-row > label { font-size: 11px; color: var(--text-2); font-weight: 500; }
+.vz-panel .vz-toggles { display: flex; flex-wrap: wrap; gap: 5px; margin: 2px 0; }
+.vz-panel .vz-tog {
+  display: flex; align-items: center; gap: 4px; padding: 4px 9px; border-radius: 5px;
+  border: 1px solid var(--border); background: var(--surface-2);
+  cursor: pointer; font-size: 11px; color: var(--text-2); transition: all .1s;
+}
+.vz-panel .vz-tog:has(input:checked) { border-color: var(--highlight); color: var(--highlight); background: var(--highlight-dim); }
+.vz-panel .vz-tog input { display: none; }
+.vz-panel .vz-palette-row { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 2px; }
+.vz-panel .vz-chip {
+  padding: 3px 9px; border-radius: 20px; border: 1px solid var(--border);
+  background: var(--surface-2); color: var(--text-3); font-size: 10px; cursor: pointer; transition: all .1s;
+}
+.vz-panel .vz-chip:hover, .vz-panel .vz-chip.on { border-color: var(--highlight); color: var(--highlight); background: var(--highlight-dim); }
+.vz-panel .vz-tpl-grid { display: flex; flex-wrap: wrap; gap: 5px; }
+.vz-panel .vz-tpl {
+  padding: 5px 10px; border-radius: 5px; border: 1px solid var(--border);
+  background: var(--surface-2); color: var(--text-2); font-size: 11px; cursor: pointer; transition: all .1s;
+}
+.vz-panel .vz-tpl:hover { border-color: var(--highlight); color: var(--highlight); background: var(--highlight-dim); }
+.vz-panel .vz-add-btn {
+  padding: 3px 10px; border-radius: 5px; border: 1px dashed var(--border);
+  background: transparent; color: var(--text-3); font-size: 11px; cursor: pointer; transition: all .1s;
+}
+.vz-panel .vz-add-btn:hover { border-color: var(--highlight); color: var(--highlight); }
 
 /* ═══ DASHBOARD ═══ */
 #v-dashboard { flex-direction: column; }
@@ -2137,16 +2164,16 @@ td.editing .td-inp { display: block; }
 /* Header save button stays visible */
 [data-theme="light"] .hbtn.pri { background: var(--highlight); color: #fff; }
 
-[data-theme="light"] .dtbl th { background: var(--surface-2); }
-[data-theme="light"] .dtbl tr:nth-child(even) td { background: var(--bg); }
+[data-theme="light"] .dtbl th { background: #f8faff; }
+[data-theme="light"] .dtbl tr:nth-child(even) td { background: #f5f7fc; }
 [data-theme="light"] #abar { background: var(--surface-2); box-shadow: 1px 0 0 var(--border); }
 [data-theme="light"] #sb-panel { box-shadow: 1px 0 0 var(--border); }
 [data-theme="light"] #hdr { box-shadow: 0 1px 0 var(--border); }
 [data-theme="light"] .s-sec { box-shadow: 0 1px 4px rgba(0,0,0,.06); }
 [data-theme="light"] .modal-box { box-shadow: 0 8px 40px rgba(0,0,0,.15); }
-[data-theme="light"] #py-editor { background: var(--surface-2); color: var(--text); }
-[data-theme="light"] .oplog { background: var(--surface-2); }
-[data-theme="light"] .iw-log { background: var(--surface-2); }
+[data-theme="light"] #py-editor { background: #f8faff; color: #1a2238; }
+[data-theme="light"] .oplog { background: #f4f6fb; }
+[data-theme="light"] .iw-log { background: #f4f6fb; }
 [data-theme="light"] .sql-result-bar { background: rgba(79,142,247,.06); }
 
 /* ═══════════════ AUTOMATIONS MODULE ═══════════════ */
@@ -2471,31 +2498,30 @@ pre:hover .kb-copy-btn{opacity:1;}
 body { letter-spacing: 0; }
 button, input, select { letter-spacing: 0; }
 
-/* ── Table: clean themed grid style ── */
+/* ── Table: clean PowerBI grid style ── */
 .dtbl { font-size: 13px; }
 .dtbl th {
   height: 28px !important;
   font-size: 11px !important;
   font-weight: 600 !important;
-  background: var(--surface-2) !important;
-  color: var(--text-2) !important;
+  background: #f3f2f1 !important;
+  color: #323130 !important;
   letter-spacing: 0 !important;
   text-transform: none !important;
-  border-right: 1px solid var(--border) !important;
-  border-bottom: 2px solid var(--border-2) !important;
+  border-right: 1px solid #e1dfdd !important;
+  border-bottom: 2px solid #c8c6c4 !important;
   padding: 0 8px !important;
 }
 .dtbl td {
   height: 28px;
   padding: 0 8px;
   font-size: 12.5px;
-  border-bottom: 1px solid var(--border);
-  border-right: 1px solid var(--border);
-  color: var(--text);
+  border-bottom: 1px solid #f3f2f1;
+  border-right: 1px solid #f3f2f1;
+  color: #201f1e;
 }
-.dtbl tr:hover td,
-[data-theme="light"] .dtbl tr:hover td { background: var(--highlight-dim) !important; }
-[data-theme="light"] .dtbl th { background: var(--surface-2) !important; color: var(--text-2) !important; }
+[data-theme="light"] .dtbl tr:hover td { background: #f0f6ff !important; }
+[data-theme="light"] .dtbl th { background: #f3f2f1 !important; color: #323130 !important; }
 
 /* ── Toolbar buttons — flat, no shadow ── */
 .tbtn {
@@ -2504,47 +2530,21 @@ button, input, select { letter-spacing: 0; }
   height: 26px;
   padding: 0 10px !important;
   box-shadow: none !important;
-  border-color: var(--border) !important;
+  border-color: #e1dfdd !important;
 }
-.tbtn:hover { background: var(--surface-3) !important; border-color: var(--border-2) !important; color: var(--text) !important; }
+.tbtn:hover { background: #edebe9 !important; }
 
-/* ── Form controls — clean themed inputs/dropdowns ── */
+/* ── Form controls — clean PowerBI inputs ── */
 .fin, .fsel, input[type="text"], input[type="number"], input[type="search"], select, textarea {
   border-radius: 2px !important;
-  background-color: var(--surface-2) !important;
-  border-color: var(--border-2) !important;
-  color: var(--text) !important;
+  border-color: #605e5c !important;
   font-size: 12.5px !important;
-  color-scheme: inherit;
 }
-.fin:hover, .fsel:hover, input[type="text"]:hover, input[type="number"]:hover, input[type="search"]:hover, select:hover, textarea:hover {
-  border-color: var(--highlight) !important;
-  background-color: var(--surface-3) !important;
-}
-.fin:focus, .fsel:focus, input[type="text"]:focus, input[type="number"]:focus, input[type="search"]:focus, select:focus, textarea:focus {
+.fin:focus, .fsel:focus { 
   border-color: var(--highlight) !important; 
   box-shadow: none !important;
-  outline: 2px solid var(--highlight-dim) !important;
+  outline: 2px solid rgba(0,120,212,.25) !important;
   outline-offset: -1px !important;
-}
-select option,
-.fsel option,
-.s-sel option,
-.sq-sm option {
-  background: var(--surface) !important;
-  color: var(--text) !important;
-}
-input::placeholder,
-textarea::placeholder {
-  color: var(--text-3) !important;
-}
-input[type="checkbox"],
-input[type="radio"] {
-  accent-color: var(--highlight);
-}
-input[type="color"] {
-  background: var(--surface-2) !important;
-  border-color: var(--border) !important;
 }
 
 /* ── Modals — flat PowerBI dialog style ── */
@@ -2552,21 +2552,21 @@ input[type="color"] {
   border-radius: 2px !important;
   box-shadow: 0 8px 24px rgba(0,0,0,.2), 0 0 0 1px rgba(0,0,0,.06) !important;
 }
-.modal-box h2, .iw-step h2 { font-size: 16px !important; font-weight: 600 !important; color: var(--text) !important; }
+.modal-box h2, .iw-step h2 { font-size: 16px !important; font-weight: 600 !important; color: #201f1e !important; }
 
 /* ── Buttons — flat, PowerBI style ── */
 .mbtn { border-radius: 2px !important; font-size: 12.5px !important; }
 .mbtn.pri { box-shadow: none !important; }
 
-/* ── View areas ── */
-.view { background: var(--surface); }
-#v-home { background: var(--bg); }
-#v-dashboard { background: var(--bg); }
+/* ── View areas — white canvas ── */
+.view { background: #ffffff; }
+#v-home { background: #f3f2f1; }
+#v-dashboard { background: #f3f2f1; }
 
 /* ── Toolbar strip ── */
 .tbar {
-  background: var(--surface) !important;
-  border-bottom: 1px solid var(--border) !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid #e1dfdd !important;
   padding: 4px 10px !important;
   min-height: 40px;
   gap: 4px;
@@ -2574,14 +2574,14 @@ input[type="color"] {
 
 /* ── Formula bar ── */
 .fbar {
-  background: var(--surface) !important;
-  border-bottom: 1px solid var(--border) !important;
+  background: #ffffff !important;
+  border-bottom: 1px solid #e1dfdd !important;
   height: 32px !important;
 }
 
 /* ── Status bar ── */
 .sbar {
-  background: var(--highlight) !important;
+  background: #0078d4 !important;
   border-top: none !important;
   color: #ffffff !important;
   font-size: 11px !important;
@@ -2597,24 +2597,24 @@ input[type="color"] {
   text-transform: uppercase !important;
   letter-spacing: .04em !important;
 }
-.tbg.number  { background: color-mix(in srgb, var(--highlight) 14%, transparent) !important; color: var(--highlight) !important; border: none !important; }
-.tbg.string  { background: color-mix(in srgb, var(--ok) 14%, transparent) !important; color: var(--ok) !important; border: none !important; }
-.tbg.date    { background: color-mix(in srgb, var(--warn) 14%, transparent) !important; color: var(--warn) !important; border: none !important; }
-.tbg.boolean { background: var(--surface-3) !important; color: var(--text-2) !important; border: none !important; }
+.tbg.number  { background: #dce8f8 !important; color: #0f548c !important; border: none !important; }
+.tbg.string  { background: #dff6dd !important; color: #0e7a0d !important; border: none !important; }
+.tbg.date    { background: #fff4ce !important; color: #8a5c00 !important; border: none !important; }
+.tbg.boolean { background: #f4e0ff !important; color: #6b21a8 !important; border: none !important; }
 
 /* ── KB reference panels ── */
-.kb-layout { background: var(--surface); }
-.kb-sidebar { background: var(--surface-2) !important; border-right: 1px solid var(--border) !important; }
+.kb-layout { background: #ffffff; }
+.kb-sidebar { background: #faf9f8 !important; border-right: 1px solid #e1dfdd !important; }
 .kb-item { border-radius: 2px !important; font-size: 12.5px !important; }
-.kb-item.on { background: var(--highlight-dim) !important; color: var(--highlight) !important; font-weight: 600 !important; }
+.kb-item.on { background: #dce8f8 !important; color: #0078d4 !important; font-weight: 600 !important; }
 
 /* ── Clean op cards ── */
 .cop {
   border-radius: 2px !important;
-  border: 1px solid var(--border) !important;
+  border: 1px solid #e1dfdd !important;
   box-shadow: none !important;
 }
-.cop:hover { border-color: var(--highlight) !important; background: var(--highlight-dim) !important; }
+.cop:hover { border-color: #0078d4 !important; background: #f0f6ff !important; }
 
 /* ── Toast notifications ── */
 .toast {
@@ -2626,46 +2626,45 @@ input[type="color"] {
 
 /* ── Scrollbars ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 0; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
+::-webkit-scrollbar-track { background: #f3f2f1; }
+::-webkit-scrollbar-thumb { background: #c8c6c4; border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: #a19f9d; }
 
 /* ── Chart panel ── */
 
 /* ── Pivot table ── */
-[data-theme="light"] .ptbl th { background: var(--surface-2) !important; color: var(--text-2) !important; }
+[data-theme="light"] .ptbl th { background: #f3f2f1 !important; color: #323130 !important; }
 
 /* ── SQL / Python editor panels ── */
 .sql-in { font-family: var(--mono) !important; font-size: 12.5px !important; }
 
 /* ── Row number col ── */
 .dtbl td:first-child { 
-  color: var(--text-3) !important;
+  color: #a19f9d !important; 
   font-size: 11px !important; 
-  background: var(--surface-2) !important;
-  border-right: 1px solid var(--border) !important;
+  background: #faf9f8 !important; 
+  border-right: 1px solid #e1dfdd !important;
   text-align: right !important;
 }
 .dtbl th:first-child {
-  background: var(--surface-2) !important;
-  border-right: 1px solid var(--border) !important;
-  color: var(--text-3) !important;
+  background: #f3f2f1 !important;
+  border-right: 1px solid #e1dfdd !important;
+  color: #a19f9d !important;
   text-transform: none !important;
 }
 
 /* ── Number cell color — PowerBI dark blue ── */
-.num,
-[data-theme="light"] .num { color: var(--highlight) !important; }
+[data-theme="light"] .num { color: #0f548c !important; }
 
 /* ── Felix AI panel ── */
-[data-theme="light"] .felix-bubble { background: var(--surface-2) !important; }
-[data-theme="light"] .felix-bubble.user { background: var(--highlight) !important; color: #fff !important; }
+[data-theme="light"] .felix-bubble { background: #f3f2f1 !important; }
+[data-theme="light"] .felix-bubble.user { background: #0078d4 !important; color: #fff !important; }
 
 /* ── Merge panel ── */
-[data-theme="light"] .mg-h { background: var(--surface-2) !important; }
+[data-theme="light"] .mg-h { background: #f3f2f1 !important; }
 
 /* ── Header proj name ── */
-#proj-name { font-weight: 600 !important; color: var(--hdr-text) !important; }
+#proj-name { font-weight: 600 !important; color: #201f1e !important; }
 
 /* ── Highlight color for selected tab active indicator ── */
 .htab.on { font-weight: 600 !important; }
@@ -2691,7 +2690,7 @@ input[type="color"] {
   <div class="htabs">
     <button class="htab on" onclick="show('home')">Home</button>
     <button class="htab" id="t-data"      onclick="show('data')"      disabled>Data</button>
-    <button class="htab" id="t-charts"    onclick="show('charts')"    disabled>Visualization</button>
+    <button class="htab" id="t-charts"    onclick="show('charts')"    disabled>Charts</button>
     <button class="htab" id="t-dashboard" onclick="show('dashboard')" disabled>Dashboard</button>
     <button class="htab" id="t-merge"     onclick="show('merge')"     disabled>Merge</button>
     <button class="htab" id="t-clean"     onclick="show('clean')"     disabled>Clean</button>
@@ -2741,7 +2740,7 @@ input[type="color"] {
       </div>
       <div class="ni" id="n-charts" onclick="show('charts')">
         <span class="ni-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
-        <span class="ni-label">Visualization</span>
+        <span class="ni-label">Chart Builder</span>
       </div>
       <div class="ni" id="n-dashboard" onclick="show('dashboard')">
         <span class="ni-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
@@ -2857,7 +2856,7 @@ input[type="color"] {
         <button class="imp-btn" onclick="loadSample()">Sample data</button>
       </div>
       <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
-        <button onclick="openImportWizard()" style="padding:8px 18px;border-radius:6px;border:1px solid var(--border-2);background:var(--surface-2);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition: background .12s, color .12s, border-color .12s, opacity .12s;letter-spacing:-.01em" onmouseover="this.style.borderColor='var(--highlight)';this.style.background='var(--surface-3)'" onmouseout="this.style.borderColor='var(--border-2)';this.style.background='var(--surface-2)'">
+        <button onclick="openImportWizard()" style="padding:8px 18px;border-radius:6px;border:1px solid var(--border-2);background:var(--surface-2);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition: background .12s, color .12s, border-color .12s, opacity .12s;letter-spacing:-.01em" onmouseover="this.style.borderColor='#4f8ef7';this.style.background='var(--surface-3)'" onmouseout="this.style.borderColor='var(--border-2)';this.style.background='var(--surface-2)'">
           Import Wizard <span style="font-size:10px;background:var(--surface-3);color:var(--text-3);padding:3px 8px;border-radius:4px;letter-spacing:.06em;font-weight:600">SELECT COLUMNS · FILTER ROWS · CLEAN</span>
         </button>
       </div>
@@ -3061,241 +3060,17 @@ input[type="color"] {
   </div>
 </div>
 
-<!-- VISUALIZATION -->
+<!-- CHARTS -->
 <div class="view" id="v-charts">
-  <!-- LEFT CONFIG RAIL -->
-  <div class="vz-rail">
-    <div class="vz-rail-head">
-      <span class="vz-rail-title">Visualization</span>
-      <button class="vz-rail-action" onclick="addToDash()" title="Add to Dashboard">＋ Dashboard</button>
-    </div>
-    <div class="vz-scroll">
 
-      <!-- CHART TYPE PICKER -->
-      <div class="vz-section">
-        <div class="vz-sec-label">Chart Type</div>
-        <div class="vz-type-grid">
-          <button class="vz-type on" data-ct="bar"          onclick="setCT('bar',this)"><svg viewBox="0 0 20 20"><rect x="2" y="8" width="4" height="10" rx="1"/><rect x="8" y="4" width="4" height="14" rx="1"/><rect x="14" y="11" width="4" height="7" rx="1"/></svg>Bar</button>
-          <button class="vz-type" data-ct="line"         onclick="setCT('line',this)"><svg viewBox="0 0 20 20"><polyline points="2,15 7,8 12,11 18,4" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Line</button>
-          <button class="vz-type" data-ct="area"         onclick="setCT('area',this)"><svg viewBox="0 0 20 20"><polyline points="2,15 7,8 12,11 18,4" fill="none" stroke-width="2" stroke-linecap="round"/><polygon points="2,15 7,8 12,11 18,4 18,18 2,18" opacity=".3"/></svg>Area</button>
-          <button class="vz-type" data-ct="pie"          onclick="setCT('pie',this)"><svg viewBox="0 0 20 20"><path d="M10 10 L10 2 A8 8 0 0 1 17 14 Z" opacity=".9"/><path d="M10 10 L17 14 A8 8 0 0 1 3 14 Z" opacity=".6"/><path d="M10 10 L3 14 A8 8 0 0 1 10 2 Z" opacity=".4"/></svg>Pie</button>
-          <button class="vz-type" data-ct="doughnut"     onclick="setCT('doughnut',this)"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" fill="none" stroke-width="4" stroke-dasharray="22 22 11" stroke-dashoffset="0"/></svg>Donut</button>
-          <button class="vz-type" data-ct="scatter"      onclick="setCT('scatter',this)"><svg viewBox="0 0 20 20"><circle cx="5" cy="14" r="1.5"/><circle cx="9" cy="8" r="1.5"/><circle cx="13" cy="11" r="1.5"/><circle cx="17" cy="5" r="1.5"/><circle cx="7" cy="15" r="1.5"/><circle cx="15" cy="9" r="1.5"/></svg>Scatter</button>
-          <button class="vz-type" data-ct="radar"        onclick="setCT('radar',this)"><svg viewBox="0 0 20 20"><polygon points="10,2 17,7 14,16 6,16 3,7" fill="none" stroke-width="1.5"/><polygon points="10,6 14,9 12,14 8,14 6,9" opacity=".5"/></svg>Radar</button>
-          <button class="vz-type" data-ct="bar-h"        onclick="setCT('bar-h',this)"><svg viewBox="0 0 20 20"><rect x="2" y="3" width="10" height="4" rx="1"/><rect x="2" y="9" width="14" height="4" rx="1"/><rect x="2" y="15" width="7" height="4" rx="1"/></svg>H-Bar</button>
-          <button class="vz-type" data-ct="bar-stacked"  onclick="setCT('bar-stacked',this)"><svg viewBox="0 0 20 20"><rect x="2" y="12" width="4" height="6" rx="1"/><rect x="2" y="7" width="4" height="5" rx="1" opacity=".6"/><rect x="8" y="8" width="4" height="10" rx="1"/><rect x="8" y="4" width="4" height="4" rx="1" opacity=".6"/><rect x="14" y="13" width="4" height="5" rx="1"/><rect x="14" y="9" width="4" height="4" rx="1" opacity=".6"/></svg>Stacked</button>
-          <button class="vz-type" data-ct="polarArea"    onclick="setCT('polarArea',this)"><svg viewBox="0 0 20 20"><path d="M10 10 L10 3 A7 7 0 0 1 16 13 Z" opacity=".9"/><path d="M10 10 L16 13 A7 7 0 0 1 4 13 Z" opacity=".55"/><path d="M10 10 L4 13 A7 7 0 0 1 10 3 Z" opacity=".35"/></svg>Polar</button>
-          <button class="vz-type" data-ct="bubble"       onclick="setCT('bubble',this)"><svg viewBox="0 0 20 20"><circle cx="6" cy="13" r="3.5"/><circle cx="14" cy="8" r="2"/><circle cx="10" cy="15" r="1.5"/></svg>Bubble</button>
-          <button class="vz-type" data-ct="histogram"    onclick="setCT('histogram',this)"><svg viewBox="0 0 20 20"><rect x="2" y="12" width="3" height="6" rx="0.5"/><rect x="6" y="7" width="3" height="11" rx="0.5"/><rect x="10" y="5" width="3" height="13" rx="0.5"/><rect x="14" y="9" width="3" height="9" rx="0.5"/></svg>Histogram</button>
-          <button class="vz-type" data-ct="waterfall"    onclick="setCT('waterfall',this)"><svg viewBox="0 0 20 20"><rect x="2" y="10" width="3" height="8" rx="0.5"/><rect x="6" y="6" width="3" height="4" rx="0.5" opacity=".7"/><rect x="10" y="4" width="3" height="2" rx="0.5" opacity=".5"/><rect x="14" y="7" width="3" height="11" rx="0.5"/></svg>Waterfall</button>
-          <button class="vz-type" data-ct="boxplot"      onclick="setCT('boxplot',this)"><svg viewBox="0 0 20 20"><rect x="4" y="7" width="5" height="9" rx="0.5" fill="none" stroke-width="1.5"/><line x1="6.5" y1="7" x2="6.5" y2="4" stroke-width="1.5"/><line x1="6.5" y1="16" x2="6.5" y2="19" stroke-width="1.5"/><line x1="4" y1="11" x2="9" y2="11" stroke-width="2"/><rect x="11" y="5" width="5" height="11" rx="0.5" fill="none" stroke-width="1.5"/><line x1="13.5" y1="5" x2="13.5" y2="3" stroke-width="1.5"/><line x1="13.5" y1="16" x2="13.5" y2="18" stroke-width="1.5"/><line x1="11" y1="10" x2="16" y2="10" stroke-width="2"/></svg>Box Plot</button>
-          <button class="vz-type" data-ct="mixed"        onclick="setCT('mixed',this)"><svg viewBox="0 0 20 20"><rect x="2" y="10" width="3" height="8" rx="0.5" opacity=".8"/><rect x="7" y="6" width="3" height="12" rx="0.5" opacity=".8"/><polyline points="2,12 7,8 14,10 19,5" fill="none" stroke-width="2" stroke-linecap="round"/></svg>Mixed</button>
-          <button class="vz-type" data-ct="bar-stacked-h" onclick="setCT('bar-stacked-h',this)"><svg viewBox="0 0 20 20"><rect x="2" y="3" width="8" height="4" rx="1"/><rect x="10" y="3" width="5" height="4" rx="1" opacity=".6"/><rect x="2" y="9" width="10" height="4" rx="1"/><rect x="12" y="9" width="4" height="4" rx="1" opacity=".6"/><rect x="2" y="15" width="6" height="4" rx="1"/><rect x="8" y="15" width="7" height="4" rx="1" opacity=".6"/></svg>H-Stack</button>
-        </div>
-      </div>
-
-      <!-- DATA MODEL -->
-      <div class="vz-section">
-        <div class="vz-sec-label">Build visual</div>
-        <div class="vz-wells" id="viz-wells"></div>
-      </div>
-
-      <!-- DATA -->
-      <div class="vz-section">
-        <div class="vz-sec-label">Data options</div>
-        <div class="vz-row"><label>Dataset</label><select class="fsel" id="cb-ds" onchange="onCbDsChange()"></select></div>
-        <div class="vz-row"><label>X Axis / Category</label><select class="fsel" id="cb-x" onchange="rebuildPreview()"></select></div>
-        <div class="vz-row"><label>Aggregation</label>
-          <select class="fsel" id="cb-agg" onchange="rebuildPreview()">
-            <option value="none">None (raw)</option><option value="sum">Sum</option><option value="avg">Average</option>
-            <option value="count">Count</option><option value="min">Min</option><option value="max">Max</option>
-            <option value="median">Median</option><option value="pct">% of Total</option><option value="stddev">Std Dev</option>
-          </select>
-        </div>
-        <div style="display:flex;gap:6px">
-          <div class="vz-row" style="flex:1"><label>Limit (0=all)</label><input class="fin" type="number" id="cb-limit" value="0" min="0" onchange="rebuildPreview()"></div>
-          <div class="vz-row" style="flex:1"><label>Skip first N</label><input class="fin" type="number" id="cb-skip" value="0" min="0" onchange="rebuildPreview()"></div>
-        </div>
-        <div style="display:flex;gap:6px">
-          <div class="vz-row" style="flex:1"><label>Sort by</label>
-            <select class="fsel" id="cb-sort-by" onchange="onVizSortChange()">
-              <option value="axis">Axis/category</option>
-              <option value="value">First value</option>
-              <option value="none">Dataset order</option>
-            </select>
-          </div>
-          <div class="vz-row" style="flex:1"><label>Direction</label>
-            <select class="fsel" id="cb-sort-dir" onchange="onVizSortChange()">
-              <option value="asc">Ascending</option>
-              <option value="desc">Descending</option>
-            </select>
-          </div>
-        </div>
-        <input type="checkbox" id="cb-sort-x" style="display:none">
-        <input type="checkbox" id="cb-sort-x-desc" style="display:none">
-      </div>
-
-      <!-- FILTERS -->
-      <div class="vz-section">
-        <div class="vz-sec-label" style="display:flex;align-items:center;justify-content:space-between">
-          <span>Visual filters</span>
-          <button class="vz-add-btn" onclick="vizAddFilter()">＋ Add</button>
-        </div>
-        <div id="viz-filters"></div>
-      </div>
-
-      <!-- SERIES -->
-      <div class="vz-section">
-        <div class="vz-sec-label" style="display:flex;align-items:center;justify-content:space-between">
-          <span>Y Series</span>
-          <button class="vz-add-btn" onclick="addSeries()">＋ Add</button>
-        </div>
-        <div id="series-list"></div>
-      </div>
-
-      <!-- STYLE -->
-      <div class="vz-section">
-        <div class="vz-sec-label">Style</div>
-        <div class="vz-row"><label>Title</label><input class="fin" id="cb-title" placeholder="Chart title" oninput="rebuildPreview()"></div>
-        <div class="vz-row"><label>Subtitle</label><input class="fin" id="cb-subtitle" placeholder="Subtitle" oninput="rebuildPreview()"></div>
-        <div style="display:flex;gap:6px">
-          <div class="vz-row" style="flex:1"><label>Title align</label>
-            <select class="fsel" id="cb-title-align" onchange="rebuildPreview()">
-              <option value="center">Center</option><option value="start">Left</option><option value="end">Right</option>
-            </select>
-          </div>
-          <div class="vz-row" style="flex:1"><label>Title size</label><input class="fin" type="number" id="cb-title-size" value="14" min="9" max="28" onchange="rebuildPreview()"></div>
-        </div>
-        <div class="vz-row"><label>Palette</label>
-          <div class="vz-palette-row" id="palette-chips">
-            <div class="vz-chip on" onclick="setCBPalette('default',this)">Default</div>
-            <div class="vz-chip" onclick="setCBPalette('warm',this)">Warm</div>
-            <div class="vz-chip" onclick="setCBPalette('cool',this)">Cool</div>
-            <div class="vz-chip" onclick="setCBPalette('earth',this)">Earth</div>
-            <div class="vz-chip" onclick="setCBPalette('neon',this)">Neon</div>
-            <div class="vz-chip" onclick="setCBPalette('pastel',this)">Pastel</div>
-            <div class="vz-chip" onclick="setCBPalette('mono',this)">Mono</div>
-          </div>
-        </div>
-        <div class="vz-row"><label>Background</label>
-          <div style="display:flex;gap:6px;align-items:center">
-            <select class="fsel" id="cb-bg" onchange="rebuildPreview()" style="flex:1">
-              <option value="surface">Surface</option><option value="bg">Deep</option>
-              <option value="surf2">Mid</option><option value="white">White</option><option value="custom">Custom…</option>
-            </select>
-            <input type="color" id="cb-bg-custom" value="#1d2436" onchange="rebuildPreview()" style="width:30px;height:30px;border:1px solid var(--border);border-radius:6px;padding:2px;background:transparent;cursor:pointer">
-          </div>
-        </div>
-        <div style="display:flex;gap:6px">
-          <div class="vz-row" style="flex:1"><label>Legend</label>
-            <select class="fsel" id="cb-legend" onchange="rebuildPreview()">
-              <option value="top">Top</option><option value="bottom">Bottom</option><option value="left">Left</option><option value="right">Right</option><option value="false">Hidden</option>
-            </select>
-          </div>
-          <div class="vz-row" style="flex:1"><label>Value format</label>
-            <select class="fsel" id="cb-fmt" onchange="rebuildPreview()">
-              <option value="">Auto</option><option value="$">$ Currency</option><option value="%">Percentage</option>
-              <option value=",">Thousands</option><option value=".1">1 decimal</option><option value=".2">2 decimals</option><option value="k">Compact K/M</option>
-            </select>
-          </div>
-        </div>
-        <div class="vz-toggles">
-          <label class="vz-tog"><input type="checkbox" id="cb-grid" checked onchange="rebuildPreview()"><span>Grid</span></label>
-          <label class="vz-tog"><input type="checkbox" id="cb-smooth" checked onchange="rebuildPreview()"><span>Smooth</span></label>
-          <label class="vz-tog"><input type="checkbox" id="cb-fill" onchange="rebuildPreview()"><span>Fill</span></label>
-          <label class="vz-tog"><input type="checkbox" id="cb-datalabels" onchange="rebuildPreview()"><span>Labels</span></label>
-          <label class="vz-tog"><input type="checkbox" id="cb-points" checked onchange="rebuildPreview()"><span>Points</span></label>
-          <label class="vz-tog"><input type="checkbox" id="cb-animate" checked onchange="rebuildPreview()"><span>Animate</span></label>
-        </div>
-      </div>
-
-      <!-- AXES -->
-      <div class="vz-section">
-        <div class="vz-sec-label">Axes</div>
-        <div class="vz-row"><label>X axis type</label>
-          <select class="fsel" id="cb-xtype" onchange="rebuildPreview()">
-            <option value="category">Category</option><option value="time">Time/Date</option>
-            <option value="linear">Linear</option><option value="logarithmic">Logarithmic</option>
-          </select>
-        </div>
-        <div class="vz-row"><label>X label</label><input class="fin" id="cb-xlabel" placeholder="X axis label" oninput="rebuildPreview()"></div>
-        <div style="display:flex;gap:6px">
-          <div class="vz-row" style="flex:1"><label>Y1 min</label><input class="fin" id="y1-min" placeholder="auto" oninput="rebuildPreview()"></div>
-          <div class="vz-row" style="flex:1"><label>Y1 max</label><input class="fin" id="y1-max" placeholder="auto" oninput="rebuildPreview()"></div>
-        </div>
-        <div class="vz-row"><label>Y1 label</label><input class="fin" id="y1-label" placeholder="Y axis label" oninput="rebuildPreview()"></div>
-        <div class="vz-row" style="flex-direction:row;align-items:center;gap:8px">
-          <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer"><input type="checkbox" id="y2-en" onchange="rebuildPreview()" style="accent-color:var(--highlight)"> Enable Y2</label>
-        </div>
-        <div style="display:flex;gap:6px">
-          <div class="vz-row" style="flex:1"><label>Y2 min</label><input class="fin" id="y2-min" placeholder="auto" oninput="rebuildPreview()"></div>
-          <div class="vz-row" style="flex:1"><label>Y2 max</label><input class="fin" id="y2-max" placeholder="auto" oninput="rebuildPreview()"></div>
-        </div>
-        <div class="vz-row"><label>Y2 label</label><input class="fin" id="y2-label" placeholder="Y2 label" oninput="rebuildPreview()"></div>
-        <div style="display:flex;gap:6px">
-          <div class="vz-row" style="flex:1"><label>X rotation</label><input class="fin" type="number" id="cb-xrot" value="0" min="-90" max="90" onchange="rebuildPreview()"></div>
-          <div class="vz-row" style="flex:1"><label>Null handling</label>
-            <select class="fsel" id="cb-nulls" onchange="rebuildPreview()">
-              <option value="gap">Gap</option><option value="zero">Zero</option><option value="skip">Skip</option>
-            </select>
-          </div>
-        </div>
-        <div class="vz-row" style="margin-top:4px"><label>Ref lines</label><div id="ref-lines"></div></div>
-        <div id="goal-lines"></div>
-      </div>
-
-      <!-- ADVANCED -->
-      <div class="vz-section">
-        <div class="vz-sec-label">Advanced</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <div class="vz-row" style="flex:1;min-width:80px"><label>Bar radius</label><input class="fin" type="number" id="cb-brad" value="4" min="0" max="20" onchange="rebuildPreview()"></div>
-          <div class="vz-row" style="flex:1;min-width:80px"><label>Bar width %</label><input class="fin" type="number" id="cb-barw" value="80" min="10" max="100" onchange="rebuildPreview()"></div>
-          <div class="vz-row" style="flex:1;min-width:80px"><label>Point r</label><input class="fin" type="number" id="cb-prad" value="3" min="0" max="12" onchange="rebuildPreview()"></div>
-          <div class="vz-row" style="flex:1;min-width:80px"><label>Line w</label><input class="fin" type="number" id="cb-lw" value="2" min="1" max="8" onchange="rebuildPreview()"></div>
-        </div>
-        <div class="vz-row"><label>Legend size</label><input class="fin" type="number" id="cb-legend-size" value="11" min="7" max="18" onchange="rebuildPreview()"></div>
-        <div class="vz-row"><label>Histogram bins</label><input class="fin" type="number" id="cb-bins" value="20" min="2" max="200" onchange="rebuildPreview()"></div>
-        <div class="vz-row"><label>Tick format</label><input class="fin" id="cb-tick-fmt" placeholder="e.g. $,.2f" oninput="rebuildPreview()"></div>
-        <div id="annot-list"></div>
-      </div>
-
-      <!-- TEMPLATES -->
-      <div class="vz-section">
-        <div class="vz-sec-label">Quick Templates</div>
-        <div class="vz-tpl-grid">
-          <button class="vz-tpl" onclick="applyTemplate('topN')">Top 10</button>
-          <button class="vz-tpl" onclick="applyTemplate('trend')">Trend Line</button>
-          <button class="vz-tpl" onclick="applyTemplate('compare')">Compare</button>
-          <button class="vz-tpl" onclick="applyTemplate('dist')">Distribution</button>
-          <button class="vz-tpl" onclick="applyTemplate('share')">Share of Total</button>
-        </div>
-      </div>
-
-      <!-- EXPORT -->
-      <div class="vz-section">
-        <div class="vz-sec-label">Export</div>
-        <div id="chart-presets" style="margin-bottom:8px"></div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          <div class="vz-row" style="flex:1"><label>Width px</label><input class="fin" type="number" id="exp-w" value="1200" min="400" max="4000" onchange="rebuildPreview()"></div>
-          <div class="vz-row" style="flex:1"><label>Height px</label><input class="fin" type="number" id="exp-h" value="700" min="200" max="3000" onchange="rebuildPreview()"></div>
-          <div class="vz-row" style="flex:1"><label>Scale</label><input class="fin" type="number" id="exp-scale" value="2" min="1" max="4" onchange="rebuildPreview()"></div>
-        </div>
-        <div style="display:flex;gap:6px;margin-top:4px">
-          <button class="tbtn" onclick="exportChartPNG()" style="flex:1">🖼 PNG</button>
-          <button class="tbtn" onclick="dupLastChart()" style="flex:1">📋 Dupe</button>
-          <button class="tbtn" onclick="saveChartPreset()" style="flex:1">💾 Preset</button>
-        </div>
-      </div>
-
-    </div><!-- end vz-scroll -->
-  </div><!-- end vz-rail -->
-
-  <!-- RIGHT PREVIEW AREA -->
-  <div class="vz-stage">
-    <div class="vz-stage-head">
-      <span class="vz-stage-info" id="chart-info">Live preview</span>
-      <div style="flex:1"></div>
-      <button class="vz-atd" onclick="addToDash()">＋ Add to Dashboard</button>
+  <!-- ── CANVAS AREA (main left area) ── -->
+  <div class="vz-canvas-area">
+    <div class="vz-toolbar">
+      <span class="vz-toolbar-info" id="chart-info">Select data and a chart type to begin</span>
+      <button class="tbtn" onclick="exportChartPNG()" title="Export as PNG" style="font-size:11px">🖼 PNG</button>
+      <button class="tbtn" onclick="saveChartPreset()" title="Save as preset" style="font-size:11px">💾 Preset</button>
+      <button class="tbtn" onclick="dupLastChart()" title="Duplicate to dashboard" style="font-size:11px">📋 Dupe</button>
+      <button class="vz-atd" onclick="addToDash()" style="font-size:12px;padding:6px 16px">＋ Add to Dashboard</button>
     </div>
     <div class="vz-canvas-wrap">
       <div class="vz-canvas-card" id="vz-canvas-card">
@@ -3304,15 +3079,355 @@ input[type="color"] {
     </div>
   </div>
 
-  <!-- RIGHT DATA PANE -->
-  <div class="vz-data-pane">
-    <div class="vz-data-head">
-      <div class="vz-data-title">Data</div>
-      <input class="vz-field-search" id="viz-field-search" placeholder="Search fields" oninput="renderVizFields(this.value)">
+  <!-- ── RIGHT PANEL (Power BI-style) ── -->
+  <div class="vz-panel">
+
+    <!-- Visualization type grid at top -->
+    <div class="vz-viz-section">
+      <div class="vz-viz-header">Visualizations</div>
+      <div class="vz-viz-grid">
+        <button class="vz-viz-btn on" data-ct="bar"           onclick="setCT('bar',this)"><svg viewBox="0 0 20 20"><rect x="2" y="8" width="4" height="10" rx="1"/><rect x="8" y="4" width="4" height="14" rx="1"/><rect x="14" y="11" width="4" height="7" rx="1"/></svg>Bar</button>
+        <button class="vz-viz-btn" data-ct="line"          onclick="setCT('line',this)"><svg viewBox="0 0 20 20"><polyline points="2,15 7,8 12,11 18,4" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Line</button>
+        <button class="vz-viz-btn" data-ct="area"          onclick="setCT('area',this)"><svg viewBox="0 0 20 20"><polyline points="2,15 7,8 12,11 18,4" fill="none" stroke-width="2" stroke-linecap="round"/><polygon points="2,15 7,8 12,11 18,4 18,18 2,18" opacity=".3"/></svg>Area</button>
+        <button class="vz-viz-btn" data-ct="pie"           onclick="setCT('pie',this)"><svg viewBox="0 0 20 20"><path d="M10 10 L10 2 A8 8 0 0 1 17 14 Z" opacity=".9"/><path d="M10 10 L17 14 A8 8 0 0 1 3 14 Z" opacity=".6"/><path d="M10 10 L3 14 A8 8 0 0 1 10 2 Z" opacity=".4"/></svg>Pie</button>
+        <button class="vz-viz-btn" data-ct="doughnut"      onclick="setCT('doughnut',this)"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7" fill="none" stroke-width="4" stroke-dasharray="22 22 11"/></svg>Donut</button>
+        <button class="vz-viz-btn" data-ct="scatter"       onclick="setCT('scatter',this)"><svg viewBox="0 0 20 20"><circle cx="5" cy="14" r="1.5"/><circle cx="9" cy="8" r="1.5"/><circle cx="13" cy="11" r="1.5"/><circle cx="17" cy="5" r="1.5"/><circle cx="7" cy="15" r="1.5"/><circle cx="15" cy="9" r="1.5"/></svg>Scatter</button>
+        <button class="vz-viz-btn" data-ct="bubble"        onclick="setCT('bubble',this)"><svg viewBox="0 0 20 20"><circle cx="6" cy="13" r="3.5"/><circle cx="14" cy="8" r="2"/><circle cx="10" cy="15" r="1.5"/></svg>Bubble</button>
+        <button class="vz-viz-btn" data-ct="radar"         onclick="setCT('radar',this)"><svg viewBox="0 0 20 20"><polygon points="10,2 17,7 14,16 6,16 3,7" fill="none" stroke-width="1.5"/><polygon points="10,6 14,9 12,14 8,14 6,9" opacity=".5"/></svg>Radar</button>
+        <button class="vz-viz-btn" data-ct="polarArea"     onclick="setCT('polarArea',this)"><svg viewBox="0 0 20 20"><path d="M10 10 L10 3 A7 7 0 0 1 16 13 Z" opacity=".9"/><path d="M10 10 L16 13 A7 7 0 0 1 4 13 Z" opacity=".55"/><path d="M10 10 L4 13 A7 7 0 0 1 10 3 Z" opacity=".35"/></svg>Polar</button>
+        <button class="vz-viz-btn" data-ct="bar-h"         onclick="setCT('bar-h',this)"><svg viewBox="0 0 20 20"><rect x="2" y="3" width="10" height="4" rx="1"/><rect x="2" y="9" width="14" height="4" rx="1"/><rect x="2" y="15" width="7" height="4" rx="1"/></svg>H-Bar</button>
+        <button class="vz-viz-btn" data-ct="bar-stacked"   onclick="setCT('bar-stacked',this)"><svg viewBox="0 0 20 20"><rect x="2" y="12" width="4" height="6" rx="1"/><rect x="2" y="7" width="4" height="5" rx="1" opacity=".6"/><rect x="8" y="8" width="4" height="10" rx="1"/><rect x="8" y="4" width="4" height="4" rx="1" opacity=".6"/><rect x="14" y="13" width="4" height="5" rx="1"/><rect x="14" y="9" width="4" height="4" rx="1" opacity=".6"/></svg>Stacked</button>
+        <button class="vz-viz-btn" data-ct="bar-stacked-h" onclick="setCT('bar-stacked-h',this)"><svg viewBox="0 0 20 20"><rect x="2" y="3" width="8" height="4" rx="1"/><rect x="10" y="3" width="5" height="4" rx="1" opacity=".6"/><rect x="2" y="9" width="10" height="4" rx="1"/><rect x="12" y="9" width="4" height="4" rx="1" opacity=".6"/><rect x="2" y="15" width="6" height="4" rx="1"/><rect x="8" y="15" width="7" height="4" rx="1" opacity=".6"/></svg>H-Stack</button>
+        <button class="vz-viz-btn" data-ct="histogram"     onclick="setCT('histogram',this)"><svg viewBox="0 0 20 20"><rect x="2" y="12" width="3" height="6" rx="0.5"/><rect x="6" y="7" width="3" height="11" rx="0.5"/><rect x="10" y="5" width="3" height="13" rx="0.5"/><rect x="14" y="9" width="3" height="9" rx="0.5"/></svg>Histogram</button>
+        <button class="vz-viz-btn" data-ct="waterfall"     onclick="setCT('waterfall',this)"><svg viewBox="0 0 20 20"><rect x="2" y="10" width="3" height="8" rx="0.5"/><rect x="6" y="6" width="3" height="4" rx="0.5" opacity=".7"/><rect x="10" y="4" width="3" height="2" rx="0.5" opacity=".5"/><rect x="14" y="7" width="3" height="11" rx="0.5"/></svg>Waterfall</button>
+        <button class="vz-viz-btn" data-ct="boxplot"       onclick="setCT('boxplot',this)"><svg viewBox="0 0 20 20"><rect x="4" y="7" width="5" height="9" rx="0.5" fill="none" stroke-width="1.5"/><line x1="6.5" y1="7" x2="6.5" y2="4" stroke-width="1.5"/><line x1="6.5" y1="16" x2="6.5" y2="19" stroke-width="1.5"/><line x1="4" y1="11" x2="9" y2="11" stroke-width="2"/><rect x="11" y="5" width="5" height="11" rx="0.5" fill="none" stroke-width="1.5"/><line x1="13.5" y1="5" x2="13.5" y2="3" stroke-width="1.5"/><line x1="13.5" y1="16" x2="13.5" y2="18" stroke-width="1.5"/><line x1="11" y1="10" x2="16" y2="10" stroke-width="2"/></svg>Box Plot</button>
+        <button class="vz-viz-btn" data-ct="mixed"         onclick="setCT('mixed',this)"><svg viewBox="0 0 20 20"><rect x="2" y="10" width="3" height="8" rx="0.5" opacity=".8"/><rect x="7" y="6" width="3" height="12" rx="0.5" opacity=".8"/><polyline points="2,12 7,8 14,10 19,5" fill="none" stroke-width="2" stroke-linecap="round"/></svg>Mixed</button>
+      </div>
     </div>
-    <div class="vz-data-scroll" id="viz-fields"></div>
-  </div>
-</div>
+
+    <!-- Tab bar: Build / Format / Analytics -->
+    <div class="vz-tabs">
+      <div class="vz-tab on"  onclick="vzTab('build',this)">Build</div>
+      <div class="vz-tab"     onclick="vzTab('format',this)">Format</div>
+      <div class="vz-tab"     onclick="vzTab('analytics',this)">Analytics</div>
+    </div>
+
+    <!-- Panel body -->
+    <div class="vz-panel-body">
+
+      <!-- ── BUILD TAB ── -->
+      <div class="vz-pane on" id="vzp-build">
+
+        <!-- Data -->
+        <div class="vz-acc open" id="vzacc-data">
+          <div class="vz-acc-head" onclick="vzAcc('data')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:6px;opacity:.6"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5"/><path d="M3 12a9 3 0 0 0 18 0"/></svg>
+            Data
+            <span class="vz-acc-chevron">▶</span>
+          </div>
+          <div class="vz-acc-body">
+            <div class="vz-row"><label>Dataset</label><select class="fsel" id="cb-ds" onchange="onCbDsChange()"></select></div>
+            <div class="vz-field-label">X Axis / Category</div>
+            <div class="vz-well">
+              <select class="fsel" id="cb-x" onchange="rebuildPreview()" style="margin:0"></select>
+            </div>
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+              <span class="vz-field-label" style="margin:0">Y Values</span>
+              <button class="vz-add-btn" onclick="addSeries()">＋ Add series</button>
+            </div>
+            <div id="series-list" style="margin-bottom:8px"></div>
+            <div class="vz-row">
+              <label>Aggregation</label>
+              <select class="fsel" id="cb-agg" onchange="rebuildPreview()">
+                <option value="none">None (raw)</option>
+                <option value="sum">Sum</option>
+                <option value="avg">Average</option>
+                <option value="count">Count</option>
+                <option value="min">Min</option>
+                <option value="max">Max</option>
+                <option value="median">Median</option>
+                <option value="pct">% of Total</option>
+                <option value="stddev">Std Dev</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sort & Filter -->
+        <div class="vz-acc" id="vzacc-sort">
+          <div class="vz-acc-head" onclick="vzAcc('sort')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:6px;opacity:.6"><line x1="21" y1="10" x2="7" y2="10"/><line x1="21" y1="6" x2="3" y2="6"/><line x1="21" y1="14" x2="3" y2="14"/><line x1="21" y1="18" x2="7" y2="18"/></svg>
+            Sort &amp; Filter
+            <span class="vz-acc-chevron">▶</span>
+          </div>
+          <div class="vz-acc-body">
+            <div style="display:flex;gap:6px">
+              <div class="vz-row" style="flex:1"><label>Limit (0=all)</label><input class="fin" type="number" id="cb-limit" value="0" min="0" onchange="rebuildPreview()"></div>
+              <div class="vz-row" style="flex:1"><label>Skip first N</label><input class="fin" type="number" id="cb-skip" value="0" min="0" onchange="rebuildPreview()"></div>
+            </div>
+            <div style="display:flex;gap:16px;margin-top:4px">
+              <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer"><input type="checkbox" id="cb-sort-x" onchange="rebuildPreview()" style="accent-color:var(--highlight)"> Sort X ↑</label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer"><input type="checkbox" id="cb-sort-x-desc" onchange="rebuildPreview()" style="accent-color:var(--highlight)"> Sort X ↓</label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Templates -->
+        <div class="vz-acc" id="vzacc-tpl">
+          <div class="vz-acc-head" onclick="vzAcc('tpl')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:6px;opacity:.6"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>
+            Quick Templates
+            <span class="vz-acc-chevron">▶</span>
+          </div>
+          <div class="vz-acc-body">
+            <div class="vz-tpl-grid">
+              <button class="vz-tpl" onclick="applyTemplate('topN')">Top 10</button>
+              <button class="vz-tpl" onclick="applyTemplate('trend')">Trend Line</button>
+              <button class="vz-tpl" onclick="applyTemplate('compare')">Compare</button>
+              <button class="vz-tpl" onclick="applyTemplate('dist')">Distribution</button>
+              <button class="vz-tpl" onclick="applyTemplate('share')">Share %</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Export -->
+        <div class="vz-acc" id="vzacc-export">
+          <div class="vz-acc-head" onclick="vzAcc('export')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:6px;opacity:.6"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export &amp; Presets
+            <span class="vz-acc-chevron">▶</span>
+          </div>
+          <div class="vz-acc-body">
+            <div id="chart-presets" style="margin-bottom:8px"></div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <div class="vz-row" style="flex:1"><label>Width px</label><input class="fin" type="number" id="exp-w" value="1200" min="400" max="4000"></div>
+              <div class="vz-row" style="flex:1"><label>Height px</label><input class="fin" type="number" id="exp-h" value="700" min="200" max="3000"></div>
+              <div class="vz-row" style="flex:1"><label>Scale</label><input class="fin" type="number" id="exp-scale" value="2" min="1" max="4"></div>
+            </div>
+            <div style="display:flex;gap:6px;margin-top:6px">
+              <button class="tbtn" onclick="exportChartPNG()" style="flex:1;font-size:11px">🖼 PNG</button>
+              <button class="tbtn" onclick="dupLastChart()" style="flex:1;font-size:11px">📋 Dupe</button>
+              <button class="tbtn" onclick="saveChartPreset()" style="flex:1;font-size:11px">💾 Save</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /vzp-build -->
+
+      <!-- ── FORMAT TAB ── -->
+      <div class="vz-pane" id="vzp-format">
+
+        <!-- Title -->
+        <div class="vz-acc open" id="vzacc-title">
+          <div class="vz-acc-head" onclick="vzAcc('title')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:6px;opacity:.6"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+            Title
+            <span class="vz-acc-chevron">▶</span>
+          </div>
+          <div class="vz-acc-body">
+            <div class="vz-row"><label>Title</label><input class="fin" id="cb-title" placeholder="Chart title…" oninput="rebuildPreview()"></div>
+            <div class="vz-row"><label>Subtitle</label><input class="fin" id="cb-subtitle" placeholder="Subtitle…" oninput="rebuildPreview()"></div>
+            <div style="display:flex;gap:6px">
+              <div class="vz-row" style="flex:1"><label>Align</label>
+                <select class="fsel" id="cb-title-align" onchange="rebuildPreview()">
+                  <option value="center">Center</option><option value="start">Left</option><option value="end">Right</option>
+                </select>
+              </div>
+              <div class="vz-row" style="flex:1"><label>Font size</label><input class="fin" type="number" id="cb-title-size" value="14" min="9" max="28" onchange="rebuildPreview()"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Colors & Palette -->
+        <div class="vz-acc open" id="vzacc-colors">
+          <div class="vz-acc-head" onclick="vzAcc('colors')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:6px;opacity:.6"><circle cx="13.5" cy="6.5" r="1"/><circle cx="17.5" cy="10.5" r="1"/><circle cx="8.5" cy="7.5" r="1"/><circle cx="6.5" cy="12.5" r="1"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+            Colors &amp; Palette
+            <span class="vz-acc-chevron">▶</span>
+          </div>
+          <div class="vz-acc-body">
+            <div class="vz-row"><label>Color palette</label>
+              <div class="vz-palette-row" id="palette-chips">
+                <div class="vz-chip on" onclick="setCBPalette('default',this)">Default</div>
+                <div class="vz-chip" onclick="setCBPalette('warm',this)">Warm</div>
+                <div class="vz-chip" onclick="setCBPalette('cool',this)">Cool</div>
+                <div class="vz-chip" onclick="setCBPalette('earth',this)">Earth</div>
+                <div class="vz-chip" onclick="setCBPalette('neon',this)">Neon</div>
+                <div class="vz-chip" onclick="setCBPalette('pastel',this)">Pastel</div>
+                <div class="vz-chip" onclick="setCBPalette('mono',this)">Mono</div>
+              </div>
+            </div>
+            <div class="vz-row"><label>Background</label>
+              <div style="display:flex;gap:6px;align-items:center">
+                <select class="fsel" id="cb-bg" onchange="rebuildPreview()" style="flex:1">
+                  <option value="surface">Surface (default)</option>
+                  <option value="bg">Deep background</option>
+                  <option value="surf2">Mid surface</option>
+                  <option value="white">White</option>
+                  <option value="custom">Custom color…</option>
+                </select>
+                <input type="color" id="cb-bg-custom" value="#1d2436" onchange="rebuildPreview()" style="width:30px;height:30px;border:1px solid var(--border);border-radius:6px;padding:2px;background:transparent;cursor:pointer">
+              </div>
+            </div>
+            <div class="vz-row"><label>Value format</label>
+              <select class="fsel" id="cb-fmt" onchange="rebuildPreview()">
+                <option value="">Auto</option>
+                <option value="$">$ Currency</option>
+                <option value="%">Percentage</option>
+                <option value=",">Thousands (1,234)</option>
+                <option value=".1">1 decimal</option>
+                <option value=".2">2 decimals</option>
+                <option value="k">Compact (1.2K / 1.5M)</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Legend -->
+        <div class="vz-acc" id="vzacc-legend">
+          <div class="vz-acc-head" onclick="vzAcc('legend')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:6px;opacity:.6"><rect x="3" y="11" width="4" height="4" rx="1"/><line x1="9" y1="13" x2="21" y2="13"/><rect x="3" y="5" width="4" height="4" rx="1"/><line x1="9" y1="7" x2="21" y2="7"/><rect x="3" y="17" width="4" height="4" rx="1"/><line x1="9" y1="19" x2="21" y2="19"/></svg>
+            Legend
+            <span class="vz-acc-chevron">▶</span>
+          </div>
+          <div class="vz-acc-body">
+            <div style="display:flex;gap:6px">
+              <div class="vz-row" style="flex:1"><label>Position</label>
+                <select class="fsel" id="cb-legend" onchange="rebuildPreview()">
+                  <option value="top">Top</option>
+                  <option value="bottom">Bottom</option>
+                  <option value="left">Left</option>
+                  <option value="right">Right</option>
+                  <option value="false">Hidden</option>
+                </select>
+              </div>
+              <div class="vz-row" style="flex:1"><label>Font size</label><input class="fin" type="number" id="cb-legend-size" value="11" min="7" max="18" onchange="rebuildPreview()"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Plot Area -->
+        <div class="vz-acc" id="vzacc-plot">
+          <div class="vz-acc-head" onclick="vzAcc('plot')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:6px;opacity:.6"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18"/></svg>
+            Plot Area
+            <span class="vz-acc-chevron">▶</span>
+          </div>
+          <div class="vz-acc-body">
+            <div class="vz-toggles">
+              <label class="vz-tog"><input type="checkbox" id="cb-grid" checked onchange="rebuildPreview()"><span>Grid</span></label>
+              <label class="vz-tog"><input type="checkbox" id="cb-smooth" checked onchange="rebuildPreview()"><span>Smooth</span></label>
+              <label class="vz-tog"><input type="checkbox" id="cb-fill" onchange="rebuildPreview()"><span>Fill</span></label>
+              <label class="vz-tog"><input type="checkbox" id="cb-datalabels" onchange="rebuildPreview()"><span>Labels</span></label>
+              <label class="vz-tog"><input type="checkbox" id="cb-points" checked onchange="rebuildPreview()"><span>Points</span></label>
+              <label class="vz-tog"><input type="checkbox" id="cb-animate" checked onchange="rebuildPreview()"><span>Animate</span></label>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px">
+              <div class="vz-row" style="flex:1;min-width:70px"><label>Bar radius</label><input class="fin" type="number" id="cb-brad" value="4" min="0" max="20" onchange="rebuildPreview()"></div>
+              <div class="vz-row" style="flex:1;min-width:70px"><label>Bar width %</label><input class="fin" type="number" id="cb-barw" value="80" min="10" max="100" onchange="rebuildPreview()"></div>
+              <div class="vz-row" style="flex:1;min-width:60px"><label>Point r</label><input class="fin" type="number" id="cb-prad" value="3" min="0" max="12" onchange="rebuildPreview()"></div>
+              <div class="vz-row" style="flex:1;min-width:60px"><label>Line w</label><input class="fin" type="number" id="cb-lw" value="2" min="1" max="8" onchange="rebuildPreview()"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Axes -->
+        <div class="vz-acc" id="vzacc-axes">
+          <div class="vz-acc-head" onclick="vzAcc('axes')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:6px;opacity:.6"><line x1="3" y1="21" x2="3" y2="3"/><line x1="3" y1="21" x2="21" y2="21"/><polyline points="7 16 11 10 15 13 19 7"/></svg>
+            Axes
+            <span class="vz-acc-chevron">▶</span>
+          </div>
+          <div class="vz-acc-body">
+            <div class="vz-row"><label>X axis type</label>
+              <select class="fsel" id="cb-xtype" onchange="rebuildPreview()">
+                <option value="category">Category</option>
+                <option value="time">Time / Date</option>
+                <option value="linear">Linear (numeric)</option>
+                <option value="logarithmic">Logarithmic</option>
+              </select>
+            </div>
+            <div class="vz-row"><label>X axis label</label><input class="fin" id="cb-xlabel" placeholder="Label for X axis…" oninput="rebuildPreview()"></div>
+            <div style="display:flex;gap:6px">
+              <div class="vz-row" style="flex:1"><label>X label rotation</label><input class="fin" type="number" id="cb-xrot" value="0" min="-90" max="90" onchange="rebuildPreview()"></div>
+              <div class="vz-row" style="flex:1"><label>Null values</label>
+                <select class="fsel" id="cb-nulls" onchange="rebuildPreview()">
+                  <option value="gap">Gap</option><option value="zero">Zero</option><option value="skip">Skip</option>
+                </select>
+              </div>
+            </div>
+            <div class="vz-field-label" style="margin-top:10px">Y1 Axis</div>
+            <div style="display:flex;gap:6px">
+              <div class="vz-row" style="flex:1"><label>Min</label><input class="fin" id="y1-min" placeholder="auto" oninput="rebuildPreview()"></div>
+              <div class="vz-row" style="flex:1"><label>Max</label><input class="fin" id="y1-max" placeholder="auto" oninput="rebuildPreview()"></div>
+            </div>
+            <div class="vz-row"><label>Y1 axis label</label><input class="fin" id="y1-label" placeholder="Label for Y axis…" oninput="rebuildPreview()"></div>
+            <div class="vz-field-label" style="margin-top:8px">Y2 Axis (dual-axis)</div>
+            <div style="margin-bottom:6px">
+              <label style="display:flex;align-items:center;gap:6px;font-size:11px;cursor:pointer"><input type="checkbox" id="y2-en" onchange="rebuildPreview()" style="accent-color:var(--highlight)"> Enable secondary Y axis</label>
+            </div>
+            <div style="display:flex;gap:6px">
+              <div class="vz-row" style="flex:1"><label>Y2 Min</label><input class="fin" id="y2-min" placeholder="auto" oninput="rebuildPreview()"></div>
+              <div class="vz-row" style="flex:1"><label>Y2 Max</label><input class="fin" id="y2-max" placeholder="auto" oninput="rebuildPreview()"></div>
+            </div>
+            <div class="vz-row"><label>Y2 axis label</label><input class="fin" id="y2-label" placeholder="Y2 label…" oninput="rebuildPreview()"></div>
+            <div class="vz-row" style="margin-top:6px"><label>Tick format</label><input class="fin" id="cb-tick-fmt" placeholder="e.g. $,.2f" oninput="rebuildPreview()"></div>
+          </div>
+        </div>
+
+      </div><!-- /vzp-format -->
+
+      <!-- ── ANALYTICS TAB ── -->
+      <div class="vz-pane" id="vzp-analytics">
+
+        <!-- Reference & Goal Lines -->
+        <div class="vz-acc open" id="vzacc-reflines">
+          <div class="vz-acc-head" onclick="vzAcc('reflines')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:6px;opacity:.6"><line x1="5" y1="12" x2="19" y2="12" stroke-dasharray="4 2"/><circle cx="5" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>
+            Reference &amp; Goal Lines
+            <span class="vz-acc-chevron">▶</span>
+          </div>
+          <div class="vz-acc-body">
+            <div style="display:flex;gap:6px;margin-bottom:8px">
+              <button class="tbtn" onclick="addRefLine()" style="flex:1;font-size:11px">＋ Ref Line</button>
+              <button class="tbtn" onclick="addGoalLine&&addGoalLine()" style="flex:1;font-size:11px">＋ Goal Line</button>
+            </div>
+            <div id="ref-lines" style="margin-bottom:4px"></div>
+            <div id="goal-lines"></div>
+          </div>
+        </div>
+
+        <!-- Statistical -->
+        <div class="vz-acc open" id="vzacc-statistical">
+          <div class="vz-acc-head" onclick="vzAcc('statistical')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:6px;opacity:.6"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg>
+            Statistical
+            <span class="vz-acc-chevron">▶</span>
+          </div>
+          <div class="vz-acc-body">
+            <div class="vz-row"><label>Histogram bins</label><input class="fin" type="number" id="cb-bins" value="20" min="2" max="200" onchange="rebuildPreview()"></div>
+          </div>
+        </div>
+
+        <!-- Annotations -->
+        <div class="vz-acc open" id="vzacc-annot">
+          <div class="vz-acc-head" onclick="vzAcc('annot')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="margin-right:6px;opacity:.6"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            Annotations
+            <span class="vz-acc-chevron">▶</span>
+          </div>
+          <div class="vz-acc-body">
+            <button class="tbtn" onclick="addAnnotation&&addAnnotation()" style="width:100%;font-size:11px;margin-bottom:8px">＋ Add Annotation</button>
+            <div id="annot-list"></div>
+          </div>
+        </div>
+
+      </div><!-- /vzp-analytics -->
+
+    </div><!-- /vz-panel-body -->
+  </div><!-- /vz-panel -->
+
+</div><!-- /v-charts -->
 
 <!-- DASHBOARD -->
 <div class="view" id="v-dashboard">
@@ -3570,7 +3685,7 @@ id="v-merge">
       </div>
     </div>
     <div class="s-sec"><div class="s-sec-t">📊 Chart Defaults</div>
-      <div class="s-row"><div class="s-ri"><div class="s-rl">Default Visual Type</div><div class="s-rd">Type pre-selected when opening Visualization</div></div>
+      <div class="s-row"><div class="s-ri"><div class="s-rl">Default Chart Type</div><div class="s-rd">Type pre-selected when opening Chart Builder</div></div>
         <div class="s-rc"><select class="s-sel" id="set-defchart" onchange="applyChartPref('deftype',this.value)">
           <option value="bar">Bar</option><option value="line">Line</option><option value="area">Area</option>
           <option value="pie">Pie</option><option value="scatter">Scatter</option>
@@ -3596,12 +3711,12 @@ id="v-merge">
     </div>
     <div class="s-sec"><div class="s-sec-t">🔄 Pivot Defaults</div>
       <div class="s-row"><div class="s-ri"><div class="s-rl">Default Aggregation</div></div>
-        <div class="s-rc"><select class="s-sel" id="set-pvagg" onchange="G('pv-agg')&&(G('pv-agg').value=this.value)">
+        <div class="s-rc"><select class="s-sel" id="set-pvagg" onchange="appPrefs.pivotAgg=this.value;if(G('pv-agg'))G('pv-agg').value=this.value;saveConfig()">
           <option value="sum">Sum</option><option value="count">Count</option><option value="avg">Average</option>
         </select></div>
       </div>
       <div class="s-row"><div class="s-ri"><div class="s-rl">Show Totals by default</div></div>
-        <div class="s-rc"><label class="tog"><input type="checkbox" id="set-pvtotals" checked onchange="G('pv-totals')&&(G('pv-totals').checked=this.checked)"><span class="tog-sl"></span></label></div>
+        <div class="s-rc"><label class="tog"><input type="checkbox" id="set-pvtotals" checked onchange="appPrefs.pivotTotals=this.checked;if(G('pv-totals'))G('pv-totals').checked=this.checked;saveConfig()"><span class="tog-sl"></span></label></div>
       </div>
     </div>
 
@@ -3620,9 +3735,9 @@ id="v-merge">
         <div class="s-ri"><div class="s-rl">Card Height</div><div class="s-rd">Default chart card height in pixels</div></div>
         <div class="s-rc"><select class="s-sel" id="set-dash-height" onchange="applyDashPref('height',this.value)">
           <option value="160px">Compact (160px)</option>
-          <option value="200px" selected>Default (200px)</option>
-          <option value="260px">Tall (260px)</option>
-          <option value="340px">Extra tall (340px)</option>
+          <option value="220px" selected>Default (220px)</option>
+          <option value="300px">Tall (300px)</option>
+          <option value="400px">Extra tall (400px)</option>
         </select></div>
       </div>
       <div class="s-row">
@@ -3642,7 +3757,7 @@ id="v-merge">
       </div>
       <div class="s-row">
         <div class="s-ri"><div class="s-rl">Table render limit</div><div class="s-rd">Max rows rendered at once (higher = slower on large data)</div></div>
-        <div class="s-rc"><select class="s-sel" id="set-renderlimit" onchange="appPrefs.renderLimit=+this.value;applyTablePref('pagesize',+this.value)">
+        <div class="s-rc"><select class="s-sel" id="set-renderlimit" onchange="appPrefs.renderLimit=+this.value;applyTablePref('pagesize',+this.value);saveConfig()">
           <option value="500">500 rows</option>
           <option value="1000">1,000 rows</option>
           <option value="2000" selected>2,000 rows</option>
@@ -3652,18 +3767,18 @@ id="v-merge">
       </div>
       <div class="s-row">
         <div class="s-ri"><div class="s-rl">Confirm on delete</div><div class="s-rd">Show confirmation dialog before deleting datasets or rows</div></div>
-        <div class="s-rc"><label class="tog"><input type="checkbox" id="set-confirmdel" checked onchange="appPrefs.confirmDel=this.checked"><span class="tog-sl"></span></label></div>
+        <div class="s-rc"><label class="tog"><input type="checkbox" id="set-confirmdel" checked onchange="appPrefs.confirmDel=this.checked;saveConfig()"><span class="tog-sl"></span></label></div>
       </div>
     </div>
 
     <div class="s-sec"><div class="s-sec-t">📥 Import Defaults</div>
       <div class="s-row">
         <div class="s-ri"><div class="s-rl">Auto-detect column types</div><div class="s-rd">Automatically classify columns as number, string, or date on import</div></div>
-        <div class="s-rc"><label class="tog"><input type="checkbox" id="set-autotype" checked onchange="appPrefs.autotype=this.checked"><span class="tog-sl"></span></label></div>
+        <div class="s-rc"><label class="tog"><input type="checkbox" id="set-autotype" checked onchange="appPrefs.autotype=this.checked;saveConfig()"><span class="tog-sl"></span></label></div>
       </div>
       <div class="s-row">
         <div class="s-ri"><div class="s-rl">CSV delimiter</div><div class="s-rd">Default field separator for CSV files</div></div>
-        <div class="s-rc"><select class="s-sel" id="set-csvdelim" onchange="appPrefs.csvDelim=this.value">
+        <div class="s-rc"><select class="s-sel" id="set-csvdelim" onchange="appPrefs.csvDelim=this.value;saveConfig()">
           <option value="auto">Auto-detect</option>
           <option value=",">Comma (,)</option>
           <option value=";">Semicolon (;)</option>
@@ -3673,21 +3788,21 @@ id="v-merge">
       </div>
       <div class="s-row">
         <div class="s-ri"><div class="s-rl">Navigate to Data view on import</div><div class="s-rd">Automatically switch to Data view after importing a file</div></div>
-        <div class="s-rc"><label class="tog"><input type="checkbox" id="set-autonav" checked onchange="appPrefs.autonav=this.checked"><span class="tog-sl"></span></label></div>
+        <div class="s-rc"><label class="tog"><input type="checkbox" id="set-autonav" checked onchange="appPrefs.autonav=this.checked;saveConfig()"><span class="tog-sl"></span></label></div>
       </div>
     </div>
 
     <div class="s-sec"><div class="s-sec-t">🔢 Number Display</div>
       <div class="s-row">
         <div class="s-ri"><div class="s-rl">Decimal separator</div><div class="s-rd">Character used as decimal point in displayed numbers</div></div>
-        <div class="s-rc"><select class="s-sel" id="set-decsep" onchange="appPrefs.decSep=this.value">
+        <div class="s-rc"><select class="s-sel" id="set-decsep" onchange="appPrefs.decSep=this.value;saveConfig()">
           <option value=".">Period ( . )</option>
           <option value=",">Comma ( , )</option>
         </select></div>
       </div>
       <div class="s-row">
         <div class="s-ri"><div class="s-rl">Thousands separator</div><div class="s-rd">Character used to group thousands in large numbers</div></div>
-        <div class="s-rc"><select class="s-sel" id="set-thousep" onchange="appPrefs.thouSep=this.value">
+        <div class="s-rc"><select class="s-sel" id="set-thousep" onchange="appPrefs.thouSep=this.value;saveConfig()">
           <option value=",">Comma ( , )</option>
           <option value=".">Period ( . )</option>
           <option value=" ">Space ( )</option>
@@ -3696,7 +3811,7 @@ id="v-merge">
       </div>
       <div class="s-row">
         <div class="s-ri"><div class="s-rl">Null display text</div><div class="s-rd">Text shown in empty/null cells</div></div>
-        <div class="s-rc"><select class="s-sel" id="set-nulltext" onchange="appPrefs.nullText=this.value;renderTable()">
+        <div class="s-rc"><select class="s-sel" id="set-nulltext" onchange="appPrefs.nullText=this.value;renderTable();saveConfig()">
           <option value="null">null</option>
           <option value="—">— (em-dash)</option>
           <option value="N/A">N/A</option>
@@ -3708,15 +3823,15 @@ id="v-merge">
     <div class="s-sec"><div class="s-sec-t">♿ Accessibility &amp; UX</div>
       <div class="s-row">
         <div class="s-ri"><div class="s-rl">Reduce animations</div><div class="s-rd">Disable chart and UI transitions for reduced motion</div></div>
-        <div class="s-rc"><label class="tog"><input type="checkbox" id="set-reducemotion" onchange="appPrefs.reduceMotion=this.checked;document.documentElement.style.setProperty('--anim-dur',this.checked?'0ms':'300ms')"><span class="tog-sl"></span></label></div>
+        <div class="s-rc"><label class="tog"><input type="checkbox" id="set-reducemotion" onchange="appPrefs.reduceMotion=this.checked;document.documentElement.style.setProperty('--anim-dur',this.checked?'0ms':'300ms');saveConfig()"><span class="tog-sl"></span></label></div>
       </div>
       <div class="s-row">
         <div class="s-ri"><div class="s-rl">High contrast borders</div><div class="s-rd">Use stronger borders between table cells</div></div>
-        <div class="s-rc"><label class="tog"><input type="checkbox" id="set-hicont" onchange="appPrefs.hiCont=this.checked;document.querySelectorAll('.dtbl td').forEach(td=>td.style.borderColor=this.checked?'var(--border-2)':'')"><span class="tog-sl"></span></label></div>
+        <div class="s-rc"><label class="tog"><input type="checkbox" id="set-hicont" onchange="appPrefs.hiCont=this.checked;document.querySelectorAll('.dtbl td').forEach(td=>td.style.borderColor=this.checked?'var(--border-2)':'');saveConfig()"><span class="tog-sl"></span></label></div>
       </div>
       <div class="s-row">
         <div class="s-ri"><div class="s-rl">Toast duration</div><div class="s-rd">How long notification toasts stay visible</div></div>
-        <div class="s-rc"><select class="s-sel" id="set-toastdur" onchange="appPrefs.toastDur=+this.value">
+        <div class="s-rc"><select class="s-sel" id="set-toastdur" onchange="appPrefs.toastDur=+this.value;saveConfig()">
           <option value="1500">Short (1.5s)</option>
           <option value="2800" selected>Default (2.8s)</option>
           <option value="5000">Long (5s)</option>
@@ -4493,7 +4608,7 @@ print(df.describe())
           <div style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px">After Import</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-2);cursor:pointer"><input type="radio" name="iw-after" value="data" checked style="accent-color:var(--highlight)"> Open Data View</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-2);cursor:pointer"><input type="radio" name="iw-after" value="charts" style="accent-color:var(--highlight)"> Open Visualization</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-2);cursor:pointer"><input type="radio" name="iw-after" value="charts" style="accent-color:var(--highlight)"> Open Chart Builder</label>
             <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-2);cursor:pointer"><input type="radio" name="iw-after" value="stay" style="accent-color:var(--highlight)"> Stay on Home</label>
           </div>
         </div>
@@ -4819,10 +4934,10 @@ const G=id=>document.getElementById(id);
 const DSC=['#5b9cf6','#f97316','#a78bfa','#4ade80','#fbbf24','#f87171','#22d3ee','#84cc16'];
 const SC=['#5b9cf6','#f97316','#a78bfa','#4ade80','#fbbf24','#f87171','#22d3ee','#84cc16'];
 let DS=[],ACT=0;
-let CB={type:'bar',dsIdx:0,xCol:'',agg:'sum',limit:0,skip:0,sortBy:'axis',sortDir:'asc',vFilters:[],series:[],y1:{min:'',max:'',label:''},y2:{en:false,min:'',max:'',label:''},refLines:[],title:'',subtitle:'',legend:'top',grid:true,smooth:true,fill:false,brad:4,bg:'surface',datalabels:false};
+let CB={type:'bar',dsIdx:0,xCol:'',agg:'sum',limit:0,series:[],y1:{min:'',max:'',label:''},y2:{en:false,min:'',max:'',label:''},refLines:[],title:'',subtitle:'',legend:'top',grid:true,smooth:true,fill:false,brad:4,bg:'surface',datalabels:false};
 let DASH=[],prevCh=null,editMode=false,pending={},cleanHist=[],condFmt=[],sortSt={col:null,dir:1},filters=[],search={term:'',col:''},selCol=null;
 // App-wide preferences (new in v1.0.2)
-let appPrefs={autosave:true,confirmDel:true,autotype:true,csvDelim:'auto',autonav:true,decSep:'.',thouSep:',',nullText:'null',reduceMotion:false,hiCont:false,toastDur:2800,renderLimit:2000,dashCols:'auto',dashHeight:'200px',dashSub:true,dashGap:'12px'};
+let appPrefs={autosave:true,confirmDel:true,autotype:true,csvDelim:'auto',autonav:true,decSep:'.',thouSep:',',nullText:'null',reduceMotion:false,hiCont:false,toastDur:2800,renderLimit:2000,dashCols:'auto',dashHeight:'220px',dashSub:true,dashGap:'12px',chartDefType:'bar',chartDefAgg:'sum',chartAnimDur:300,chartDefPalette:'default',pivotAgg:'sum',pivotTotals:true};
 const ds=()=>DS[ACT];
 const data=()=>DS[ACT]?.data||[];
 const genId=()=>'ds_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
@@ -4994,13 +5109,7 @@ function renderDsList(){
 function renameDs(idx){const el=G('dsn-'+idx);if(!el)return;const old=DS[idx].name;el.innerHTML='';const inp=document.createElement('input');inp.className='dsc-ren';inp.value=old;el.appendChild(inp);inp.focus();inp.select();const done=()=>{const v=inp.value.trim()||old;DS[idx].name=v;renderDsList();syncDDs();toast('"'+v+'" renamed','success');};inp.addEventListener('blur',done);inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();if(e.key==='Escape'){inp.value=old;inp.blur();}});}
 function dupeDs(idx){const s=DS[idx];addDataset(JSON.parse(JSON.stringify(s.data)),s.columns.map(c=>c.name),s.name+' (copy)');if(s.group)DS[DS.length-1].group=s.group;renderDsList();syncDDs();renderTable();toast('Duplicated','success');}
 function deleteDs(idx){if(DS.length<=1)return toast('Cannot delete the only dataset','error');openModal('Delete Dataset','Remove "'+DS[idx].name+'"? Cannot be undone.','',()=>{DS.splice(idx,1);if(ACT>=DS.length)ACT=Math.max(0,DS.length-1);renderDsList();syncDDs();renderTable();toast('Deleted','info');});}
-function syncDDs(){
-  ['active-ds','clean-ds','pv-ds','cb-ds'].forEach(id=>{
-    const el=G(id);if(!el)return;
-    const sel=id==='cb-ds'?(DS[CB.dsIdx]?CB.dsIdx:ACT):ACT;
-    el.innerHTML=DS.map((d,i)=>`<option value="${i}" ${i===sel?'selected':''}>${htmlEsc(d.name)}</option>`).join('')||'<option value="">No datasets</option>';
-  });
-}
+function syncDDs(){const opts=DS.map((d,i)=>`<option value="${i}" ${i===ACT?'selected':''}>${d.name}</option>`).join('');['active-ds','clean-ds','pv-ds','cb-ds'].forEach(id=>{const el=G(id);if(!el)return;el.innerHTML=opts||'<option value="">No datasets</option>';});}
 
 // ═══════════════════════════ IMPORT ═══════════════════════════
 function triggerImport(t){G('fi-'+t)?.click();}
@@ -5868,265 +5977,30 @@ function executeMerge(){
   G('mg-preview').textContent='Result: '+result.length+' rows × '+allCols.length+' columns';
 }
 // ═══════════════════════════ CHART BUILDER ═══════════════════════════
-function htmlEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
-function chartDsLabel(idx){
-  const d=DS[idx]; if(!d) return 'Dataset';
-  if(d.group){
-    const prefix=d.group+'_';
-    const sheet=d.name.startsWith(prefix)?d.name.slice(prefix.length):d.name;
-    return d.group+' / '+sheet;
-  }
-  return d.name;
-}
-function chartScopeIndexes(baseIdx){
-  return DS.map((_,i)=>i);
-}
-function seriesDsIdx(s, cb=CB){
-  const idx=Number.isInteger(+s?.dsIdx)?+s.dsIdx:+cb.dsIdx;
-  return DS[idx]?idx:(DS[cb.dsIdx]?+cb.dsIdx:ACT);
-}
-function chartNumericCols(idx){return (DS[idx]?.columns||[]).filter(c=>c.type==='number');}
-function chartDatasetOptions(selectedIdx, baseIdx=CB.dsIdx){
-  return chartScopeIndexes(baseIdx).map(i=>`<option value="${i}" ${i===selectedIdx?'selected':''}>${htmlEsc(chartDsLabel(i))}</option>`).join('');
-}
-function chartColumnOptions(dsIdx, selectedCol){
-  return chartNumericCols(dsIdx).map(c=>`<option value="${htmlEsc(c.name)}" ${c.name===selectedCol?'selected':''}>${htmlEsc(c.name)}</option>`).join('');
-}
-function chartAllColumnOptions(selected, includeBlank=false){
-  const opts=[];
-  if(includeBlank) opts.push('<option value="">Field...</option>');
-  DS.forEach((d,di)=>d.columns.forEach(c=>{
-    const key=di+'|'+c.name;
-    opts.push(`<option value="${htmlEsc(key)}" ${key===selected?'selected':''}>${htmlEsc(chartDsLabel(di)+' / '+c.name)}</option>`);
-  }));
-  return opts.join('');
-}
-function chartFieldTypeIcon(type){return type==='number'?'#':type==='date'?'D':type==='boolean'?'T':'Aa';}
-function chartRowPass(row, f){
-  const raw=row?.[f.col], val=String(raw??''), cmp=String(f.val??''), n=+raw, cn=+cmp;
-  switch(f.op){
-    case '=': return val===cmp;
-    case '!=': return val!==cmp;
-    case '>': return !isNaN(n)&&!isNaN(cn)&&n>cn;
-    case '<': return !isNaN(n)&&!isNaN(cn)&&n<cn;
-    case '>=': return !isNaN(n)&&!isNaN(cn)&&n>=cn;
-    case '<=': return !isNaN(n)&&!isNaN(cn)&&n<=cn;
-    case 'contains': return val.toLowerCase().includes(cmp.toLowerCase());
-    case 'starts': return val.toLowerCase().startsWith(cmp.toLowerCase());
-    case 'blank': return raw==null||raw==='';
-    case 'notblank': return raw!=null&&raw!=='';
-    default: return true;
-  }
-}
-function chartFilteredRows(dsIdx, cb=CB){
-  const d=DS[dsIdx]; if(!d) return [];
-  const fs=(cb.vFilters||[]).filter(f=>+f.dsIdx===+dsIdx&&f.col);
-  if(!fs.length) return d.data||[];
-  return (d.data||[]).filter(row=>fs.every(f=>chartRowPass(row,f)));
-}
-function renderVizWells(){
-  const el=G('viz-wells'); if(!el) return;
-  const xDs=DS[CB.dsIdx];
-  const axis=xDs&&CB.xCol?`<span>${htmlEsc(chartDsLabel(CB.dsIdx)+' / '+CB.xCol)}</span><button onclick="vizClearAxis()">×</button>`:'<span class="vz-empty">Click a text/date field, or choose X Axis below</span>';
-  const vals=(CB.series||[]).map((s,i)=>{
-    const di=seriesDsIdx(s,CB);
-    return `<span class="vz-pill" title="${htmlEsc(chartDsLabel(di))}"><span>${htmlEsc(chartDsLabel(di)+' / '+(s.label||s.col))}</span><button onclick="vizRemoveSeries(${i})">×</button></span>`;
-  }).join(' ')||'<span class="vz-empty">Click numeric fields in the Data pane</span>';
-  el.innerHTML=`<div class="vz-well"><div class="vz-well-label"><span>Axis</span><button class="vz-add-btn" onclick="vizClearAxis()">Clear</button></div><div class="vz-pill">${axis}</div></div>
-    <div class="vz-well"><div class="vz-well-label"><span>Values</span><button class="vz-add-btn" onclick="addSeries()">Add</button></div>${vals}</div>`;
-}
-function renderVizFields(q=''){
-  const el=G('viz-fields'); if(!el) return;
-  const term=String(q||'').trim().toLowerCase();
-  if(!DS.length){el.innerHTML='<div class="vz-empty" style="padding:8px">Load data to see fields.</div>';return;}
-  el.innerHTML=DS.map((d,di)=>{
-    const cols=d.columns.filter(c=>!term||d.name.toLowerCase().includes(term)||c.name.toLowerCase().includes(term));
-    if(!cols.length) return '';
-    const fields=cols.map(c=>{
-      const isAxis=di===CB.dsIdx&&c.name===CB.xCol;
-      const isVal=(CB.series||[]).some(s=>seriesDsIdx(s,CB)===di&&s.col===c.name);
-      return `<div class="vz-field ${isAxis||isVal?'on':''}" data-col="${htmlEsc(c.name)}" onclick="vizUseField(${di},this.dataset.col)">
-        <span class="vz-field-type">${chartFieldTypeIcon(c.type)}</span>
-        <span class="vz-field-name" title="${htmlEsc(c.name)}">${htmlEsc(c.name)}</span>
-        <span class="vz-field-hint">${c.type==='number'?'value':'axis'}</span>
-      </div>`;
-    }).join('');
-    return `<div class="vz-ds-card"><div class="vz-ds-head"><span class="vz-ds-dot" style="background:${htmlEsc(d.color||SC[di%SC.length])}"></span><span title="${htmlEsc(d.name)}">${htmlEsc(chartDsLabel(di))}</span><span class="vz-ds-meta">${(d.data||[]).length}r</span></div>${fields}</div>`;
-  }).join('')||'<div class="vz-empty" style="padding:8px">No matching fields.</div>';
-}
-function vizUseField(dsIdx,col){
-  const c=DS[dsIdx]?.columns.find(x=>x.name===col); if(!c) return;
-  if(c.type==='number') vizAddValue(dsIdx,col);
-  else vizSetAxis(dsIdx,col);
-}
-function vizSetAxis(dsIdx,col){
-  CB.dsIdx=+dsIdx; CB.xCol=col;
-  const sel=G('cb-ds'); if(sel) sel.value=String(CB.dsIdx);
-  populateCBFields(); rebuildPreview();
-}
-function vizClearAxis(){CB.xCol='';populateCBFields();rebuildPreview();}
-function vizAddValue(dsIdx,col){
-  if(!(CB.series||[]).some(s=>seriesDsIdx(s,CB)===+dsIdx&&s.col===col)) addSeriesObj(col,+dsIdx);
-  renderSeriesList(); renderVizWells(); renderVizFields(G('viz-field-search')?.value||''); rebuildPreview();
-}
-function vizRemoveSeries(i){CB.series.splice(i,1);renderSeriesList();renderVizWells();renderVizFields(G('viz-field-search')?.value||'');rebuildPreview();}
-function vizAddFilter(){
-  const first=DS[CB.dsIdx]?.columns[0]?.name||DS[0]?.columns[0]?.name||'';
-  CB.vFilters=CB.vFilters||[];
-  CB.vFilters.push({dsIdx:CB.dsIdx||0,col:first,op:'contains',val:''});
-  renderVizFilters(); rebuildPreview();
-}
-function vizRemoveFilter(i){CB.vFilters.splice(i,1);renderVizFilters();rebuildPreview();}
-function vizFilterFieldChanged(i,val){
-  if(!val){ if(CB.vFilters[i]){CB.vFilters[i].col='';} renderVizFilters(); rebuildPreview(); return; }
-  const [dsIdx,col]=String(val).split('|');
-  if(!CB.vFilters[i]) return;
-  CB.vFilters[i].dsIdx=+dsIdx; CB.vFilters[i].col=col;
-  renderVizFilters(); rebuildPreview();
-}
-function renderVizFilters(){
-  const el=G('viz-filters'); if(!el) return;
-  const ops=[['=','='],['!=','≠'],['>','>'],['<','<'],['>=','≥'],['<=','≤'],['contains','contains'],['starts','starts'],['blank','blank'],['notblank','not blank']];
-  const filters=CB.vFilters||[];
-  el.innerHTML=filters.length?filters.map((f,i)=>{
-    const key=(f.dsIdx??CB.dsIdx)+'|'+(f.col||'');
-    return `<div class="vz-filter-row">
-      <select class="fsel" onchange="vizFilterFieldChanged(${i},this.value)">${chartAllColumnOptions(key,true)}</select>
-      <select class="fsel" onchange="CB.vFilters[${i}].op=this.value;rebuildPreview()">${ops.map(([v,l])=>`<option value="${v}" ${f.op===v?'selected':''}>${l}</option>`).join('')}</select>
-      <input class="fin" value="${htmlEsc(f.val||'')}" placeholder="value" oninput="CB.vFilters[${i}].val=this.value;rebuildPreview()">
-      <button class="ser-del" onclick="vizRemoveFilter(${i})">×</button>
-    </div>`;
-  }).join(''):'<div class="vz-empty">No visual filters.</div>';
-}
-function onVizSortChange(){
-  CB.sortBy=G('cb-sort-by')?.value||'axis';
-  CB.sortDir=G('cb-sort-dir')?.value||'asc';
-  const sx=G('cb-sort-x'), sxd=G('cb-sort-x-desc');
-  if(sx) sx.checked=CB.sortBy==='axis'&&CB.sortDir==='asc';
-  if(sxd) sxd.checked=CB.sortBy==='axis'&&CB.sortDir==='desc';
-  rebuildPreview();
-}
-function normalizeChartState(target=CB){
-  if(!DS.length) return;
-  if(!DS[target.dsIdx]) target.dsIdx=ACT;
-  target.vFilters=target.vFilters||[];
-  target.sortBy=target.sortBy||((target.sortX||target.sortXDesc)?'axis':'axis');
-  target.sortDir=target.sortDir||(target.sortXDesc?'desc':'asc');
-  const xDs=DS[target.dsIdx]||ds();
-  if(xDs&&!xDs.columns.some(c=>c.name===target.xCol)) target.xCol=xDs.columns[0]?.name||'';
-  const scope=chartScopeIndexes(target.dsIdx);
-  target.series=target.series||[];
-  target.series.forEach(s=>{
-    if(s.dsIdx==null) s.dsIdx=target.dsIdx;
-    if(!scope.includes(+s.dsIdx)) s.dsIdx=target.dsIdx;
-    const nums=chartNumericCols(+s.dsIdx);
-    if(!nums.some(c=>c.name===s.col)) s.col=nums[0]?.name||'';
-    if(!s.label) s.label=s.col||'Series';
-  });
-  if(!target.series.length){
-    const scopedWithNum=scope.find(i=>chartNumericCols(i).length);
-    const firstIdx=scopedWithNum>=0?scopedWithNum:target.dsIdx;
-    const fn=chartNumericCols(firstIdx)[0];
-    if(fn) target.series.push({dsIdx:firstIdx,col:fn.name,label:fn.name,color:SC[target.series.length%SC.length],chartType:'',yAxis:'y1',showTrend:false,trendType:'linear',opacity:85,bw:2,dashed:false});
-  }
-}
-function populateCBFields(){
-  normalizeChartState();
-  const d=DS[CB.dsIdx]||ds(); if(!d)return;
-  const dsSel=G('cb-ds'); if(dsSel) dsSel.value=String(CB.dsIdx);
-  G('cb-x').innerHTML=d.columns.map(c=>`<option value="${htmlEsc(c.name)}" ${c.name===CB.xCol?'selected':''}>${htmlEsc(c.name)}</option>`).join('');
-  if(!CB.xCol)CB.xCol=d.columns[0]?.name;
-  const sortBy=G('cb-sort-by'); if(sortBy) sortBy.value=CB.sortBy||'axis';
-  const sortDir=G('cb-sort-dir'); if(sortDir) sortDir.value=CB.sortDir||'asc';
-  const sx=G('cb-sort-x'), sxd=G('cb-sort-x-desc');
-  if(sx) sx.checked=(CB.sortBy||'axis')==='axis'&&(CB.sortDir||'asc')==='asc';
-  if(sxd) sxd.checked=(CB.sortBy||'axis')==='axis'&&(CB.sortDir||'asc')==='desc';
-  renderSeriesList();
-  renderVizWells();
-  renderVizFields(G('viz-field-search')?.value||'');
-  renderVizFilters();
-  if(typeof renderAnnotList==='function')renderAnnotList();
-  if(typeof renderGoalLines==='function')renderGoalLines();
-  if(typeof renderPresetList==='function')renderPresetList();
-}
-function onCbDsChange(){
-  CB.dsIdx=+G('cb-ds').value;
-  const d=DS[CB.dsIdx];
-  if(d&&!d.columns.some(c=>c.name===CB.xCol)) CB.xCol=d.columns[0]?.name||'';
-  normalizeChartState();
-  populateCBFields();
-  rebuildPreview();
-}
-function addSeriesObj(col, dsIdx=CB.dsIdx){CB.series.push({dsIdx,col,label:col,color:SC[CB.series.length%SC.length],chartType:'',yAxis:'y1',showTrend:false,trendType:'linear',opacity:85,bw:2,dashed:false});}
-function refreshNewSeriesCols(){
-  const dsIdx=+G('ns-ds')?.value;
-  const colSel=G('ns-c'); if(!colSel) return;
-  colSel.innerHTML=chartColumnOptions(dsIdx,'');
-}
-function addSeries(){
-  if(!ds())return toast('Load data first','error');
-  normalizeChartState();
-  const scope=chartScopeIndexes(CB.dsIdx).filter(i=>chartNumericCols(i).length);
-  if(!scope.length)return toast('No numeric columns in this dataset group','error');
-  const initial=scope[0];
-  openModal('Add Series','',`
-    <div style="display:flex;flex-direction:column;gap:8px">
-      <div><div class="flbl">Y Dataset</div><select class="fsel" id="ns-ds" onchange="refreshNewSeriesCols()">${scope.map(i=>`<option value="${i}">${htmlEsc(chartDsLabel(i))}</option>`).join('')}</select></div>
-      <div><div class="flbl">Y Column</div><select class="fsel" id="ns-c">${chartColumnOptions(initial,'')}</select></div>
-    </div>`,()=>{
-      addSeriesObj(G('ns-c').value,+G('ns-ds').value);
-      renderSeriesList();
-      rebuildPreview();
-    });
-}
-function onSeriesDsChange(i, val){
-  const s=CB.series[i]; if(!s) return;
-  s.dsIdx=+val;
-  const nums=chartNumericCols(s.dsIdx);
-  s.col=nums[0]?.name||'';
-  if(!s.label||s.label==='Series') s.label=s.col;
-  renderSeriesList();
-  rebuildPreview();
-}
-function renderSeriesList(){
-  const el=G('series-list'); if(!el) return;
-  normalizeChartState();
-  el.innerHTML=CB.series.map((s,i)=>{
-    const dsIdx=seriesDsIdx(s,CB);
-    const colOptions=chartColumnOptions(dsIdx,s.col);
-    const dsName=chartDsLabel(dsIdx);
-    return `<div class="ser-card">
-      <div class="ser-head" onclick="toggleSB(${i})">
-        <div class="ser-dot" style="background:${htmlEsc(s.color)}"></div>
-        <div class="ser-nm">${htmlEsc(s.label||s.col)}</div>
-        <span style="font-size:9px;padding:1px 5px;border-radius:10px;background:var(--surface-3);color:var(--text-3);font-family:var(--mono)" title="${htmlEsc(dsName)}">${htmlEsc(s.col)}</span>
-        <button class="ser-del" onclick="event.stopPropagation();CB.series.splice(${i},1);renderSeriesList();rebuildPreview()">✕</button>
-      </div>
-      <div class="ser-body" id="sb-${i}">
-        <div class="flbl">Label</div>
-        <input class="fin" value="${htmlEsc(s.label)}" oninput="CB.series[${i}].label=this.value;rebuildPreview()" style="margin-bottom:6px">
-        <div class="flbl">Y Dataset</div>
-        <select class="fsel" onchange="onSeriesDsChange(${i},this.value)" style="margin-bottom:6px">${chartDatasetOptions(dsIdx,CB.dsIdx)}</select>
-        <div class="flbl">Y Column</div>
-        <select class="fsel" onchange="CB.series[${i}].col=this.value;rebuildPreview()" style="margin-bottom:6px">${colOptions}</select>
-        <div class="flbl">Y Axis</div>
-        <select class="fsel" onchange="CB.series[${i}].yAxis=this.value;rebuildPreview()" style="margin-bottom:6px"><option value="y1" ${s.yAxis==='y1'?'selected':''}>Left (Y1)</option><option value="y2" ${s.yAxis==='y2'?'selected':''}>Right (Y2)</option></select>
-        <div class="flbl">Color</div>
-        <div class="chips">${SC.map(c=>`<div class="chip ${s.color===c?'on':''}" style="background:${c}" onclick="CB.series[${i}].color='${c}';renderSeriesList();rebuildPreview()"></div>`).join('')}<input type="color" value="${htmlEsc(s.color)}" onchange="CB.series[${i}].color=this.value;renderSeriesList();rebuildPreview()" style="width:18px;height:18px;border:none;cursor:pointer;padding:0;background:none"></div>
-        <div class="tog-row" style="margin-top:6px"><span class="tog-lbl">Trendline</span><label class="tog"><input type="checkbox" ${s.showTrend?'checked':''} onchange="CB.series[${i}].showTrend=this.checked;renderSeriesList();rebuildPreview()"><span class="tog-sl"></span></label></div>
-        ${s.showTrend?`<select class="fsel" onchange="CB.series[${i}].trendType=this.value;rebuildPreview()"><option value="linear" ${s.trendType==='linear'?'selected':''}>Linear</option><option value="exponential" ${s.trendType==='exponential'?'selected':''}>Exponential</option><option value="moving" ${s.trendType==='moving'?'selected':''}>Moving Avg</option></select>`:''}
-        <div class="tog-row"><span class="tog-lbl">Dashed</span><label class="tog"><input type="checkbox" ${s.dashed?'checked':''} onchange="CB.series[${i}].dashed=this.checked;rebuildPreview()"><span class="tog-sl"></span></label></div>
-        <div class="nr"><label>Opacity %</label><input class="nin" type="number" value="${s.opacity}" min="10" max="100" onchange="CB.series[${i}].opacity=+this.value;rebuildPreview()"></div>
-      </div>
-    </div>`;
-  }).join('');
-  renderVizWells();
-  renderVizFields(G('viz-field-search')?.value||'');
-}
+function populateCBFields(){const d=DS[CB.dsIdx]||ds();if(!d)return;G('cb-x').innerHTML=d.columns.map(c=>`<option value="${c.name}" ${c.name===CB.xCol?'selected':''}>${c.name}</option>`).join('');if(!CB.xCol)CB.xCol=d.columns[0]?.name;if(!CB.series.length){const fn=d.columns.find(c=>c.type==='number');if(fn)addSeriesObj(fn.name);}renderSeriesList();if(typeof renderAnnotList==='function')renderAnnotList();if(typeof renderGoalLines==='function')renderGoalLines();if(typeof renderPresetList==='function')renderPresetList();}
+function onCbDsChange(){CB.dsIdx=+G('cb-ds').value;CB.series=[];populateCBFields();rebuildPreview();}
+function addSeriesObj(col){CB.series.push({col,label:col,color:SC[CB.series.length%SC.length],chartType:'',yAxis:'y1',showTrend:false,trendType:'linear',opacity:85,bw:2,dashed:false});}
+function addSeries(){if(!ds())return toast('Load data first','error');const d=DS[CB.dsIdx]||ds();const nc=d.columns.filter(c=>c.type==='number');if(!nc.length)return toast('No numeric columns','error');openModal('Add Series','',`<select class="fsel" id="ns-c">${nc.map(c=>`<option value="${c.name}">${c.name}</option>`).join('')}</select>`,()=>{addSeriesObj(G('ns-c').value);renderSeriesList();rebuildPreview();});}
+function renderSeriesList(){G('series-list').innerHTML=CB.series.map((s,i)=>`<div class="ser-card"><div class="ser-head" onclick="toggleSB(${i})"><div class="ser-dot" style="background:${s.color}"></div><div class="ser-nm">${s.label||s.col}</div><span style="font-size:9px;padding:1px 5px;border-radius:10px;background:var(--surface-3);color:var(--text-3);font-family:var(--mono)">${s.col}</span><button class="ser-del" onclick="event.stopPropagation();CB.series.splice(${i},1);renderSeriesList();rebuildPreview()">✕</button></div><div class="ser-body" id="sb-${i}"><div class="flbl">Label</div><input class="fin" value="${s.label}" oninput="CB.series[${i}].label=this.value;rebuildPreview()" style="margin-bottom:6px"><div class="flbl">Column</div><select class="fsel" onchange="CB.series[${i}].col=this.value;rebuildPreview()" style="margin-bottom:6px">${(DS[CB.dsIdx]||ds())?.columns.filter(c=>c.type==='number').map(c=>`<option value="${c.name}" ${c.name===s.col?'selected':''}>${c.name}</option>`).join('')}</select><div class="flbl">Y Axis</div><select class="fsel" onchange="CB.series[${i}].yAxis=this.value;rebuildPreview()" style="margin-bottom:6px"><option value="y1" ${s.yAxis==='y1'?'selected':''}>Left (Y1)</option><option value="y2" ${s.yAxis==='y2'?'selected':''}>Right (Y2)</option></select><div class="flbl">Color</div><div class="chips">${SC.map(c=>`<div class="chip ${s.color===c?'on':''}" style="background:${c}" onclick="CB.series[${i}].color='${c}';renderSeriesList();rebuildPreview()"></div>`).join('')}<input type="color" value="${s.color}" onchange="CB.series[${i}].color=this.value;renderSeriesList();rebuildPreview()" style="width:18px;height:18px;border:none;cursor:pointer;padding:0;background:none"></div><div class="tog-row" style="margin-top:6px"><span class="tog-lbl">Trendline</span><label class="tog"><input type="checkbox" ${s.showTrend?'checked':''} onchange="CB.series[${i}].showTrend=this.checked;renderSeriesList();rebuildPreview()"><span class="tog-sl"></span></label></div>${s.showTrend?`<select class="fsel" onchange="CB.series[${i}].trendType=this.value;rebuildPreview()"><option value="linear">Linear</option><option value="exponential">Exponential</option><option value="moving">Moving Avg</option></select>`:''}<div class="tog-row"><span class="tog-lbl">Dashed</span><label class="tog"><input type="checkbox" ${s.dashed?'checked':''} onchange="CB.series[${i}].dashed=this.checked;rebuildPreview()"><span class="tog-sl"></span></label></div><div class="nr"><label>Opacity %</label><input class="nin" type="number" value="${s.opacity}" min="10" max="100" onchange="CB.series[${i}].opacity=+this.value;rebuildPreview()"></div></div></div>`).join('');}
 function toggleSB(i){G('sb-'+i)?.classList.toggle('open');}
 function addRefLine(){CB.refLines.push({value:'',label:'Ref',color:'#fbbf24',axis:'y1'});renderRefLines();}
 function renderRefLines(){G('ref-lines').innerHTML=CB.refLines.map((rl,i)=>`<div style="display:flex;gap:5px;align-items:center;margin-bottom:5px"><input class="fin" type="number" value="${rl.value}" placeholder="Value" style="width:65px;margin:0" onchange="CB.refLines[${i}].value=+this.value;rebuildPreview()"><input class="fin" value="${rl.label}" placeholder="Label" style="flex:1;margin:0" oninput="CB.refLines[${i}].label=this.value;rebuildPreview()"><input type="color" value="${rl.color}" onchange="CB.refLines[${i}].color=this.value;rebuildPreview()" style="width:22px;height:22px;border:none;cursor:pointer;padding:0;background:none"><select class="fsel" style="width:52px;margin:0" onchange="CB.refLines[${i}].axis=this.value;rebuildPreview()"><option value="y1">Y1</option><option value="y2">Y2</option></select><button class="tbtn" style="padding:3px 6px;border-color:var(--err);color:var(--err)" onclick="CB.refLines.splice(${i},1);renderRefLines();rebuildPreview()">✕</button></div>`).join('');}
-function setCT(type,btn){CB.type=type;document.querySelectorAll('.vz-type,.ctbtn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');rebuildPreview();}
+function setCT(type,btn){CB.type=type;document.querySelectorAll('.vz-viz-btn,.vz-type,.ctbtn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');rebuildPreview();}
+
+// Visualization panel tab switching
+function vzTab(name, el) {
+  document.querySelectorAll('.vz-tab').forEach(t => t.classList.remove('on'));
+  document.querySelectorAll('.vz-pane').forEach(p => p.classList.remove('on'));
+  if (el) el.classList.add('on');
+  const pane = G('vzp-' + name);
+  if (pane) pane.classList.add('on');
+}
+
+// Visualization panel accordion toggle
+function vzAcc(name) {
+  const acc = G('vzacc-' + name);
+  if (acc) acc.classList.toggle('open');
+}
 function cbTab(name){document.querySelectorAll('.cbtab').forEach(t=>t.classList.remove('on'));document.querySelectorAll('.cb-panel').forEach(p=>p.classList.remove('on'));G('cbt-'+name)?.classList.add('on');G('cbp-'+name)?.classList.add('on');if(name==='series')renderSeriesList();if(name==='annot'){renderAnnotList();renderGoalLines();}if(name==='export'){renderPresetList();}}
 // Color palettes
 const PALETTES = {
@@ -6170,7 +6044,7 @@ function fmtTick(v, fmt) {
 
 function setCBPalette(name, el) {
   CB_PALETTE = name;
-  document.querySelectorAll('#palette-chips .vz-chip,#palette-chips .cpill').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('#palette-chips .cpill,#palette-chips .vz-chip').forEach(p=>p.classList.remove('on'));
   if (el) el.classList.add('on');
   // Update series colors to match palette
   const pal = PALETTES[name]||PALETTES.default;
@@ -6209,11 +6083,8 @@ function syncCBUI() {
   CB.xtype     = G('cb-xtype')?.value || 'category';
   CB.tickFmt   = G('cb-tick-fmt')?.value || '';
   CB.nulls     = G('cb-nulls')?.value || 'gap';
-  CB.sortBy    = G('cb-sort-by')?.value || CB.sortBy || 'axis';
-  CB.sortDir   = G('cb-sort-dir')?.value || CB.sortDir || 'asc';
-  CB.sortX     = CB.sortBy==='axis'&&CB.sortDir==='asc';
-  CB.sortXDesc = CB.sortBy==='axis'&&CB.sortDir==='desc';
-  CB.vFilters  = CB.vFilters || [];
+  CB.sortX     = G('cb-sort-x')?.checked;
+  CB.sortXDesc = G('cb-sort-x-desc')?.checked;
   CB.padT      = +(G('cb-pad-t')?.value||10);
   CB.padR      = +(G('cb-pad-r')?.value||10);
   CB.padB      = +(G('cb-pad-b')?.value||10);
@@ -6223,56 +6094,25 @@ function syncCBUI() {
   CB.y2 = {en:G('y2-en')?.checked, min:G('y2-min')?.value||'', max:G('y2-max')?.value||'', label:G('y2-label')?.value||''};
 }
 
-function buildChartXLabels(xCol, cbOpts=CB) {
-  const xDs = DS[cbOpts?.dsIdx] || ds();
-  const order = [];
-  chartFilteredRows(cbOpts?.dsIdx ?? ACT, cbOpts).forEach(row => order.push(String(row[xCol] ?? 'null')));
-  let labels = [...new Set(order)];
-  const sortBy = cbOpts?.sortBy || ((cbOpts?.sortX||cbOpts?.sortXDesc)?'axis':'axis');
-  const sortDir = cbOpts?.sortDir || (cbOpts?.sortXDesc?'desc':'asc');
-  if (sortBy === 'axis' && sortDir === 'asc') labels.sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
-  if (sortBy === 'axis' && sortDir === 'desc') labels.sort((a,b)=>b.localeCompare(a,undefined,{numeric:true}));
-  if (sortBy !== 'value') {
-    const skip = cbOpts?.skip ?? CB.skip ?? 0;
-    if (skip > 0) labels = labels.slice(skip);
-    const lim = +(cbOpts?.limit ?? G('cb-limit')?.value ?? CB.limit ?? 0);
-    if (lim > 0) labels = labels.slice(0, lim);
-  }
-  return labels;
-}
-
 function aggData(xCol, yCol, fn, dsIdx, cbOpts) {
-  const xDs = DS[cbOpts?.dsIdx] || ds();
-  const yDs = (dsIdx!==undefined ? DS[dsIdx] : xDs) || ds();
-  const xRows = chartFilteredRows(cbOpts?.dsIdx ?? ACT, cbOpts);
-  const yRows = chartFilteredRows(dsIdx!==undefined ? dsIdx : (cbOpts?.dsIdx ?? ACT), cbOpts);
+  const src = (dsIdx!==undefined ? DS[dsIdx] : ds())?.data || [];
   const skip = cbOpts?.skip ?? CB.skip ?? 0;
   const groups = {}, order = [];
-  const yHasX = !!yDs?.columns?.some(c=>c.name===xCol);
-  const sameDataset = xDs && yDs && xDs === yDs;
-  const addValue = (k, row) => {
+  src.forEach(row => {
+    const k = String(row[xCol] ?? 'null');
     if (!groups[k]) { groups[k] = []; order.push(k); }
-    const v = row?.[yCol];
+    const v = row[yCol];
     if (fn === 'none') { groups[k].push(v); }
     else { const n=+v; if(!isNaN(n)) groups[k].push(n); }
-  };
-  if (sameDataset || yHasX) {
-    yRows.forEach(row => addValue(String(row?.[xCol] ?? 'null'), row));
-  } else {
-    xRows.forEach((xRow,i) => addValue(String(xRow?.[xCol] ?? 'null'), yRows[i]));
-  }
-  let labels = cbOpts?.baseLabels ? [...cbOpts.baseLabels] : [...new Set(order)];
-  const sortBy = cbOpts?.sortBy || ((cbOpts?.sortX||cbOpts?.sortXDesc)?'axis':'axis');
-  const sortDir = cbOpts?.sortDir || (cbOpts?.sortXDesc?'desc':'asc');
-  if (!cbOpts?.baseLabels) {
-    if (sortBy === 'axis' && sortDir === 'asc') labels.sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
-    if (sortBy === 'axis' && sortDir === 'desc') labels.sort((a,b)=>b.localeCompare(a,undefined,{numeric:true}));
-    if (sortBy !== 'value') {
-      if (skip > 0) labels = labels.slice(skip);
-      const lim = +(cbOpts?.limit ?? G('cb-limit')?.value ?? CB.limit ?? 0);
-      if (lim > 0) labels = labels.slice(0, lim);
-    }
-  }
+  });
+  let labels = [...new Set(order)];
+  const sortX = cbOpts?.sortX ?? CB.sortX;
+  const sortXDesc = cbOpts?.sortXDesc ?? CB.sortXDesc;
+  if (sortX && !sortXDesc) labels.sort((a,b)=>a.localeCompare(a,undefined,{numeric:true}));
+  if (sortX && sortXDesc) labels.sort((a,b)=>b.localeCompare(a,undefined,{numeric:true}));
+  if (skip > 0) labels = labels.slice(skip);
+  const lim = +(cbOpts?.limit ?? G('cb-limit')?.value ?? CB.limit ?? 0);
+  if (lim > 0) labels = labels.slice(0, lim);
   const values = labels.map(k => {
     const arr = groups[k]||[];
     if (!arr.length) return fn==='count'?0:null;
@@ -6308,8 +6148,8 @@ function calcTrend(values, type) {
   return x.map(xi=>+(slope*xi+int).toFixed(3));
 }
 
-function buildHistogramData(col, bins, dsIdx, cbOpts=CB) {
-  const src=chartFilteredRows(dsIdx!==undefined?dsIdx:ACT, cbOpts);
+function buildHistogramData(col, bins, dsIdx) {
+  const src=(dsIdx!==undefined?DS[dsIdx]:ds())?.data||[];
   const vals=src.map(r=>+r[col]).filter(v=>!isNaN(v));
   if(!vals.length) return {labels:[],values:[]};
   const mn=Math.min(...vals), mx=Math.max(...vals), bw=mx===mn?1:(mx-mn)/bins;
@@ -6319,8 +6159,8 @@ function buildHistogramData(col, bins, dsIdx, cbOpts=CB) {
   return {labels, values:counts};
 }
 
-function buildBoxPlotData(valueCol, groupCol, dsIdx, cbOpts=CB) {
-  const src=chartFilteredRows(dsIdx!==undefined?dsIdx:ACT, cbOpts);
+function buildBoxPlotData(valueCol, groupCol, dsIdx) {
+  const src=(dsIdx!==undefined?DS[dsIdx]:ds())?.data||[];
   const groups={};
   src.forEach(r=>{
     const k=groupCol?String(r[groupCol]??'All'):'All';
@@ -6356,36 +6196,7 @@ function buildWaterfallData(labels, values) {
   return {data, colors};
 }
 
-function applyVisualSort(labels, datasets, cb) {
-  const sortBy = cb.sortBy || ((cb.sortX||cb.sortXDesc)?'axis':'axis');
-  const sortDir = cb.sortDir || (cb.sortXDesc?'desc':'asc');
-  let rows = labels.map((label,i)=>({label,i,sortVal:datasets[0]?.data?.[i]}));
-  if (sortBy === 'value') {
-    rows.sort((a,b)=>{
-      const av = typeof a.sortVal === 'object' ? +(a.sortVal?.value ?? 0) : +(a.sortVal ?? 0);
-      const bv = typeof b.sortVal === 'object' ? +(b.sortVal?.value ?? 0) : +(b.sortVal ?? 0);
-      return sortDir === 'desc' ? bv-av : av-bv;
-    });
-  } else if (sortBy === 'axis') {
-    rows.sort((a,b)=>sortDir === 'desc'
-      ? String(b.label).localeCompare(String(a.label),undefined,{numeric:true})
-      : String(a.label).localeCompare(String(b.label),undefined,{numeric:true}));
-  }
-  if (sortBy === 'value') {
-    const skip = cb.skip || 0;
-    if (skip > 0) rows = rows.slice(skip);
-    const lim = +(cb.limit || 0);
-    if (lim > 0) rows = rows.slice(0, lim);
-  }
-  const idxs = rows.map(r=>r.i);
-  return {
-    labels: idxs.map(i=>labels[i]),
-    datasets: datasets.map(ds=>Object.assign({}, ds, {data: idxs.map(i=>ds.data?.[i])}))
-  };
-}
-
 function buildConfig(cb, forDash) {
-  normalizeChartState(cb);
   const srcDs = DS[cb.dsIdx]||ds(); if(!srcDs||!cb.series.length) return null;
   const pal = PALETTES[CB_PALETTE]||PALETTES.default;
   const isPie    = ['pie','doughnut','polarArea'].includes(cb.type);
@@ -6399,7 +6210,7 @@ function buildConfig(cb, forDash) {
   const bgMap={surface:'#161b28',bg:'#0d0f17',surf2:'#1d2436',white:'#ffffff',custom:cb.bgCustom||'#1d2436'};
   const bg=bgMap[cb.bg]||bgMap.surface, isLight=bg==='#ffffff';
   const tc=isLight?'#222':'#b8c8e8', gc=isLight?'#e0e0e0':'#2a3350';
-  const animDur = cb.animate===false||forDash ? 0 : 300;
+  const animDur = cb.animate===false||forDash ? 0 : (appPrefs.chartAnimDur||300);
   const fmt = v => fmtVal(v, cb.fmt||'');
 
   const titlePlugin = {display:!!cb.title,text:cb.title,color:tc,align:cb.titleAlign||'center',font:{size:cb.titleSize||14,weight:'700'}};
@@ -6408,8 +6219,7 @@ function buildConfig(cb, forDash) {
   // ─── HISTOGRAM ───
   if (isHisto) {
     const col=cb.series[0]?.col; if(!col) return null;
-    const yDsIdx=seriesDsIdx(cb.series[0],cb);
-    const {labels,values}=buildHistogramData(col,cb.bins||20,yDsIdx,cb);
+    const {labels,values}=buildHistogramData(col,cb.bins||20,cb.dsIdx);
     const color=cb.series[0]?.color||pal[0];
     return {type:'bar',data:{labels,datasets:[{label:col,data:values,backgroundColor:hexA(color,.7),borderColor:color,borderWidth:1,borderRadius:2}]},
       options:{responsive:true,maintainAspectRatio:!forDash,plugins:{legend:{display:false},title:titlePlugin,subtitle:subPlugin,
@@ -6421,10 +6231,7 @@ function buildConfig(cb, forDash) {
   // ─── BOX PLOT ───
   if (isBox) {
     const col=cb.series[0]?.col; if(!col) return null;
-    const yDsIdx=seriesDsIdx(cb.series[0],cb);
-    const yDs=DS[yDsIdx];
-    const groupCol=(cb.xCol!==col&&yDs?.columns?.some(c=>c.name===cb.xCol))?cb.xCol:null;
-    const stats=buildBoxPlotData(col,groupCol,yDsIdx,cb);
+    const stats=buildBoxPlotData(col,cb.xCol!==col?cb.xCol:null,cb.dsIdx);
     const color=cb.series[0]?.color||pal[0];
     return {type:'bar',
       data:{labels:stats.map(s=>s.label),datasets:[
@@ -6439,24 +6246,25 @@ function buildConfig(cb, forDash) {
   }
 
   // ─── STANDARD CHARTS ───
-  let rawLabels=buildChartXLabels(cb.xCol,cb);
-  let tickLabels=rawLabels.map(l=>fmtTick(l,cb.tickFmt||''));
+  const base=aggData(cb.xCol,cb.series[0].col,cb.agg,cb.dsIdx,cb);
+  const rawLabels=base.labels;
+  const tickLabels=rawLabels.map(l=>fmtTick(l,cb.tickFmt||''));
 
-  let datasets=[];
+  const datasets=[];
 
   if (isPie) {
     const s=cb.series[0];
-    const {values}=aggData(cb.xCol,s.col,cb.agg,seriesDsIdx(s,cb),Object.assign({},cb,{baseLabels:rawLabels}));
+    const {values}=aggData(cb.xCol,s.col,cb.agg,cb.dsIdx,cb);
     const colors=rawLabels.map((_,i)=>pal[i%pal.length]);
     datasets.push({label:s.label||s.col,data:values,backgroundColor:colors.map(c=>hexA(c,(s.opacity||85)/100)),borderColor:colors,borderWidth:s.bw||2});
   } else if (isWfall) {
     const s=cb.series[0];
-    const {values}=aggData(cb.xCol,s.col,cb.agg,seriesDsIdx(s,cb),Object.assign({},cb,{baseLabels:rawLabels}));
+    const {values}=aggData(cb.xCol,s.col,cb.agg,cb.dsIdx,cb);
     const {data,colors}=buildWaterfallData(rawLabels,values);
     datasets.push({label:s.label||s.col,data:data.map(d=>d.value),base:data.map(d=>d.base),backgroundColor:colors,borderColor:colors.map(c=>c.replace(/[\d.]+\)$/,'1)')),borderWidth:1,borderRadius:3});
   } else {
     cb.series.forEach((s,si)=>{
-      const {values}=aggData(cb.xCol,s.col,cb.agg,seriesDsIdx(s,cb),Object.assign({},cb,{baseLabels:rawLabels}));
+      const {values}=aggData(cb.xCol,s.col,cb.agg,cb.dsIdx,cb);
       const color=s.color||pal[si%pal.length];
       const alpha=(s.opacity||85)/100;
       const st=s.chartType||cb.type;
@@ -6491,11 +6299,6 @@ function buildConfig(cb, forDash) {
       datasets.push({type:'line',label:rl.label||'Ref',data:rawLabels.map(()=>+rl.value),borderColor:rl.color||'#fbbf24',backgroundColor:'transparent',borderWidth:rl.width||1.5,borderDash:[8,4],fill:false,pointRadius:0,yAxisID:rl.axis||'y1',order:200+ri});
     });
   }
-
-  const sortedVisual = applyVisualSort(rawLabels, datasets, cb);
-  rawLabels = sortedVisual.labels;
-  tickLabels = rawLabels.map(l=>fmtTick(l,cb.tickFmt||''));
-  datasets = sortedVisual.datasets;
 
   const isH=isHBar||isHStack;
   const scales = isPie ? {x:{display:false},y:{display:false}} : {
@@ -6570,11 +6373,7 @@ function _rebuildPreviewImmediate() {
   if(cfg.options){cfg.options.responsive=true;cfg.options.maintainAspectRatio=false;cfg.options.aspectRatio=cfg.options.aspectRatio||2;}
   try{prevChInst=new Chart(canvas,cfg);}catch(e){console.warn(e);}
   const d=DS[CB.dsIdx]||ds();
-  if(d&&G('chart-info')) {
-    const fRows=chartFilteredRows(CB.dsIdx,CB).length;
-    const fText=fRows===d.data.length?d.data.length.toLocaleString()+' rows':fRows.toLocaleString()+' of '+d.data.length.toLocaleString()+' rows';
-    G('chart-info').textContent=fText+' · '+CB.series.length+' value field'+(CB.series.length!==1?'s':'')+' · '+CB.type;
-  }
+  if(d&&G('chart-info')) G('chart-info').textContent=d.data.length.toLocaleString()+' rows · '+CB.series.length+' series · '+CB.type;
 }
 let _rbTmr;
 function rebuildPreview(){ clearTimeout(_rbTmr); _rbTmr=setTimeout(_rebuildPreviewImmediate, 80); }
@@ -6610,13 +6409,13 @@ function copyChartImage() {
 function applyTemplate(tpl) {
   const d=ds();if(!d) return toast('Load data first','error');
   switch(tpl) {
-    case 'topN':    CB.limit=10;CB.agg='sum';CB.sortBy='value';CB.sortDir='desc';CB.sortX=false;CB.sortXDesc=false;CB.type='bar';break;
+    case 'topN':    CB.limit=10;CB.agg='sum';CB.sortX=true;CB.sortXDesc=true;CB.type='bar';break;
     case 'trend':   CB.type='line';CB.smooth=true;if(CB.series[0]) CB.series[0].showTrend=true;break;
     case 'compare': CB.type='bar';CB.agg='avg';CB.type='bar';break;
     case 'dist':    CB.type='histogram';break;
     case 'share':   CB.type='pie';CB.agg='sum';break;
   }
-  document.querySelectorAll('.ctbtn').forEach(b=>{b.classList.remove('on');if(b.dataset.ct===CB.type)b.classList.add('on');});
+  document.querySelectorAll('.vz-viz-btn,.vz-type,.ctbtn').forEach(b=>{b.classList.remove('on');if(b.dataset.ct===CB.type)b.classList.add('on');});
   populateCBFields();rebuildPreview();toast('Template applied','success');
 }
 
@@ -6665,7 +6464,7 @@ function dupLastChart(){if(!DASH.length)return toast('No charts yet','error');co
 function dashEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 function dashSeries(col,i=0,extra={}){return Object.assign({col,label:col,color:SC[i%SC.length],chartType:'',yAxis:'y1',showTrend:false,trendType:'linear',opacity:85,bw:2,dashed:false},extra);}
 function dashBaseChart(type,xCol,yCol,title,extra={}){
-  return Object.assign({type,dsIdx:ACT,xCol,agg:'sum',limit:0,skip:0,sortBy:'axis',sortDir:'asc',vFilters:[],series:[dashSeries(yCol,0)],y1:{min:'',max:'',label:''},y2:{en:false,min:'',max:'',label:''},refLines:[],title,subtitle:'',legend:'top',grid:true,smooth:true,fill:false,brad:4,bg:'surface',datalabels:false,showPoints:true,animate:false},extra);
+  return Object.assign({type,dsIdx:ACT,xCol,agg:'sum',limit:0,skip:0,series:[dashSeries(yCol,0)],y1:{min:'',max:'',label:''},y2:{en:false,min:'',max:'',label:''},refLines:[],title,subtitle:'',legend:'top',grid:true,smooth:true,fill:false,brad:4,bg:'surface',datalabels:false,showPoints:true,animate:false},extra);
 }
 function dashDetectFields(d){
   const nums=d.columns.filter(c=>c.type==='number');
@@ -6843,7 +6642,7 @@ function duplicateCard(id){
   toast('Card duplicated','success');
 }
 function removeCard(id){DASH=DASH.filter(c=>c.id!==id);renderDashboard();}
-function editCard(id){const card=DASH.find(c=>c.id===id);if(!card)return;CB=JSON.parse(JSON.stringify(card.cb));populateCBFields();show('charts');setTimeout(()=>{document.querySelectorAll('.vz-type,.ctbtn').forEach(b=>{b.classList.remove('on');if(b.dataset.ct===CB.type)b.classList.add('on');});rebuildPreview();const atdBtn=document.querySelector('.vz-atd,.atd');if(atdBtn){atdBtn.textContent='💾 Update';atdBtn.onclick=()=>{syncCBUI();card.cb=JSON.parse(JSON.stringify(CB));renderDashboard();show('dashboard');atdBtn.textContent='＋ Add to Dashboard';atdBtn.onclick=addToDash;toast('Updated','success');};}},60);}
+function editCard(id){const card=DASH.find(c=>c.id===id);if(!card)return;CB=JSON.parse(JSON.stringify(card.cb));populateCBFields();show('charts');setTimeout(()=>{document.querySelectorAll('.vz-viz-btn,.vz-type,.ctbtn').forEach(b=>{b.classList.remove('on');if(b.dataset.ct===CB.type)b.classList.add('on');});rebuildPreview();const atdBtn=document.querySelector('.vz-atd,.atd');if(atdBtn){atdBtn.textContent='💾 Update';atdBtn.onclick=()=>{syncCBUI();card.cb=JSON.parse(JSON.stringify(CB));renderDashboard();show('dashboard');atdBtn.textContent='＋ Add to Dashboard';atdBtn.onclick=addToDash;toast('Updated','success');};}},60);}
 function addKPICard(){
   if(!ds())return;
   const id='kpi_'+Date.now();
@@ -8474,50 +8273,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ── SETTINGS ──
 const THEMES=[
-  {name:'Light', vars:{'--bg':'#f5f7fb','--surface':'#ffffff','--surface-2':'#eef2f7','--surface-3':'#e2e8f0','--border':'#d8dee8','--border-2':'#b9c4d4','--text':'#172033','--text-2':'#41516d','--text-3':'#78869c','--highlight':'#2563eb','--highlight-dim':'rgba(37,99,235,.11)','--highlight-hover':'#1d4ed8','--hdr-bg':'#ffffff','--hdr-border':'#d8dee8','--hdr-text':'#172033','--hdr-text-2':'#526174','--hdr-tab-on':'#2563eb','--hdr-tab-on-bg':'rgba(37,99,235,.09)','--hdr-tab-hover':'#eef2f7','--hdr-stripe':'#2563eb','--sb-bg':'#ffffff','--sb-border':'#d8dee8','--sb-text':'#617084','--sb-text-hover':'#172033','--sb-on-bg':'rgba(37,99,235,.09)','--sb-on-text':'#2563eb','--sb-on-bar':'#2563eb','--sb-label':'#8a97aa','--ok':'#15803d','--warn':'#b45309','--err':'#dc2626'}},
-  {name:'Soft Light', vars:{'--bg':'#f6f5f2','--surface':'#ffffff','--surface-2':'#efeee9','--surface-3':'#e6e3dc','--border':'#d9d4ca','--border-2':'#bfb7a9','--text':'#211f1c','--text-2':'#514b43','--text-3':'#82786b','--highlight':'#0f766e','--highlight-dim':'rgba(15,118,110,.12)','--highlight-hover':'#0d5f59','--hdr-bg':'#ffffff','--hdr-border':'#d9d4ca','--hdr-text':'#211f1c','--hdr-text-2':'#5f574d','--hdr-tab-on':'#0f766e','--hdr-tab-on-bg':'rgba(15,118,110,.09)','--hdr-tab-hover':'#efeee9','--hdr-stripe':'#0f766e','--sb-bg':'#ffffff','--sb-border':'#d9d4ca','--sb-text':'#6f665b','--sb-text-hover':'#211f1c','--sb-on-bg':'rgba(15,118,110,.1)','--sb-on-text':'#0f766e','--sb-on-bar':'#0f766e','--sb-label':'#958b7e','--ok':'#15803d','--warn':'#b45309','--err':'#b91c1c'}},
-  {name:'Graphite', vars:{'--bg':'#0f1115','--surface':'#171a21','--surface-2':'#20242d','--surface-3':'#2a303b','--border':'#313743','--border-2':'#465061','--text':'#f0f3f7','--text-2':'#c2cbd8','--text-3':'#7b8798','--highlight':'#60a5fa','--highlight-dim':'rgba(96,165,250,.16)','--highlight-hover':'#3b82f6','--hdr-bg':'#13161c','--hdr-border':'#303642','--hdr-text':'#f0f3f7','--hdr-text-2':'#aeb8c7','--hdr-tab-on':'#93c5fd','--hdr-tab-on-bg':'rgba(96,165,250,.13)','--hdr-tab-hover':'#20242d','--hdr-stripe':'#60a5fa','--sb-bg':'#12151b','--sb-border':'#303642','--sb-text':'#aeb8c7','--sb-text-hover':'#ffffff','--sb-on-bg':'rgba(96,165,250,.14)','--sb-on-text':'#93c5fd','--sb-on-bar':'#60a5fa','--sb-label':'#697386','--ok':'#34d399','--warn':'#f59e0b','--err':'#fb7185'}},
-  {name:'Deep Navy', vars:{'--bg':'#0a1020','--surface':'#111a2e','--surface-2':'#18233a','--surface-3':'#22304b','--border':'#2b3a58','--border-2':'#3e5277','--text':'#edf5ff','--text-2':'#b8c9e4','--text-3':'#7183a3','--highlight':'#38bdf8','--highlight-dim':'rgba(56,189,248,.16)','--highlight-hover':'#0ea5e9','--hdr-bg':'#0d1628','--hdr-border':'#2b3a58','--hdr-text':'#edf5ff','--hdr-text-2':'#a8bbd8','--hdr-tab-on':'#7dd3fc','--hdr-tab-on-bg':'rgba(56,189,248,.13)','--hdr-tab-hover':'#18233a','--hdr-stripe':'#38bdf8','--sb-bg':'#0d1628','--sb-border':'#2b3a58','--sb-text':'#a8bbd8','--sb-text-hover':'#ffffff','--sb-on-bg':'rgba(56,189,248,.14)','--sb-on-text':'#7dd3fc','--sb-on-bar':'#38bdf8','--sb-label':'#637797','--ok':'#34d399','--warn':'#fbbf24','--err':'#fb7185'}},
-  {name:'Midnight', vars:{'--bg':'#080914','--surface':'#111224','--surface-2':'#1a1c33','--surface-3':'#242743','--border':'#2d3150','--border-2':'#424768','--text':'#f1f2ff','--text-2':'#c6c8e8','--text-3':'#777ba8','--highlight':'#a78bfa','--highlight-dim':'rgba(167,139,250,.16)','--highlight-hover':'#8b5cf6','--hdr-bg':'#0c0d1a','--hdr-border':'#2d3150','--hdr-text':'#f1f2ff','--hdr-text-2':'#b8badb','--hdr-tab-on':'#c4b5fd','--hdr-tab-on-bg':'rgba(167,139,250,.13)','--hdr-tab-hover':'#1a1c33','--hdr-stripe':'#a78bfa','--sb-bg':'#0c0d1a','--sb-border':'#2d3150','--sb-text':'#b8badb','--sb-text-hover':'#ffffff','--sb-on-bg':'rgba(167,139,250,.14)','--sb-on-text':'#c4b5fd','--sb-on-bar':'#a78bfa','--sb-label':'#696d98','--ok':'#34d399','--warn':'#fbbf24','--err':'#fb7185'}},
-  {name:'Forest', vars:{'--bg':'#07110c','--surface':'#0f1d15','--surface-2':'#17271e','--surface-3':'#203329','--border':'#294133','--border-2':'#3b5d49','--text':'#e9f7ed','--text-2':'#b9d4c1','--text-3':'#74917d','--highlight':'#4ade80','--highlight-dim':'rgba(74,222,128,.14)','--highlight-hover':'#22c55e','--hdr-bg':'#0b1710','--hdr-border':'#294133','--hdr-text':'#e9f7ed','--hdr-text-2':'#abcab5','--hdr-tab-on':'#86efac','--hdr-tab-on-bg':'rgba(74,222,128,.12)','--hdr-tab-hover':'#17271e','--hdr-stripe':'#4ade80','--sb-bg':'#0b1710','--sb-border':'#294133','--sb-text':'#abcab5','--sb-text-hover':'#ffffff','--sb-on-bg':'rgba(74,222,128,.12)','--sb-on-text':'#86efac','--sb-on-bar':'#4ade80','--sb-label':'#678872','--ok':'#34d399','--warn':'#fbbf24','--err':'#fb7185'}},
-  {name:'Plum', vars:{'--bg':'#150c15','--surface':'#211322','--surface-2':'#2c1a2e','--surface-3':'#38233b','--border':'#4a2d4d','--border-2':'#67406b','--text':'#fbeafa','--text-2':'#dfb9df','--text-3':'#9c759f','--highlight':'#f472b6','--highlight-dim':'rgba(244,114,182,.14)','--highlight-hover':'#ec4899','--hdr-bg':'#1a0f1b','--hdr-border':'#4a2d4d','--hdr-text':'#fbeafa','--hdr-text-2':'#d5afd6','--hdr-tab-on':'#f9a8d4','--hdr-tab-on-bg':'rgba(244,114,182,.12)','--hdr-tab-hover':'#2c1a2e','--hdr-stripe':'#f472b6','--sb-bg':'#1a0f1b','--sb-border':'#4a2d4d','--sb-text':'#d5afd6','--sb-text-hover':'#ffffff','--sb-on-bg':'rgba(244,114,182,.12)','--sb-on-text':'#f9a8d4','--sb-on-bar':'#f472b6','--sb-label':'#8d6890','--ok':'#34d399','--warn':'#fbbf24','--err':'#fb7185'}},
+  {name:'Default',     vars:{'--bg':'#0c0c0e','--surface':'#141416','--surface-2':'#1c1c1f','--surface-3':'#242428','--border':'#2e2e33','--border-2':'#48484f','--text':'#f0f0f2','--text-2':'#c4c4cc','--text-3':'#8b8b96','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
+  {name:'Deep Navy',   vars:{'--bg':'#0d0f17','--surface':'#161b28','--surface-2':'#1d2436','--surface-3':'#242d44','--border':'#2a3350','--border-2':'#364265','--text':'#f0f4ff','--text-2':'#b8c8e8','--text-3':'#6b7ea8','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
+  {name:'Midnight',    vars:{'--bg':'#07070f','--surface':'#0e0e1a','--surface-2':'#141427','--surface-3':'#1b1b35','--border':'#1c1c40','--border-2':'#252550','--text':'#dde0f0','--text-2':'#9e9ec8','--text-3':'#5a5a90','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
+  {name:'Forest',      vars:{'--bg':'#080f0a','--surface':'#0e1a10','--surface-2':'#152318','--surface-3':'#1c2d20','--border':'#213a25','--border-2':'#2d4d31','--text':'#dff2e0','--text-2':'#9fc8a0','--text-3':'#5a8a5c','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
+  {name:'Charcoal',    vars:{'--bg':'#0e0e0e','--surface':'#181818','--surface-2':'#212121','--surface-3':'#2a2a2a','--border':'#2e2e2e','--border-2':'#3a3a3a','--text':'#eeeeee','--text-2':'#b8b8b8','--text-3':'#737373','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
+  {name:'Warm Dark',   vars:{'--bg':'#120e09','--surface':'#1c1510','--surface-2':'#251c16','--surface-3':'#2e231b','--border':'#3a2c1e','--border-2':'#4d3c2a','--text':'#f2e8e0','--text-2':'#c8b098','--text-3':'#8a7060','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
+  {name:'Slate',       vars:{'--bg':'#0f1117','--surface':'#171c26','--surface-2':'#1e2535','--surface-3':'#252e42','--border':'#2e3a52','--border-2':'#3a4c6a','--text':'#e8eaf6','--text-2':'#b0b8d0','--text-3':'#6a7490','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
+  {name:'Rose Dark',   vars:{'--bg':'#130a0d','--surface':'#1e1014','--surface-2':'#27151a','--surface-3':'#311b22','--border':'#42202a','--border-2':'#5a2c38','--text':'#fce8ec','--text-2':'#e0a8b0','--text-3':'#a06070','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
+  {name:'Light',       vars:{'--bg':'#f2f4f8','--surface':'#ffffff','--surface-2':'#edf0f7','--surface-3':'#e2e6f0','--border':'#d0d5e8','--border-2':'#b8c0d8','--text':'#1a2238','--text-2':'#3d4f72','--text-3':'#6a7a9a','--ok':'#16a34a','--warn':'#d97706','--err':'#dc2626'}},
+  {name:'Light Warm',  vars:{'--bg':'#f7f3ef','--surface':'#ffffff','--surface-2':'#f0ece8','--surface-3':'#e8e2da','--border':'#ddd5c8','--border-2':'#c8bca8','--text':'#2a1f14','--text-2':'#5a4a38','--text-3':'#8a7868','--ok':'#16a34a','--warn':'#d97706','--err':'#dc2626'}},
 ];
 const ACCENTS=['#5b9cf6','#3b82f6','#6366f1','#8b5cf6','#ec4899','#ef4444','#f97316','#eab308','#10b981','#06b6d4','#22d3ee','#84cc16'];
 let tablePref={zebra:false,freeze:false,rownum:true,numfmt:'',pagesize:2000};
-let currentThemeIdx = 0;
-
-function themeIsLight(vars) {
-  const hex = (vars?.['--bg'] || '#000000').replace('#','');
-  if (hex.length < 6) return false;
-  const r=parseInt(hex.slice(0,2),16), g=parseInt(hex.slice(2,4),16), b=parseInt(hex.slice(4,6),16);
-  return ((r*299 + g*587 + b*114) / 1000) > 150;
-}
-
-function refreshThemeChrome(vars) {
-  const root = document.documentElement;
-  const css = vars || Object.fromEntries(CONFIG_CSS_VARS.map(v=>[v,getComputedStyle(root).getPropertyValue(v).trim()]));
-  const isLight = themeIsLight(css);
-  root.setAttribute('data-theme', isLight ? 'light' : 'dark');
-  root.style.colorScheme = isLight ? 'light' : 'dark';
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', css['--hdr-bg'] || css['--bg'] || (isLight ? '#ffffff' : '#0f1115'));
-  document.querySelectorAll('[id="theme-toggle-btn"]').forEach(btn => { btn.textContent = isLight ? '☀️' : '🌙'; });
-  if(typeof _applyChartDefaults === 'function') _applyChartDefaults();
-  if(typeof rebuildPreview === 'function') rebuildPreview();
-  if(typeof renderDashboard === 'function' && G('dcanvas')) renderDashboard();
-}
-
-function detectThemeIndex(cssVars) {
-  const src = cssVars || {};
-  const idx = THEMES.findIndex(t =>
-    t.vars['--bg'] === src['--bg'] &&
-    t.vars['--surface'] === src['--surface'] &&
-    t.vars['--highlight'] === src['--highlight']
-  );
-  return idx >= 0 ? idx : currentThemeIdx;
-}
 
 function renderSettings(){
-  G('theme-grid').innerHTML=THEMES.map((t,i)=>`<div class="tsw ${i===currentThemeIdx?'on':''}" id="tsw-${i}" onclick="applyTheme(${i})"><div class="tsw-prev" style="background:${t.vars['--surface']}"><div class="tsw-bar" style="background:${t.vars['--hdr-bg']}"></div><div class="tsw-bar" style="background:${t.vars['--sb-bg']}"></div><div class="tsw-bar" style="background:${t.vars['--surface-2']}"></div><div class="tsw-bar" style="background:${t.vars['--highlight']};width:30%"></div></div><div class="tsw-nm">${t.name}</div></div>`).join('');
+  G('theme-grid').innerHTML=THEMES.map((t,i)=>`<div class="tsw" id="tsw-${i}" onclick="applyTheme(${i})"><div class="tsw-prev" style="background:${t.vars['--surface']}"><div class="tsw-bar" style="background:${t.vars['--surface-2']||t.vars['--surf2']||'#222'}"></div><div class="tsw-bar" style="background:${t.vars['--border-2']||t.vars['--bdr2']||'#333'}"></div><div class="tsw-bar" style="background:${t.vars['--highlight']||'#4f8ef7'};width:30%"></div></div><div class="tsw-nm">${t.name}</div></div>`).join('');
   G('ac-row').innerHTML=ACCENTS.map(c=>`<div class="ac-chip" style="background:${c}" onclick="setAccent('${c}',this)"></div>`).join('');
   const overrides=[['--text','Primary Text','Main text'],['--text-2','Secondary Text','Muted labels'],['--text-3','Tertiary Text','Subtle hints'],['--bg','Background','Page background'],['--surface','Surface','Cards & panels'],['--surface-2','Surface 2','Inputs & dropdowns'],['--surface-3','Surface 3','Hover states'],['--border','Border','Default borders'],['--border-2','Border 2','Stronger borders'],['--highlight','Accent','Highlights (also above)'],['--ok','Success Green','Success states'],['--warn','Warning Yellow','Warnings'],['--err','Error Red','Errors & delete']];
   G('color-overrides').innerHTML=overrides.map(([v,lbl,desc])=>`<div class="s-row"><div class="s-ri"><div class="s-rl">${lbl} <span style="font-size:10px;color:var(--text-3);font-family:var(--mono)">${v}</span></div><div class="s-rd">${desc}</div></div><div class="s-rc"><input type="color" class="s-color" value="${r2h(getComputedStyle(document.documentElement).getPropertyValue(v).trim())}" onchange="applyVar('${v}',this.value)"></div></div>`).join('');
@@ -8559,6 +8330,14 @@ function renderSettings(){
   if(G('set-dash-height')) G('set-dash-height').value=appPrefs.dashHeight;
   if(G('set-dash-sub')) G('set-dash-sub').checked=appPrefs.dashSub;
   if(G('set-dash-gap')) G('set-dash-gap').value=parseInt(appPrefs.dashGap)||12;
+  // Sync chart defaults
+  if(G('set-defchart')) G('set-defchart').value=appPrefs.chartDefType||'bar';
+  if(G('set-defagg')) G('set-defagg').value=appPrefs.chartDefAgg||'sum';
+  if(G('set-animdur')) G('set-animdur').value=appPrefs.chartAnimDur||300;
+  if(G('set-defpalette')) G('set-defpalette').value=appPrefs.chartDefPalette||'default';
+  // Sync pivot defaults
+  if(G('set-pvagg')) G('set-pvagg').value=appPrefs.pivotAgg||'sum';
+  if(G('set-pvtotals')) G('set-pvtotals').checked=appPrefs.pivotTotals!==false;
   setTimeout(()=>updateConfigStatus(localStorage.getItem(LS_KEY)?'saved':'none'),0);
   // Render keyboard shortcuts UI (defined below)
   if(typeof renderKeyboardShortcutsUI==='function') setTimeout(renderKeyboardShortcutsUI,0);
@@ -8575,8 +8354,31 @@ function applyTablePref(key, val) {
 }
 
 function applyChartPref(key, val) {
-  if(key==='deftype'&&G('cb-type')) { CB.type=val; document.querySelectorAll('.ctbtn').forEach(b=>{b.classList.remove('on');if(b.dataset.ct===val)b.classList.add('on');}); }
-  if(key==='defagg'&&G('cb-agg'))   { G('cb-agg').value=val; CB.agg=val; }
+  if(key==='deftype') {
+    appPrefs.chartDefType = val;
+    CB.type = val;
+    document.querySelectorAll('.vz-viz-btn,.vz-type,.ctbtn').forEach(b=>{b.classList.remove('on');if(b.dataset.ct===val)b.classList.add('on');});
+    saveConfig();
+  }
+  if(key==='defagg') {
+    appPrefs.chartDefAgg = val;
+    if(G('cb-agg')) { G('cb-agg').value=val; CB.agg=val; }
+    saveConfig();
+  }
+  if(key==='animdur') {
+    appPrefs.chartAnimDur = +val;
+    saveConfig();
+  }
+  if(key==='defpalette') {
+    appPrefs.chartDefPalette = val;
+    CB_PALETTE = val;
+    document.querySelectorAll('#palette-chips .vz-chip').forEach(c=>{
+      c.classList.remove('on');
+      if(c.textContent.trim().toLowerCase()===val.toLowerCase()) c.classList.add('on');
+    });
+    rebuildPreview();
+    saveConfig();
+  }
 }
 
 function applyDashPref(key, val) {
@@ -8585,8 +8387,16 @@ function applyDashPref(key, val) {
   if(key==='cols') {
     const colMap={'auto':'repeat(auto-fill,minmax(440px,1fr))','1':'1fr','2':'repeat(2,1fr)','3':'repeat(3,1fr)','4':'repeat(4,1fr)'};
     canvas.style.gridTemplateColumns = colMap[val] || colMap.auto;
+    // Sync both selects
+    if(G('dash-cols-sel')) G('dash-cols-sel').value=val;
+    if(G('set-dash-cols')) G('set-dash-cols').value=val;
   }
-  if(key==='height') { document.querySelectorAll('.cbox').forEach(b=>b.style.height=val); }
+  if(key==='height') {
+    document.querySelectorAll('.cbox').forEach(b=>b.style.height=val);
+    // Sync both selects
+    if(G('dash-height-sel')) G('dash-height-sel').value=val;
+    if(G('set-dash-height')) G('set-dash-height').value=val;
+  }
   if(key==='gap') { canvas.style.gap=val; }
   if(key==='sub') {
     document.querySelectorAll('.dc-sub').forEach(el=>el.style.display=val?'':'none');
@@ -8599,7 +8409,6 @@ function applyTheme(idx){const t=THEMES[idx];Object.entries(t.vars).forEach(([v,
 let _avTmr = {};
 function applyVar(v,val){
   document.documentElement.style.setProperty(v,val);
-  if(CONFIG_CSS_VARS.includes(v)) refreshThemeChrome();
   // Re-render table so --tfs takes effect on new cells
   if(v==='--tfs') { clearTimeout(_avTmr['__tfs_rt']); _avTmr['__tfs_rt']=setTimeout(()=>renderTable&&renderTable(),60); }
   // Debounce save per-variable to handle rapid color-picker dragging
@@ -8608,7 +8417,6 @@ function applyVar(v,val){
 }
 function setAccent(hex,chip){applyVar('--highlight',hex);applyVar('--acch',shadeHex(hex,-.1));if(G('custom-accent'))G('custom-accent').value=hex;document.querySelectorAll('.ac-chip').forEach(c=>c.classList.remove('on'));if(chip)chip.classList.add('on');renderSettings();}
 function shadeHex(hex,pct){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16),adj=n=>Math.min(255,Math.max(0,Math.round(n*(1+pct))));return'#'+[r,g,b].map(adj).map(n=>(n<16?'0':'')+n.toString(16)).join('');}
-function hexToRgba(hex,a){if(!hex||!/^#[0-9a-f]{6}$/i.test(hex))return`rgba(91,156,246,${a})`;const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},${a})`;}
 function applyFont(type,val){if(type==='font')applyVar('--font',val);else applyVar('--mono',val);saveConfig();}
 
 
@@ -9877,9 +9685,7 @@ show(head(result, 20))</code></pre>`
 
 // ═══════════════════════════ CONFIG SYSTEM ═══════════════════════════
 const CONFIG_CSS_VARS = ['--bg','--surface','--surface-2','--surface-3','--border','--border-2',
-  '--highlight','--acch','--highlight-dim','--highlight-hover','--text','--text-2','--text-3','--ok','--warn','--err',
-  '--hdr-bg','--hdr-border','--hdr-text','--hdr-text-2','--hdr-tab-on','--hdr-tab-on-bg','--hdr-tab-hover','--hdr-stripe',
-  '--sb-bg','--sb-border','--sb-text','--sb-text-hover','--sb-on-bg','--sb-on-text','--sb-on-bar','--sb-label',
+  '--highlight','--acch','--highlight-dim','--text','--text-2','--text-3','--ok','--warn','--err',
   '--font','--mono','--fs','--tfs','--sidebar-w','--header-h','--row-h'];
 const CONFIG_VERSION = 1;
 const LS_KEY = 'dfwio_config_v3'; // v3: new var names
@@ -9895,7 +9701,6 @@ function captureConfig() {
     savedAt: new Date().toISOString(),
     app: 'DataFramework.io',
     cssVars,
-    currentThemeIdx,
     tablePref: JSON.parse(JSON.stringify(tablePref)),
     appPrefs: JSON.parse(JSON.stringify(appPrefs)),
     customKeys: typeof customKeys!=='undefined'?JSON.parse(JSON.stringify(customKeys)):{},
@@ -9910,9 +9715,7 @@ function applyConfig(cfg, silent) {
   // Clear ALL possible var names (old and new) to remove stale inline styles
   const CLEAR_VARS = [
     '--bg','--surface','--surface-2','--surface-3','--border','--border-2',
-    '--text','--text-2','--text-3','--highlight','--highlight-dim','--highlight-hover','--ok','--warn','--err',
-    '--hdr-bg','--hdr-border','--hdr-text','--hdr-text-2','--hdr-tab-on','--hdr-tab-on-bg','--hdr-tab-hover','--hdr-stripe',
-    '--sb-bg','--sb-border','--sb-text','--sb-text-hover','--sb-on-bg','--sb-on-text','--sb-on-bar','--sb-label',
+    '--text','--text-2','--text-3','--highlight','--highlight-dim','--ok','--warn','--err',
     '--font','--mono','--fs','--tfs','--sidebar-w','--header-h','--row-h',
     '--surf2','--surf3','--bdr2','--bdr','--bdr3','--txt','--txt2','--txt3',
     '--acc','--acch','--sbw','--hh','--rh',
@@ -9929,8 +9732,6 @@ function applyConfig(cfg, silent) {
       document.documentElement.style.setProperty(legacyMap[v] || v, val);
     });
   }
-  if (Number.isInteger(cfg.currentThemeIdx) && THEMES[cfg.currentThemeIdx]) currentThemeIdx = cfg.currentThemeIdx;
-  else currentThemeIdx = detectThemeIndex(cfg.cssVars);
   // Apply table prefs
   if (cfg.tablePref) {
     tablePref = Object.assign({zebra:false,freeze:false,rownum:true,numfmt:'',pagesize:2000}, cfg.tablePref);
@@ -9939,7 +9740,12 @@ function applyConfig(cfg, silent) {
   if (cfg.appPrefs) {
     appPrefs = Object.assign(appPrefs, cfg.appPrefs);
   }
-  refreshThemeChrome(cfg.cssVars);
+  // Set data-theme attribute
+  if (cfg.cssVars && cfg.cssVars['--bg']) {
+    const bgHex = cfg.cssVars['--bg'].replace('#','');
+    const isLight = parseInt(bgHex.slice(0,2),16) > 128;
+    document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
+  }
   // Apply custom key bindings
   if (cfg.customKeys && typeof customKeys!=='undefined') {
     customKeys = Object.assign({}, cfg.customKeys);
@@ -10045,30 +9851,27 @@ function importSystemConfig() {
 // Wrap every settings mutation to auto-save
 function applyTheme(idx) {
   const t=THEMES[idx];
-  if(!t) return;
   // Clear ALL possible stale vars first
-  CONFIG_CSS_VARS.forEach(v=>document.documentElement.style.removeProperty(v));
+  ['--bg','--surface','--surface-2','--surface-3','--border','--border-2',
+   '--text','--text-2','--text-3','--ok','--warn','--err'].forEach(v=>document.documentElement.style.removeProperty(v));
   Object.entries(t.vars).forEach(([v,val])=>document.documentElement.style.setProperty(v,val));
-  currentThemeIdx = idx;
+  // Recompute highlight-dim based on current highlight
+  const hl = getComputedStyle(document.documentElement).getPropertyValue('--highlight').trim() || '#4f8ef7';
+  document.documentElement.style.setProperty('--highlight-dim', hl.replace('#','').length===6 ? 
+    'rgba('+parseInt(hl.slice(1,3),16)+','+parseInt(hl.slice(3,5),16)+','+parseInt(hl.slice(5,7),16)+',.14)' : 
+    'rgba(79,142,247,.14)');
   document.querySelectorAll('.tsw').forEach((el,i)=>el.classList.toggle('on',i===idx));
-  refreshThemeChrome(t.vars);
+  // Set data-theme attribute for CSS overrides
+  const isLight = t.vars['--bg'] && parseInt(t.vars['--bg'].replace('#','').slice(0,2),16) > 128;
+  document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
   renderSettings(); saveConfig(); toast('Theme: '+t.name,'info');
 }
 function setAccent(hex, chip) {
   document.documentElement.style.setProperty('--highlight', hex);
   document.documentElement.style.setProperty('--acch', shadeHex(hex, -.1));
-  document.documentElement.style.setProperty('--highlight-hover', shadeHex(hex, -.12));
-  document.documentElement.style.setProperty('--highlight-dim', hexToRgba(hex, .14));
-  document.documentElement.style.setProperty('--hdr-tab-on', hex);
-  document.documentElement.style.setProperty('--hdr-tab-on-bg', hexToRgba(hex, .12));
-  document.documentElement.style.setProperty('--hdr-stripe', hex);
-  document.documentElement.style.setProperty('--sb-on-bg', hexToRgba(hex, .13));
-  document.documentElement.style.setProperty('--sb-on-text', hex);
-  document.documentElement.style.setProperty('--sb-on-bar', hex);
   if (G('custom-accent')) G('custom-accent').value = hex;
   document.querySelectorAll('.ac-chip').forEach(c => c.classList.remove('on'));
   if (chip) chip.classList.add('on');
-  refreshThemeChrome();
   renderSettings(); saveConfig();
 }
 /* applyFont defined above in main block */
@@ -10079,22 +9882,22 @@ function debounceSave() { clearTimeout(_saveTmr); _saveTmr = setTimeout(saveConf
 
 function resetSettings() {
   openModal('Reset to Defaults', 'This will clear your saved browser configuration and restore all settings to factory defaults.', '', () => {
-    CONFIG_CSS_VARS.forEach(v => document.documentElement.style.removeProperty(v));
-    currentThemeIdx = 0;
-    const def = Object.assign({}, THEMES[0].vars, {
-      '--font':"'DM Sans', 'Segoe UI', system-ui, -apple-system, sans-serif",
-      '--mono':"'DM Mono', 'Cascadia Code', 'Consolas', monospace",
-      '--fs':'13.5px','--tfs':'13px','--sidebar-w':'48px','--header-h':'48px','--row-h':'32px'
-    });
+    const def = {
+      '--bg':'#0c0c0e','--surface':'#141416','--surface-2':'#1c1c1f','--surface-3':'#242428',
+      '--border':'#2e2e33','--border-2':'#48484f','--highlight':'#4f8ef7','--acch':'#3b7de8',
+      '--text':'#f0f4ff','--text-2':'#b8c8e8','--text-3':'#6b7ea8',
+      '--ok':'#4ade80','--warn':'#fbbf24','--err':'#f87171',
+      '--font':"'Inter',sans-serif",'--mono':"'JetBrains Mono',monospace",
+      '--fs':'13px','--tfs':'13px','--sidebar-w':'56px','--header-h':'48px','--row-h':'34px'
+    };
     Object.entries(def).forEach(([v,val]) => document.documentElement.style.setProperty(v, val));
     ['set-fs','set-tfs'].forEach(id => { const el=G(id); if(el) el.value='13'; });
-    if (G('set-sbw')) G('set-sbw').value = '220';
+    if (G('set-sbw')) G('set-sbw').value = '230';
     tablePref = {zebra:false,freeze:false,rownum:true,numfmt:'',pagesize:2000};
     if(typeof customKeys!=='undefined') customKeys = {};
     CB_PALETTE = 'default';
     chartPresets = [];
     try { localStorage.removeItem(LS_KEY); } catch(e) {}
-    refreshThemeChrome(def);
     renderSettings(); toast('Settings reset to factory defaults','info');
     updateConfigStatus('cleared');
   });
@@ -11800,7 +11603,7 @@ document.addEventListener('keydown',function(e){
       if(k==='f'){e.preventDefault();openFinder();return;}                     // Ctrl+Shift+F → Finder
       if(k==='m'){e.preventDefault();if(!G('t-merge')?.disabled)show('merge');return;}// Ctrl+Shift+M → Merge
       if(k==='s'){e.preventDefault();openColInspector();return;}               // Ctrl+Shift+S → Col Inspector
-      if(k==='c'){e.preventDefault();if(!G('t-charts')?.disabled)show('charts');return;}// Ctrl+Shift+C → Visualization
+      if(k==='c'){e.preventDefault();if(!G('t-charts')?.disabled)show('charts');return;}// Ctrl+Shift+C → Charts
       if(k==='p'){e.preventDefault();if(!G('t-pivot')?.disabled)show('pivot');return;} // Ctrl+Shift+P → Pivot
       if(k==='i'){e.preventDefault();if(typeof openImportWizard==='function')openImportWizard();return;} // Ctrl+Shift+I → Import Wizard
     }
@@ -11891,7 +11694,7 @@ const KB_DEFAULTS = [
   {id:'finder',  group:'Tools',   desc:'Open Finder & Replace',     action:'openFinder()',                       defaultKey:{mod:'ctrl',shift:true, key:'f'}},
   {id:'merge',   group:'Tools',   desc:'Open Merge view',           action:"mergeKB()",                         defaultKey:{mod:'ctrl',shift:true, key:'m'}},
   {id:'inspect', group:'Tools',   desc:'Column Inspector',          action:'openColInspector()',                 defaultKey:{mod:'ctrl',shift:true, key:'s'}},
-  {id:'charts',  group:'Nav',     desc:'Visualization',             action:"show('charts')",                     defaultKey:{mod:'ctrl',shift:true, key:'c'}},
+  {id:'charts',  group:'Nav',     desc:'Chart Builder',             action:"show('charts')",                     defaultKey:{mod:'ctrl',shift:true, key:'c'}},
   {id:'pivot',   group:'Nav',     desc:'Pivot Table',               action:"show('pivot')",                      defaultKey:{mod:'ctrl',shift:true, key:'p'}},
   {id:'wizard',  group:'Tools',   desc:'Import Wizard',             action:'openImportWizard()',                 defaultKey:{mod:'ctrl',shift:true, key:'i'}},
 ];
@@ -15516,34 +15319,43 @@ if (!_themePrefVersion) {
 }
 
 function quickToggleTheme() {
-  const isLightNow = document.documentElement.getAttribute('data-theme') === 'light';
-  const targetIdx = THEMES.findIndex(t => themeIsLight(t.vars) !== isLightNow);
-  if (targetIdx >= 0) {
-    _isLightMode = themeIsLight(THEMES[targetIdx].vars);
-    try {
-      localStorage.setItem('df_light_mode', _isLightMode ? '1' : '0');
-      localStorage.setItem('df_theme_pref_v2', '1');
-    } catch(e) {}
-    applyTheme(targetIdx);
-  }
-}
-
-function _applyQuickTheme() {
-  const hasFullConfig = !!localStorage.getItem(LS_KEY);
-  if (!hasFullConfig && _themePrefVersion) {
-    const wantedLight = _storedLightMode !== '0';
-    const idx = THEMES.findIndex(t => themeIsLight(t.vars) === wantedLight);
-    if (idx >= 0) { applyTheme(idx); return; }
-  }
-  refreshThemeChrome();
-}
-
-/* Legacy signature kept for older saved onclick handlers. */
-function _legacyQuickThemeWrite() {
+  _isLightMode = !_isLightMode;
   try {
     localStorage.setItem('df_light_mode', _isLightMode ? '1' : '0');
     localStorage.setItem('df_theme_pref_v2', '1');
   } catch(e) {}
+  _applyQuickTheme();
+}
+
+function _applyQuickTheme() {
+  const root = document.documentElement;
+  const btn = G('theme-toggle-btn');
+  // Override whatever detectTheme set — we own the theme decision here
+  if (_isLightMode) {
+    root.setAttribute('data-theme', 'light');
+    // Light mode vars
+    root.style.setProperty('--bg',        '#f5f5f7');
+    root.style.setProperty('--surface',   '#ffffff');
+    root.style.setProperty('--surface-2', '#f0f0f3');
+    root.style.setProperty('--surface-3', '#e5e5ea');
+    root.style.setProperty('--border',    '#d1d1d6');
+    root.style.setProperty('--text',      '#1c1c1e');
+    root.style.setProperty('--text-2',    '#3c3c43');
+    root.style.setProperty('--text-3',    '#8e8e93');
+    if (btn) btn.textContent = '☀️';
+  } else {
+    root.setAttribute('data-theme', 'dark');
+    // Restore dark defaults
+    root.style.setProperty('--bg',        '#0c0c0e');
+    root.style.setProperty('--surface',   '#141417');
+    root.style.setProperty('--surface-2', '#1c1c21');
+    root.style.setProperty('--surface-3', '#252530');
+    root.style.setProperty('--border',    '#2a2a35');
+    root.style.setProperty('--text',      '#e8e8f0');
+    root.style.setProperty('--text-2',    '#a0a0b8');
+    root.style.setProperty('--text-3',    '#52526a');
+    if (btn) btn.textContent = '🌙';
+  }
 }
 
 // Apply on load
