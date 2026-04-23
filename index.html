@@ -1304,14 +1304,14 @@ td.editing .td-inp { display: block; }
 .imp-btn.dfp { border-color: rgba(124,101,206,.5); color: #7c65ce; }
 .imp-btn.dfp:hover { border-color: #7c65ce; background: rgba(124,101,206,.08); }
 
-/* ═══ CHARTS ═══ */
-/* ═══ CHARTS + DASHBOARD ═══ */
+/* ═══ VISUALIZATION ═══ */
+/* ═══ VISUALIZATION + DASHBOARD ═══ */
 
-/* ── Chart Builder Layout ── */
+/* ── Visualization Layout ── */
 #v-charts { flex-direction: row; background: var(--bg); }
 
 .vz-rail {
-  width: 300px; min-width: 300px; background: var(--surface);
+  width: 320px; min-width: 320px; background: var(--surface);
   border-right: 1px solid var(--border);
   display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0;
 }
@@ -1406,6 +1406,7 @@ td.editing .td-inp { display: block; }
 /* ── Chart Stage (right side) ── */
 .vz-stage {
   flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg);
+  min-width: 360px;
 }
 .vz-stage-head {
   display: flex; align-items: center; gap: 8px;
@@ -1431,6 +1432,105 @@ td.editing .td-inp { display: block; }
   position: relative; display: flex; align-items: center; justify-content: center;
 }
 .vz-canvas-card canvas { display: block; width: 100% !important; max-height: 70vh; }
+
+/* ── PowerBI-style field wells and data pane ── */
+.vz-wells { display: grid; gap: 7px; }
+.vz-well {
+  border: 1px dashed var(--border-2);
+  background: var(--surface-2);
+  border-radius: var(--radius);
+  min-height: 34px;
+  padding: 7px 8px;
+}
+.vz-well-label {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  font-size: 9px; font-weight: 700; color: var(--text-3);
+  text-transform: uppercase; letter-spacing: .08em; margin-bottom: 5px;
+}
+.vz-pill {
+  display: inline-flex; align-items: center; gap: 5px; max-width: 100%;
+  padding: 3px 7px; border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 11px; font-weight: 600;
+}
+.vz-pill span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vz-pill button {
+  border: none; background: none; color: var(--text-3);
+  cursor: pointer; font-size: 12px; line-height: 1; padding: 0;
+}
+.vz-pill button:hover { color: var(--err); }
+.vz-empty {
+  color: var(--text-3); font-size: 11px; font-style: italic;
+}
+.vz-filter-row {
+  display: grid; grid-template-columns: minmax(0,1fr) 74px minmax(0,1fr) 20px;
+  gap: 5px; align-items: center; margin-bottom: 5px;
+}
+.vz-data-pane {
+  width: 280px; min-width: 260px; max-width: 340px;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column; overflow: hidden; flex-shrink: 0;
+}
+.vz-data-head {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.vz-data-title {
+  font-size: 12px; font-weight: 700; color: var(--text);
+  letter-spacing: .04em; text-transform: uppercase; margin-bottom: 8px;
+}
+.vz-field-search {
+  width: 100%;
+  padding: 6px 8px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text);
+  outline: none;
+  font-size: 12px;
+}
+.vz-data-scroll { flex: 1; overflow-y: auto; padding: 8px; }
+.vz-ds-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.vz-ds-head {
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 8px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: 11px; font-weight: 700;
+}
+.vz-ds-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.vz-ds-meta { margin-left: auto; color: var(--text-3); font-size: 9px; font-family: var(--mono); }
+.vz-field {
+  display: flex; align-items: center; gap: 7px;
+  padding: 6px 8px;
+  color: var(--text-2);
+  font-size: 11.5px;
+  cursor: pointer;
+  border-top: 1px solid color-mix(in srgb, var(--border) 55%, transparent);
+}
+.vz-field:first-child { border-top: none; }
+.vz-field:hover { background: var(--highlight-dim); color: var(--highlight); }
+.vz-field.on { color: var(--highlight); font-weight: 700; }
+.vz-field-type {
+  width: 18px; height: 18px; border-radius: 3px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text-3);
+  font-size: 10px; font-family: var(--mono); flex-shrink: 0;
+}
+.vz-field-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.vz-field-hint { margin-left: auto; color: var(--text-3); font-size: 9px; }
 
 /* ── OLD cb-* compatibility shims (series list uses these) ── */
 .cb-panel { display: block; }
@@ -2591,7 +2691,7 @@ input[type="color"] {
   <div class="htabs">
     <button class="htab on" onclick="show('home')">Home</button>
     <button class="htab" id="t-data"      onclick="show('data')"      disabled>Data</button>
-    <button class="htab" id="t-charts"    onclick="show('charts')"    disabled>Charts</button>
+    <button class="htab" id="t-charts"    onclick="show('charts')"    disabled>Visualization</button>
     <button class="htab" id="t-dashboard" onclick="show('dashboard')" disabled>Dashboard</button>
     <button class="htab" id="t-merge"     onclick="show('merge')"     disabled>Merge</button>
     <button class="htab" id="t-clean"     onclick="show('clean')"     disabled>Clean</button>
@@ -2641,7 +2741,7 @@ input[type="color"] {
       </div>
       <div class="ni" id="n-charts" onclick="show('charts')">
         <span class="ni-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
-        <span class="ni-label">Chart Builder</span>
+        <span class="ni-label">Visualization</span>
       </div>
       <div class="ni" id="n-dashboard" onclick="show('dashboard')">
         <span class="ni-ico"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></span>
@@ -2961,12 +3061,12 @@ input[type="color"] {
   </div>
 </div>
 
-<!-- CHARTS -->
+<!-- VISUALIZATION -->
 <div class="view" id="v-charts">
   <!-- LEFT CONFIG RAIL -->
   <div class="vz-rail">
     <div class="vz-rail-head">
-      <span class="vz-rail-title">Chart Builder</span>
+      <span class="vz-rail-title">Visualization</span>
       <button class="vz-rail-action" onclick="addToDash()" title="Add to Dashboard">＋ Dashboard</button>
     </div>
     <div class="vz-scroll">
@@ -2994,9 +3094,15 @@ input[type="color"] {
         </div>
       </div>
 
+      <!-- DATA MODEL -->
+      <div class="vz-section">
+        <div class="vz-sec-label">Build visual</div>
+        <div class="vz-wells" id="viz-wells"></div>
+      </div>
+
       <!-- DATA -->
       <div class="vz-section">
-        <div class="vz-sec-label">Data</div>
+        <div class="vz-sec-label">Data options</div>
         <div class="vz-row"><label>Dataset</label><select class="fsel" id="cb-ds" onchange="onCbDsChange()"></select></div>
         <div class="vz-row"><label>X Axis / Category</label><select class="fsel" id="cb-x" onchange="rebuildPreview()"></select></div>
         <div class="vz-row"><label>Aggregation</label>
@@ -3010,10 +3116,32 @@ input[type="color"] {
           <div class="vz-row" style="flex:1"><label>Limit (0=all)</label><input class="fin" type="number" id="cb-limit" value="0" min="0" onchange="rebuildPreview()"></div>
           <div class="vz-row" style="flex:1"><label>Skip first N</label><input class="fin" type="number" id="cb-skip" value="0" min="0" onchange="rebuildPreview()"></div>
         </div>
-        <div class="vz-row" style="gap:12px;flex-direction:row;align-items:center">
-          <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer"><input type="checkbox" id="cb-sort-x" onchange="rebuildPreview()" style="accent-color:var(--highlight)"> Sort X ↑</label>
-          <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer"><input type="checkbox" id="cb-sort-x-desc" onchange="rebuildPreview()" style="accent-color:var(--highlight)"> Sort X ↓</label>
+        <div style="display:flex;gap:6px">
+          <div class="vz-row" style="flex:1"><label>Sort by</label>
+            <select class="fsel" id="cb-sort-by" onchange="onVizSortChange()">
+              <option value="axis">Axis/category</option>
+              <option value="value">First value</option>
+              <option value="none">Dataset order</option>
+            </select>
+          </div>
+          <div class="vz-row" style="flex:1"><label>Direction</label>
+            <select class="fsel" id="cb-sort-dir" onchange="onVizSortChange()">
+              <option value="asc">Ascending</option>
+              <option value="desc">Descending</option>
+            </select>
+          </div>
         </div>
+        <input type="checkbox" id="cb-sort-x" style="display:none">
+        <input type="checkbox" id="cb-sort-x-desc" style="display:none">
+      </div>
+
+      <!-- FILTERS -->
+      <div class="vz-section">
+        <div class="vz-sec-label" style="display:flex;align-items:center;justify-content:space-between">
+          <span>Visual filters</span>
+          <button class="vz-add-btn" onclick="vizAddFilter()">＋ Add</button>
+        </div>
+        <div id="viz-filters"></div>
       </div>
 
       <!-- SERIES -->
@@ -3174,6 +3302,15 @@ input[type="color"] {
         <canvas id="preview-canvas"></canvas>
       </div>
     </div>
+  </div>
+
+  <!-- RIGHT DATA PANE -->
+  <div class="vz-data-pane">
+    <div class="vz-data-head">
+      <div class="vz-data-title">Data</div>
+      <input class="vz-field-search" id="viz-field-search" placeholder="Search fields" oninput="renderVizFields(this.value)">
+    </div>
+    <div class="vz-data-scroll" id="viz-fields"></div>
   </div>
 </div>
 
@@ -3433,7 +3570,7 @@ id="v-merge">
       </div>
     </div>
     <div class="s-sec"><div class="s-sec-t">📊 Chart Defaults</div>
-      <div class="s-row"><div class="s-ri"><div class="s-rl">Default Chart Type</div><div class="s-rd">Type pre-selected when opening Chart Builder</div></div>
+      <div class="s-row"><div class="s-ri"><div class="s-rl">Default Visual Type</div><div class="s-rd">Type pre-selected when opening Visualization</div></div>
         <div class="s-rc"><select class="s-sel" id="set-defchart" onchange="applyChartPref('deftype',this.value)">
           <option value="bar">Bar</option><option value="line">Line</option><option value="area">Area</option>
           <option value="pie">Pie</option><option value="scatter">Scatter</option>
@@ -4356,7 +4493,7 @@ print(df.describe())
           <div style="font-size:11px;font-weight:700;color:var(--text-3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px">After Import</div>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
             <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-2);cursor:pointer"><input type="radio" name="iw-after" value="data" checked style="accent-color:var(--highlight)"> Open Data View</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-2);cursor:pointer"><input type="radio" name="iw-after" value="charts" style="accent-color:var(--highlight)"> Open Chart Builder</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-2);cursor:pointer"><input type="radio" name="iw-after" value="charts" style="accent-color:var(--highlight)"> Open Visualization</label>
             <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text-2);cursor:pointer"><input type="radio" name="iw-after" value="stay" style="accent-color:var(--highlight)"> Stay on Home</label>
           </div>
         </div>
@@ -4682,7 +4819,7 @@ const G=id=>document.getElementById(id);
 const DSC=['#5b9cf6','#f97316','#a78bfa','#4ade80','#fbbf24','#f87171','#22d3ee','#84cc16'];
 const SC=['#5b9cf6','#f97316','#a78bfa','#4ade80','#fbbf24','#f87171','#22d3ee','#84cc16'];
 let DS=[],ACT=0;
-let CB={type:'bar',dsIdx:0,xCol:'',agg:'sum',limit:0,series:[],y1:{min:'',max:'',label:''},y2:{en:false,min:'',max:'',label:''},refLines:[],title:'',subtitle:'',legend:'top',grid:true,smooth:true,fill:false,brad:4,bg:'surface',datalabels:false};
+let CB={type:'bar',dsIdx:0,xCol:'',agg:'sum',limit:0,skip:0,sortBy:'axis',sortDir:'asc',vFilters:[],series:[],y1:{min:'',max:'',label:''},y2:{en:false,min:'',max:'',label:''},refLines:[],title:'',subtitle:'',legend:'top',grid:true,smooth:true,fill:false,brad:4,bg:'surface',datalabels:false};
 let DASH=[],prevCh=null,editMode=false,pending={},cleanHist=[],condFmt=[],sortSt={col:null,dir:1},filters=[],search={term:'',col:''},selCol=null;
 // App-wide preferences (new in v1.0.2)
 let appPrefs={autosave:true,confirmDel:true,autotype:true,csvDelim:'auto',autonav:true,decSep:'.',thouSep:',',nullText:'null',reduceMotion:false,hiCont:false,toastDur:2800,renderLimit:2000,dashCols:'auto',dashHeight:'200px',dashSub:true,dashGap:'12px'};
@@ -5742,9 +5879,7 @@ function chartDsLabel(idx){
   return d.name;
 }
 function chartScopeIndexes(baseIdx){
-  const base=DS[baseIdx]||ds(); if(!base) return [];
-  if(base.group) return DS.map((d,i)=>d.group===base.group?i:-1).filter(i=>i>=0);
-  return [DS.indexOf(base)].filter(i=>i>=0);
+  return DS.map((_,i)=>i);
 }
 function seriesDsIdx(s, cb=CB){
   const idx=Number.isInteger(+s?.dsIdx)?+s.dsIdx:+cb.dsIdx;
@@ -5757,9 +5892,126 @@ function chartDatasetOptions(selectedIdx, baseIdx=CB.dsIdx){
 function chartColumnOptions(dsIdx, selectedCol){
   return chartNumericCols(dsIdx).map(c=>`<option value="${htmlEsc(c.name)}" ${c.name===selectedCol?'selected':''}>${htmlEsc(c.name)}</option>`).join('');
 }
+function chartAllColumnOptions(selected, includeBlank=false){
+  const opts=[];
+  if(includeBlank) opts.push('<option value="">Field...</option>');
+  DS.forEach((d,di)=>d.columns.forEach(c=>{
+    const key=di+'|'+c.name;
+    opts.push(`<option value="${htmlEsc(key)}" ${key===selected?'selected':''}>${htmlEsc(chartDsLabel(di)+' / '+c.name)}</option>`);
+  }));
+  return opts.join('');
+}
+function chartFieldTypeIcon(type){return type==='number'?'#':type==='date'?'D':type==='boolean'?'T':'Aa';}
+function chartRowPass(row, f){
+  const raw=row?.[f.col], val=String(raw??''), cmp=String(f.val??''), n=+raw, cn=+cmp;
+  switch(f.op){
+    case '=': return val===cmp;
+    case '!=': return val!==cmp;
+    case '>': return !isNaN(n)&&!isNaN(cn)&&n>cn;
+    case '<': return !isNaN(n)&&!isNaN(cn)&&n<cn;
+    case '>=': return !isNaN(n)&&!isNaN(cn)&&n>=cn;
+    case '<=': return !isNaN(n)&&!isNaN(cn)&&n<=cn;
+    case 'contains': return val.toLowerCase().includes(cmp.toLowerCase());
+    case 'starts': return val.toLowerCase().startsWith(cmp.toLowerCase());
+    case 'blank': return raw==null||raw==='';
+    case 'notblank': return raw!=null&&raw!=='';
+    default: return true;
+  }
+}
+function chartFilteredRows(dsIdx, cb=CB){
+  const d=DS[dsIdx]; if(!d) return [];
+  const fs=(cb.vFilters||[]).filter(f=>+f.dsIdx===+dsIdx&&f.col);
+  if(!fs.length) return d.data||[];
+  return (d.data||[]).filter(row=>fs.every(f=>chartRowPass(row,f)));
+}
+function renderVizWells(){
+  const el=G('viz-wells'); if(!el) return;
+  const xDs=DS[CB.dsIdx];
+  const axis=xDs&&CB.xCol?`<span>${htmlEsc(chartDsLabel(CB.dsIdx)+' / '+CB.xCol)}</span><button onclick="vizClearAxis()">×</button>`:'<span class="vz-empty">Click a text/date field, or choose X Axis below</span>';
+  const vals=(CB.series||[]).map((s,i)=>{
+    const di=seriesDsIdx(s,CB);
+    return `<span class="vz-pill" title="${htmlEsc(chartDsLabel(di))}"><span>${htmlEsc(chartDsLabel(di)+' / '+(s.label||s.col))}</span><button onclick="vizRemoveSeries(${i})">×</button></span>`;
+  }).join(' ')||'<span class="vz-empty">Click numeric fields in the Data pane</span>';
+  el.innerHTML=`<div class="vz-well"><div class="vz-well-label"><span>Axis</span><button class="vz-add-btn" onclick="vizClearAxis()">Clear</button></div><div class="vz-pill">${axis}</div></div>
+    <div class="vz-well"><div class="vz-well-label"><span>Values</span><button class="vz-add-btn" onclick="addSeries()">Add</button></div>${vals}</div>`;
+}
+function renderVizFields(q=''){
+  const el=G('viz-fields'); if(!el) return;
+  const term=String(q||'').trim().toLowerCase();
+  if(!DS.length){el.innerHTML='<div class="vz-empty" style="padding:8px">Load data to see fields.</div>';return;}
+  el.innerHTML=DS.map((d,di)=>{
+    const cols=d.columns.filter(c=>!term||d.name.toLowerCase().includes(term)||c.name.toLowerCase().includes(term));
+    if(!cols.length) return '';
+    const fields=cols.map(c=>{
+      const isAxis=di===CB.dsIdx&&c.name===CB.xCol;
+      const isVal=(CB.series||[]).some(s=>seriesDsIdx(s,CB)===di&&s.col===c.name);
+      return `<div class="vz-field ${isAxis||isVal?'on':''}" data-col="${htmlEsc(c.name)}" onclick="vizUseField(${di},this.dataset.col)">
+        <span class="vz-field-type">${chartFieldTypeIcon(c.type)}</span>
+        <span class="vz-field-name" title="${htmlEsc(c.name)}">${htmlEsc(c.name)}</span>
+        <span class="vz-field-hint">${c.type==='number'?'value':'axis'}</span>
+      </div>`;
+    }).join('');
+    return `<div class="vz-ds-card"><div class="vz-ds-head"><span class="vz-ds-dot" style="background:${htmlEsc(d.color||SC[di%SC.length])}"></span><span title="${htmlEsc(d.name)}">${htmlEsc(chartDsLabel(di))}</span><span class="vz-ds-meta">${(d.data||[]).length}r</span></div>${fields}</div>`;
+  }).join('')||'<div class="vz-empty" style="padding:8px">No matching fields.</div>';
+}
+function vizUseField(dsIdx,col){
+  const c=DS[dsIdx]?.columns.find(x=>x.name===col); if(!c) return;
+  if(c.type==='number') vizAddValue(dsIdx,col);
+  else vizSetAxis(dsIdx,col);
+}
+function vizSetAxis(dsIdx,col){
+  CB.dsIdx=+dsIdx; CB.xCol=col;
+  const sel=G('cb-ds'); if(sel) sel.value=String(CB.dsIdx);
+  populateCBFields(); rebuildPreview();
+}
+function vizClearAxis(){CB.xCol='';populateCBFields();rebuildPreview();}
+function vizAddValue(dsIdx,col){
+  if(!(CB.series||[]).some(s=>seriesDsIdx(s,CB)===+dsIdx&&s.col===col)) addSeriesObj(col,+dsIdx);
+  renderSeriesList(); renderVizWells(); renderVizFields(G('viz-field-search')?.value||''); rebuildPreview();
+}
+function vizRemoveSeries(i){CB.series.splice(i,1);renderSeriesList();renderVizWells();renderVizFields(G('viz-field-search')?.value||'');rebuildPreview();}
+function vizAddFilter(){
+  const first=DS[CB.dsIdx]?.columns[0]?.name||DS[0]?.columns[0]?.name||'';
+  CB.vFilters=CB.vFilters||[];
+  CB.vFilters.push({dsIdx:CB.dsIdx||0,col:first,op:'contains',val:''});
+  renderVizFilters(); rebuildPreview();
+}
+function vizRemoveFilter(i){CB.vFilters.splice(i,1);renderVizFilters();rebuildPreview();}
+function vizFilterFieldChanged(i,val){
+  if(!val){ if(CB.vFilters[i]){CB.vFilters[i].col='';} renderVizFilters(); rebuildPreview(); return; }
+  const [dsIdx,col]=String(val).split('|');
+  if(!CB.vFilters[i]) return;
+  CB.vFilters[i].dsIdx=+dsIdx; CB.vFilters[i].col=col;
+  renderVizFilters(); rebuildPreview();
+}
+function renderVizFilters(){
+  const el=G('viz-filters'); if(!el) return;
+  const ops=[['=','='],['!=','≠'],['>','>'],['<','<'],['>=','≥'],['<=','≤'],['contains','contains'],['starts','starts'],['blank','blank'],['notblank','not blank']];
+  const filters=CB.vFilters||[];
+  el.innerHTML=filters.length?filters.map((f,i)=>{
+    const key=(f.dsIdx??CB.dsIdx)+'|'+(f.col||'');
+    return `<div class="vz-filter-row">
+      <select class="fsel" onchange="vizFilterFieldChanged(${i},this.value)">${chartAllColumnOptions(key,true)}</select>
+      <select class="fsel" onchange="CB.vFilters[${i}].op=this.value;rebuildPreview()">${ops.map(([v,l])=>`<option value="${v}" ${f.op===v?'selected':''}>${l}</option>`).join('')}</select>
+      <input class="fin" value="${htmlEsc(f.val||'')}" placeholder="value" oninput="CB.vFilters[${i}].val=this.value;rebuildPreview()">
+      <button class="ser-del" onclick="vizRemoveFilter(${i})">×</button>
+    </div>`;
+  }).join(''):'<div class="vz-empty">No visual filters.</div>';
+}
+function onVizSortChange(){
+  CB.sortBy=G('cb-sort-by')?.value||'axis';
+  CB.sortDir=G('cb-sort-dir')?.value||'asc';
+  const sx=G('cb-sort-x'), sxd=G('cb-sort-x-desc');
+  if(sx) sx.checked=CB.sortBy==='axis'&&CB.sortDir==='asc';
+  if(sxd) sxd.checked=CB.sortBy==='axis'&&CB.sortDir==='desc';
+  rebuildPreview();
+}
 function normalizeChartState(target=CB){
   if(!DS.length) return;
   if(!DS[target.dsIdx]) target.dsIdx=ACT;
+  target.vFilters=target.vFilters||[];
+  target.sortBy=target.sortBy||((target.sortX||target.sortXDesc)?'axis':'axis');
+  target.sortDir=target.sortDir||(target.sortXDesc?'desc':'asc');
   const xDs=DS[target.dsIdx]||ds();
   if(xDs&&!xDs.columns.some(c=>c.name===target.xCol)) target.xCol=xDs.columns[0]?.name||'';
   const scope=chartScopeIndexes(target.dsIdx);
@@ -5784,7 +6036,15 @@ function populateCBFields(){
   const dsSel=G('cb-ds'); if(dsSel) dsSel.value=String(CB.dsIdx);
   G('cb-x').innerHTML=d.columns.map(c=>`<option value="${htmlEsc(c.name)}" ${c.name===CB.xCol?'selected':''}>${htmlEsc(c.name)}</option>`).join('');
   if(!CB.xCol)CB.xCol=d.columns[0]?.name;
+  const sortBy=G('cb-sort-by'); if(sortBy) sortBy.value=CB.sortBy||'axis';
+  const sortDir=G('cb-sort-dir'); if(sortDir) sortDir.value=CB.sortDir||'asc';
+  const sx=G('cb-sort-x'), sxd=G('cb-sort-x-desc');
+  if(sx) sx.checked=(CB.sortBy||'axis')==='axis'&&(CB.sortDir||'asc')==='asc';
+  if(sxd) sxd.checked=(CB.sortBy||'axis')==='axis'&&(CB.sortDir||'asc')==='desc';
   renderSeriesList();
+  renderVizWells();
+  renderVizFields(G('viz-field-search')?.value||'');
+  renderVizFilters();
   if(typeof renderAnnotList==='function')renderAnnotList();
   if(typeof renderGoalLines==='function')renderGoalLines();
   if(typeof renderPresetList==='function')renderPresetList();
@@ -5860,6 +6120,8 @@ function renderSeriesList(){
       </div>
     </div>`;
   }).join('');
+  renderVizWells();
+  renderVizFields(G('viz-field-search')?.value||'');
 }
 function toggleSB(i){G('sb-'+i)?.classList.toggle('open');}
 function addRefLine(){CB.refLines.push({value:'',label:'Ref',color:'#fbbf24',axis:'y1'});renderRefLines();}
@@ -5908,7 +6170,7 @@ function fmtTick(v, fmt) {
 
 function setCBPalette(name, el) {
   CB_PALETTE = name;
-  document.querySelectorAll('#palette-chips .cpill').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('#palette-chips .vz-chip,#palette-chips .cpill').forEach(p=>p.classList.remove('on'));
   if (el) el.classList.add('on');
   // Update series colors to match palette
   const pal = PALETTES[name]||PALETTES.default;
@@ -5947,8 +6209,11 @@ function syncCBUI() {
   CB.xtype     = G('cb-xtype')?.value || 'category';
   CB.tickFmt   = G('cb-tick-fmt')?.value || '';
   CB.nulls     = G('cb-nulls')?.value || 'gap';
-  CB.sortX     = G('cb-sort-x')?.checked;
-  CB.sortXDesc = G('cb-sort-x-desc')?.checked;
+  CB.sortBy    = G('cb-sort-by')?.value || CB.sortBy || 'axis';
+  CB.sortDir   = G('cb-sort-dir')?.value || CB.sortDir || 'asc';
+  CB.sortX     = CB.sortBy==='axis'&&CB.sortDir==='asc';
+  CB.sortXDesc = CB.sortBy==='axis'&&CB.sortDir==='desc';
+  CB.vFilters  = CB.vFilters || [];
   CB.padT      = +(G('cb-pad-t')?.value||10);
   CB.padR      = +(G('cb-pad-r')?.value||10);
   CB.padB      = +(G('cb-pad-b')?.value||10);
@@ -5961,24 +6226,26 @@ function syncCBUI() {
 function buildChartXLabels(xCol, cbOpts=CB) {
   const xDs = DS[cbOpts?.dsIdx] || ds();
   const order = [];
-  (xDs?.data||[]).forEach(row => order.push(String(row[xCol] ?? 'null')));
+  chartFilteredRows(cbOpts?.dsIdx ?? ACT, cbOpts).forEach(row => order.push(String(row[xCol] ?? 'null')));
   let labels = [...new Set(order)];
-  const sortX = cbOpts?.sortX ?? CB.sortX;
-  const sortXDesc = cbOpts?.sortXDesc ?? CB.sortXDesc;
-  if (sortX && !sortXDesc) labels.sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
-  if (sortX && sortXDesc) labels.sort((a,b)=>b.localeCompare(a,undefined,{numeric:true}));
-  const skip = cbOpts?.skip ?? CB.skip ?? 0;
-  if (skip > 0) labels = labels.slice(skip);
-  const lim = +(cbOpts?.limit ?? G('cb-limit')?.value ?? CB.limit ?? 0);
-  if (lim > 0) labels = labels.slice(0, lim);
+  const sortBy = cbOpts?.sortBy || ((cbOpts?.sortX||cbOpts?.sortXDesc)?'axis':'axis');
+  const sortDir = cbOpts?.sortDir || (cbOpts?.sortXDesc?'desc':'asc');
+  if (sortBy === 'axis' && sortDir === 'asc') labels.sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+  if (sortBy === 'axis' && sortDir === 'desc') labels.sort((a,b)=>b.localeCompare(a,undefined,{numeric:true}));
+  if (sortBy !== 'value') {
+    const skip = cbOpts?.skip ?? CB.skip ?? 0;
+    if (skip > 0) labels = labels.slice(skip);
+    const lim = +(cbOpts?.limit ?? G('cb-limit')?.value ?? CB.limit ?? 0);
+    if (lim > 0) labels = labels.slice(0, lim);
+  }
   return labels;
 }
 
 function aggData(xCol, yCol, fn, dsIdx, cbOpts) {
   const xDs = DS[cbOpts?.dsIdx] || ds();
   const yDs = (dsIdx!==undefined ? DS[dsIdx] : xDs) || ds();
-  const xRows = xDs?.data || [];
-  const yRows = yDs?.data || [];
+  const xRows = chartFilteredRows(cbOpts?.dsIdx ?? ACT, cbOpts);
+  const yRows = chartFilteredRows(dsIdx!==undefined ? dsIdx : (cbOpts?.dsIdx ?? ACT), cbOpts);
   const skip = cbOpts?.skip ?? CB.skip ?? 0;
   const groups = {}, order = [];
   const yHasX = !!yDs?.columns?.some(c=>c.name===xCol);
@@ -5995,14 +6262,16 @@ function aggData(xCol, yCol, fn, dsIdx, cbOpts) {
     xRows.forEach((xRow,i) => addValue(String(xRow?.[xCol] ?? 'null'), yRows[i]));
   }
   let labels = cbOpts?.baseLabels ? [...cbOpts.baseLabels] : [...new Set(order)];
-  const sortX = cbOpts?.sortX ?? CB.sortX;
-  const sortXDesc = cbOpts?.sortXDesc ?? CB.sortXDesc;
+  const sortBy = cbOpts?.sortBy || ((cbOpts?.sortX||cbOpts?.sortXDesc)?'axis':'axis');
+  const sortDir = cbOpts?.sortDir || (cbOpts?.sortXDesc?'desc':'asc');
   if (!cbOpts?.baseLabels) {
-    if (sortX && !sortXDesc) labels.sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
-    if (sortX && sortXDesc) labels.sort((a,b)=>b.localeCompare(a,undefined,{numeric:true}));
-    if (skip > 0) labels = labels.slice(skip);
-    const lim = +(cbOpts?.limit ?? G('cb-limit')?.value ?? CB.limit ?? 0);
-    if (lim > 0) labels = labels.slice(0, lim);
+    if (sortBy === 'axis' && sortDir === 'asc') labels.sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+    if (sortBy === 'axis' && sortDir === 'desc') labels.sort((a,b)=>b.localeCompare(a,undefined,{numeric:true}));
+    if (sortBy !== 'value') {
+      if (skip > 0) labels = labels.slice(skip);
+      const lim = +(cbOpts?.limit ?? G('cb-limit')?.value ?? CB.limit ?? 0);
+      if (lim > 0) labels = labels.slice(0, lim);
+    }
   }
   const values = labels.map(k => {
     const arr = groups[k]||[];
@@ -6039,8 +6308,8 @@ function calcTrend(values, type) {
   return x.map(xi=>+(slope*xi+int).toFixed(3));
 }
 
-function buildHistogramData(col, bins, dsIdx) {
-  const src=(dsIdx!==undefined?DS[dsIdx]:ds())?.data||[];
+function buildHistogramData(col, bins, dsIdx, cbOpts=CB) {
+  const src=chartFilteredRows(dsIdx!==undefined?dsIdx:ACT, cbOpts);
   const vals=src.map(r=>+r[col]).filter(v=>!isNaN(v));
   if(!vals.length) return {labels:[],values:[]};
   const mn=Math.min(...vals), mx=Math.max(...vals), bw=mx===mn?1:(mx-mn)/bins;
@@ -6050,8 +6319,8 @@ function buildHistogramData(col, bins, dsIdx) {
   return {labels, values:counts};
 }
 
-function buildBoxPlotData(valueCol, groupCol, dsIdx) {
-  const src=(dsIdx!==undefined?DS[dsIdx]:ds())?.data||[];
+function buildBoxPlotData(valueCol, groupCol, dsIdx, cbOpts=CB) {
+  const src=chartFilteredRows(dsIdx!==undefined?dsIdx:ACT, cbOpts);
   const groups={};
   src.forEach(r=>{
     const k=groupCol?String(r[groupCol]??'All'):'All';
@@ -6087,6 +6356,34 @@ function buildWaterfallData(labels, values) {
   return {data, colors};
 }
 
+function applyVisualSort(labels, datasets, cb) {
+  const sortBy = cb.sortBy || ((cb.sortX||cb.sortXDesc)?'axis':'axis');
+  const sortDir = cb.sortDir || (cb.sortXDesc?'desc':'asc');
+  let rows = labels.map((label,i)=>({label,i,sortVal:datasets[0]?.data?.[i]}));
+  if (sortBy === 'value') {
+    rows.sort((a,b)=>{
+      const av = typeof a.sortVal === 'object' ? +(a.sortVal?.value ?? 0) : +(a.sortVal ?? 0);
+      const bv = typeof b.sortVal === 'object' ? +(b.sortVal?.value ?? 0) : +(b.sortVal ?? 0);
+      return sortDir === 'desc' ? bv-av : av-bv;
+    });
+  } else if (sortBy === 'axis') {
+    rows.sort((a,b)=>sortDir === 'desc'
+      ? String(b.label).localeCompare(String(a.label),undefined,{numeric:true})
+      : String(a.label).localeCompare(String(b.label),undefined,{numeric:true}));
+  }
+  if (sortBy === 'value') {
+    const skip = cb.skip || 0;
+    if (skip > 0) rows = rows.slice(skip);
+    const lim = +(cb.limit || 0);
+    if (lim > 0) rows = rows.slice(0, lim);
+  }
+  const idxs = rows.map(r=>r.i);
+  return {
+    labels: idxs.map(i=>labels[i]),
+    datasets: datasets.map(ds=>Object.assign({}, ds, {data: idxs.map(i=>ds.data?.[i])}))
+  };
+}
+
 function buildConfig(cb, forDash) {
   normalizeChartState(cb);
   const srcDs = DS[cb.dsIdx]||ds(); if(!srcDs||!cb.series.length) return null;
@@ -6112,7 +6409,7 @@ function buildConfig(cb, forDash) {
   if (isHisto) {
     const col=cb.series[0]?.col; if(!col) return null;
     const yDsIdx=seriesDsIdx(cb.series[0],cb);
-    const {labels,values}=buildHistogramData(col,cb.bins||20,yDsIdx);
+    const {labels,values}=buildHistogramData(col,cb.bins||20,yDsIdx,cb);
     const color=cb.series[0]?.color||pal[0];
     return {type:'bar',data:{labels,datasets:[{label:col,data:values,backgroundColor:hexA(color,.7),borderColor:color,borderWidth:1,borderRadius:2}]},
       options:{responsive:true,maintainAspectRatio:!forDash,plugins:{legend:{display:false},title:titlePlugin,subtitle:subPlugin,
@@ -6127,7 +6424,7 @@ function buildConfig(cb, forDash) {
     const yDsIdx=seriesDsIdx(cb.series[0],cb);
     const yDs=DS[yDsIdx];
     const groupCol=(cb.xCol!==col&&yDs?.columns?.some(c=>c.name===cb.xCol))?cb.xCol:null;
-    const stats=buildBoxPlotData(col,groupCol,yDsIdx);
+    const stats=buildBoxPlotData(col,groupCol,yDsIdx,cb);
     const color=cb.series[0]?.color||pal[0];
     return {type:'bar',
       data:{labels:stats.map(s=>s.label),datasets:[
@@ -6142,10 +6439,10 @@ function buildConfig(cb, forDash) {
   }
 
   // ─── STANDARD CHARTS ───
-  const rawLabels=buildChartXLabels(cb.xCol,cb);
-  const tickLabels=rawLabels.map(l=>fmtTick(l,cb.tickFmt||''));
+  let rawLabels=buildChartXLabels(cb.xCol,cb);
+  let tickLabels=rawLabels.map(l=>fmtTick(l,cb.tickFmt||''));
 
-  const datasets=[];
+  let datasets=[];
 
   if (isPie) {
     const s=cb.series[0];
@@ -6194,6 +6491,11 @@ function buildConfig(cb, forDash) {
       datasets.push({type:'line',label:rl.label||'Ref',data:rawLabels.map(()=>+rl.value),borderColor:rl.color||'#fbbf24',backgroundColor:'transparent',borderWidth:rl.width||1.5,borderDash:[8,4],fill:false,pointRadius:0,yAxisID:rl.axis||'y1',order:200+ri});
     });
   }
+
+  const sortedVisual = applyVisualSort(rawLabels, datasets, cb);
+  rawLabels = sortedVisual.labels;
+  tickLabels = rawLabels.map(l=>fmtTick(l,cb.tickFmt||''));
+  datasets = sortedVisual.datasets;
 
   const isH=isHBar||isHStack;
   const scales = isPie ? {x:{display:false},y:{display:false}} : {
@@ -6268,7 +6570,11 @@ function _rebuildPreviewImmediate() {
   if(cfg.options){cfg.options.responsive=true;cfg.options.maintainAspectRatio=false;cfg.options.aspectRatio=cfg.options.aspectRatio||2;}
   try{prevChInst=new Chart(canvas,cfg);}catch(e){console.warn(e);}
   const d=DS[CB.dsIdx]||ds();
-  if(d&&G('chart-info')) G('chart-info').textContent=d.data.length.toLocaleString()+' rows · '+CB.series.length+' series · '+CB.type;
+  if(d&&G('chart-info')) {
+    const fRows=chartFilteredRows(CB.dsIdx,CB).length;
+    const fText=fRows===d.data.length?d.data.length.toLocaleString()+' rows':fRows.toLocaleString()+' of '+d.data.length.toLocaleString()+' rows';
+    G('chart-info').textContent=fText+' · '+CB.series.length+' value field'+(CB.series.length!==1?'s':'')+' · '+CB.type;
+  }
 }
 let _rbTmr;
 function rebuildPreview(){ clearTimeout(_rbTmr); _rbTmr=setTimeout(_rebuildPreviewImmediate, 80); }
@@ -6304,7 +6610,7 @@ function copyChartImage() {
 function applyTemplate(tpl) {
   const d=ds();if(!d) return toast('Load data first','error');
   switch(tpl) {
-    case 'topN':    CB.limit=10;CB.agg='sum';CB.sortX=true;CB.sortXDesc=true;CB.type='bar';break;
+    case 'topN':    CB.limit=10;CB.agg='sum';CB.sortBy='value';CB.sortDir='desc';CB.sortX=false;CB.sortXDesc=false;CB.type='bar';break;
     case 'trend':   CB.type='line';CB.smooth=true;if(CB.series[0]) CB.series[0].showTrend=true;break;
     case 'compare': CB.type='bar';CB.agg='avg';CB.type='bar';break;
     case 'dist':    CB.type='histogram';break;
@@ -6359,7 +6665,7 @@ function dupLastChart(){if(!DASH.length)return toast('No charts yet','error');co
 function dashEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 function dashSeries(col,i=0,extra={}){return Object.assign({col,label:col,color:SC[i%SC.length],chartType:'',yAxis:'y1',showTrend:false,trendType:'linear',opacity:85,bw:2,dashed:false},extra);}
 function dashBaseChart(type,xCol,yCol,title,extra={}){
-  return Object.assign({type,dsIdx:ACT,xCol,agg:'sum',limit:0,skip:0,series:[dashSeries(yCol,0)],y1:{min:'',max:'',label:''},y2:{en:false,min:'',max:'',label:''},refLines:[],title,subtitle:'',legend:'top',grid:true,smooth:true,fill:false,brad:4,bg:'surface',datalabels:false,showPoints:true,animate:false},extra);
+  return Object.assign({type,dsIdx:ACT,xCol,agg:'sum',limit:0,skip:0,sortBy:'axis',sortDir:'asc',vFilters:[],series:[dashSeries(yCol,0)],y1:{min:'',max:'',label:''},y2:{en:false,min:'',max:'',label:''},refLines:[],title,subtitle:'',legend:'top',grid:true,smooth:true,fill:false,brad:4,bg:'surface',datalabels:false,showPoints:true,animate:false},extra);
 }
 function dashDetectFields(d){
   const nums=d.columns.filter(c=>c.type==='number');
@@ -11494,7 +11800,7 @@ document.addEventListener('keydown',function(e){
       if(k==='f'){e.preventDefault();openFinder();return;}                     // Ctrl+Shift+F → Finder
       if(k==='m'){e.preventDefault();if(!G('t-merge')?.disabled)show('merge');return;}// Ctrl+Shift+M → Merge
       if(k==='s'){e.preventDefault();openColInspector();return;}               // Ctrl+Shift+S → Col Inspector
-      if(k==='c'){e.preventDefault();if(!G('t-charts')?.disabled)show('charts');return;}// Ctrl+Shift+C → Charts
+      if(k==='c'){e.preventDefault();if(!G('t-charts')?.disabled)show('charts');return;}// Ctrl+Shift+C → Visualization
       if(k==='p'){e.preventDefault();if(!G('t-pivot')?.disabled)show('pivot');return;} // Ctrl+Shift+P → Pivot
       if(k==='i'){e.preventDefault();if(typeof openImportWizard==='function')openImportWizard();return;} // Ctrl+Shift+I → Import Wizard
     }
@@ -11585,7 +11891,7 @@ const KB_DEFAULTS = [
   {id:'finder',  group:'Tools',   desc:'Open Finder & Replace',     action:'openFinder()',                       defaultKey:{mod:'ctrl',shift:true, key:'f'}},
   {id:'merge',   group:'Tools',   desc:'Open Merge view',           action:"mergeKB()",                         defaultKey:{mod:'ctrl',shift:true, key:'m'}},
   {id:'inspect', group:'Tools',   desc:'Column Inspector',          action:'openColInspector()',                 defaultKey:{mod:'ctrl',shift:true, key:'s'}},
-  {id:'charts',  group:'Nav',     desc:'Chart Builder',             action:"show('charts')",                     defaultKey:{mod:'ctrl',shift:true, key:'c'}},
+  {id:'charts',  group:'Nav',     desc:'Visualization',             action:"show('charts')",                     defaultKey:{mod:'ctrl',shift:true, key:'c'}},
   {id:'pivot',   group:'Nav',     desc:'Pivot Table',               action:"show('pivot')",                      defaultKey:{mod:'ctrl',shift:true, key:'p'}},
   {id:'wizard',  group:'Tools',   desc:'Import Wizard',             action:'openImportWizard()',                 defaultKey:{mod:'ctrl',shift:true, key:'i'}},
 ];
