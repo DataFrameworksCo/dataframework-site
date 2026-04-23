@@ -2037,16 +2037,16 @@ td.editing .td-inp { display: block; }
 /* Header save button stays visible */
 [data-theme="light"] .hbtn.pri { background: var(--highlight); color: #fff; }
 
-[data-theme="light"] .dtbl th { background: #f8faff; }
-[data-theme="light"] .dtbl tr:nth-child(even) td { background: #f5f7fc; }
+[data-theme="light"] .dtbl th { background: var(--surface-2); }
+[data-theme="light"] .dtbl tr:nth-child(even) td { background: var(--bg); }
 [data-theme="light"] #abar { background: var(--surface-2); box-shadow: 1px 0 0 var(--border); }
 [data-theme="light"] #sb-panel { box-shadow: 1px 0 0 var(--border); }
 [data-theme="light"] #hdr { box-shadow: 0 1px 0 var(--border); }
 [data-theme="light"] .s-sec { box-shadow: 0 1px 4px rgba(0,0,0,.06); }
 [data-theme="light"] .modal-box { box-shadow: 0 8px 40px rgba(0,0,0,.15); }
-[data-theme="light"] #py-editor { background: #f8faff; color: #1a2238; }
-[data-theme="light"] .oplog { background: #f4f6fb; }
-[data-theme="light"] .iw-log { background: #f4f6fb; }
+[data-theme="light"] #py-editor { background: var(--surface-2); color: var(--text); }
+[data-theme="light"] .oplog { background: var(--surface-2); }
+[data-theme="light"] .iw-log { background: var(--surface-2); }
 [data-theme="light"] .sql-result-bar { background: rgba(79,142,247,.06); }
 
 /* ═══════════════ AUTOMATIONS MODULE ═══════════════ */
@@ -2371,30 +2371,31 @@ pre:hover .kb-copy-btn{opacity:1;}
 body { letter-spacing: 0; }
 button, input, select { letter-spacing: 0; }
 
-/* ── Table: clean PowerBI grid style ── */
+/* ── Table: clean themed grid style ── */
 .dtbl { font-size: 13px; }
 .dtbl th {
   height: 28px !important;
   font-size: 11px !important;
   font-weight: 600 !important;
-  background: #f3f2f1 !important;
-  color: #323130 !important;
+  background: var(--surface-2) !important;
+  color: var(--text-2) !important;
   letter-spacing: 0 !important;
   text-transform: none !important;
-  border-right: 1px solid #e1dfdd !important;
-  border-bottom: 2px solid #c8c6c4 !important;
+  border-right: 1px solid var(--border) !important;
+  border-bottom: 2px solid var(--border-2) !important;
   padding: 0 8px !important;
 }
 .dtbl td {
   height: 28px;
   padding: 0 8px;
   font-size: 12.5px;
-  border-bottom: 1px solid #f3f2f1;
-  border-right: 1px solid #f3f2f1;
-  color: #201f1e;
+  border-bottom: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  color: var(--text);
 }
-[data-theme="light"] .dtbl tr:hover td { background: #f0f6ff !important; }
-[data-theme="light"] .dtbl th { background: #f3f2f1 !important; color: #323130 !important; }
+.dtbl tr:hover td,
+[data-theme="light"] .dtbl tr:hover td { background: var(--highlight-dim) !important; }
+[data-theme="light"] .dtbl th { background: var(--surface-2) !important; color: var(--text-2) !important; }
 
 /* ── Toolbar buttons — flat, no shadow ── */
 .tbtn {
@@ -2403,21 +2404,47 @@ button, input, select { letter-spacing: 0; }
   height: 26px;
   padding: 0 10px !important;
   box-shadow: none !important;
-  border-color: #e1dfdd !important;
+  border-color: var(--border) !important;
 }
-.tbtn:hover { background: #edebe9 !important; }
+.tbtn:hover { background: var(--surface-3) !important; border-color: var(--border-2) !important; color: var(--text) !important; }
 
-/* ── Form controls — clean PowerBI inputs ── */
+/* ── Form controls — clean themed inputs/dropdowns ── */
 .fin, .fsel, input[type="text"], input[type="number"], input[type="search"], select, textarea {
   border-radius: 2px !important;
-  border-color: #605e5c !important;
+  background-color: var(--surface-2) !important;
+  border-color: var(--border-2) !important;
+  color: var(--text) !important;
   font-size: 12.5px !important;
+  color-scheme: inherit;
 }
-.fin:focus, .fsel:focus { 
+.fin:hover, .fsel:hover, input[type="text"]:hover, input[type="number"]:hover, input[type="search"]:hover, select:hover, textarea:hover {
+  border-color: var(--highlight) !important;
+  background-color: var(--surface-3) !important;
+}
+.fin:focus, .fsel:focus, input[type="text"]:focus, input[type="number"]:focus, input[type="search"]:focus, select:focus, textarea:focus {
   border-color: var(--highlight) !important; 
   box-shadow: none !important;
-  outline: 2px solid rgba(0,120,212,.25) !important;
+  outline: 2px solid var(--highlight-dim) !important;
   outline-offset: -1px !important;
+}
+select option,
+.fsel option,
+.s-sel option,
+.sq-sm option {
+  background: var(--surface) !important;
+  color: var(--text) !important;
+}
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-3) !important;
+}
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--highlight);
+}
+input[type="color"] {
+  background: var(--surface-2) !important;
+  border-color: var(--border) !important;
 }
 
 /* ── Modals — flat PowerBI dialog style ── */
@@ -2425,21 +2452,21 @@ button, input, select { letter-spacing: 0; }
   border-radius: 2px !important;
   box-shadow: 0 8px 24px rgba(0,0,0,.2), 0 0 0 1px rgba(0,0,0,.06) !important;
 }
-.modal-box h2, .iw-step h2 { font-size: 16px !important; font-weight: 600 !important; color: #201f1e !important; }
+.modal-box h2, .iw-step h2 { font-size: 16px !important; font-weight: 600 !important; color: var(--text) !important; }
 
 /* ── Buttons — flat, PowerBI style ── */
 .mbtn { border-radius: 2px !important; font-size: 12.5px !important; }
 .mbtn.pri { box-shadow: none !important; }
 
-/* ── View areas — white canvas ── */
-.view { background: #ffffff; }
-#v-home { background: #f3f2f1; }
-#v-dashboard { background: #f3f2f1; }
+/* ── View areas ── */
+.view { background: var(--surface); }
+#v-home { background: var(--bg); }
+#v-dashboard { background: var(--bg); }
 
 /* ── Toolbar strip ── */
 .tbar {
-  background: #ffffff !important;
-  border-bottom: 1px solid #e1dfdd !important;
+  background: var(--surface) !important;
+  border-bottom: 1px solid var(--border) !important;
   padding: 4px 10px !important;
   min-height: 40px;
   gap: 4px;
@@ -2447,14 +2474,14 @@ button, input, select { letter-spacing: 0; }
 
 /* ── Formula bar ── */
 .fbar {
-  background: #ffffff !important;
-  border-bottom: 1px solid #e1dfdd !important;
+  background: var(--surface) !important;
+  border-bottom: 1px solid var(--border) !important;
   height: 32px !important;
 }
 
 /* ── Status bar ── */
 .sbar {
-  background: #0078d4 !important;
+  background: var(--highlight) !important;
   border-top: none !important;
   color: #ffffff !important;
   font-size: 11px !important;
@@ -2470,24 +2497,24 @@ button, input, select { letter-spacing: 0; }
   text-transform: uppercase !important;
   letter-spacing: .04em !important;
 }
-.tbg.number  { background: #dce8f8 !important; color: #0f548c !important; border: none !important; }
-.tbg.string  { background: #dff6dd !important; color: #0e7a0d !important; border: none !important; }
-.tbg.date    { background: #fff4ce !important; color: #8a5c00 !important; border: none !important; }
-.tbg.boolean { background: #f4e0ff !important; color: #6b21a8 !important; border: none !important; }
+.tbg.number  { background: color-mix(in srgb, var(--highlight) 14%, transparent) !important; color: var(--highlight) !important; border: none !important; }
+.tbg.string  { background: color-mix(in srgb, var(--ok) 14%, transparent) !important; color: var(--ok) !important; border: none !important; }
+.tbg.date    { background: color-mix(in srgb, var(--warn) 14%, transparent) !important; color: var(--warn) !important; border: none !important; }
+.tbg.boolean { background: var(--surface-3) !important; color: var(--text-2) !important; border: none !important; }
 
 /* ── KB reference panels ── */
-.kb-layout { background: #ffffff; }
-.kb-sidebar { background: #faf9f8 !important; border-right: 1px solid #e1dfdd !important; }
+.kb-layout { background: var(--surface); }
+.kb-sidebar { background: var(--surface-2) !important; border-right: 1px solid var(--border) !important; }
 .kb-item { border-radius: 2px !important; font-size: 12.5px !important; }
-.kb-item.on { background: #dce8f8 !important; color: #0078d4 !important; font-weight: 600 !important; }
+.kb-item.on { background: var(--highlight-dim) !important; color: var(--highlight) !important; font-weight: 600 !important; }
 
 /* ── Clean op cards ── */
 .cop {
   border-radius: 2px !important;
-  border: 1px solid #e1dfdd !important;
+  border: 1px solid var(--border) !important;
   box-shadow: none !important;
 }
-.cop:hover { border-color: #0078d4 !important; background: #f0f6ff !important; }
+.cop:hover { border-color: var(--highlight) !important; background: var(--highlight-dim) !important; }
 
 /* ── Toast notifications ── */
 .toast {
@@ -2499,45 +2526,46 @@ button, input, select { letter-spacing: 0; }
 
 /* ── Scrollbars ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #f3f2f1; }
-::-webkit-scrollbar-thumb { background: #c8c6c4; border-radius: 0; }
-::-webkit-scrollbar-thumb:hover { background: #a19f9d; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 0; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
 
 /* ── Chart panel ── */
 
 /* ── Pivot table ── */
-[data-theme="light"] .ptbl th { background: #f3f2f1 !important; color: #323130 !important; }
+[data-theme="light"] .ptbl th { background: var(--surface-2) !important; color: var(--text-2) !important; }
 
 /* ── SQL / Python editor panels ── */
 .sql-in { font-family: var(--mono) !important; font-size: 12.5px !important; }
 
 /* ── Row number col ── */
 .dtbl td:first-child { 
-  color: #a19f9d !important; 
+  color: var(--text-3) !important;
   font-size: 11px !important; 
-  background: #faf9f8 !important; 
-  border-right: 1px solid #e1dfdd !important;
+  background: var(--surface-2) !important;
+  border-right: 1px solid var(--border) !important;
   text-align: right !important;
 }
 .dtbl th:first-child {
-  background: #f3f2f1 !important;
-  border-right: 1px solid #e1dfdd !important;
-  color: #a19f9d !important;
+  background: var(--surface-2) !important;
+  border-right: 1px solid var(--border) !important;
+  color: var(--text-3) !important;
   text-transform: none !important;
 }
 
 /* ── Number cell color — PowerBI dark blue ── */
-[data-theme="light"] .num { color: #0f548c !important; }
+.num,
+[data-theme="light"] .num { color: var(--highlight) !important; }
 
 /* ── Felix AI panel ── */
-[data-theme="light"] .felix-bubble { background: #f3f2f1 !important; }
-[data-theme="light"] .felix-bubble.user { background: #0078d4 !important; color: #fff !important; }
+[data-theme="light"] .felix-bubble { background: var(--surface-2) !important; }
+[data-theme="light"] .felix-bubble.user { background: var(--highlight) !important; color: #fff !important; }
 
 /* ── Merge panel ── */
-[data-theme="light"] .mg-h { background: #f3f2f1 !important; }
+[data-theme="light"] .mg-h { background: var(--surface-2) !important; }
 
 /* ── Header proj name ── */
-#proj-name { font-weight: 600 !important; color: #201f1e !important; }
+#proj-name { font-weight: 600 !important; color: var(--hdr-text) !important; }
 
 /* ── Highlight color for selected tab active indicator ── */
 .htab.on { font-weight: 600 !important; }
@@ -2729,7 +2757,7 @@ button, input, select { letter-spacing: 0; }
         <button class="imp-btn" onclick="loadSample()">Sample data</button>
       </div>
       <div style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border)">
-        <button onclick="openImportWizard()" style="padding:8px 18px;border-radius:6px;border:1px solid var(--border-2);background:var(--surface-2);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition: background .12s, color .12s, border-color .12s, opacity .12s;letter-spacing:-.01em" onmouseover="this.style.borderColor='#4f8ef7';this.style.background='var(--surface-3)'" onmouseout="this.style.borderColor='var(--border-2)';this.style.background='var(--surface-2)'">
+        <button onclick="openImportWizard()" style="padding:8px 18px;border-radius:6px;border:1px solid var(--border-2);background:var(--surface-2);color:var(--text);font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition: background .12s, color .12s, border-color .12s, opacity .12s;letter-spacing:-.01em" onmouseover="this.style.borderColor='var(--highlight)';this.style.background='var(--surface-3)'" onmouseout="this.style.borderColor='var(--border-2)';this.style.background='var(--surface-2)'">
           Import Wizard <span style="font-size:10px;background:var(--surface-3);color:var(--text-3);padding:3px 8px;border-radius:4px;letter-spacing:.06em;font-weight:600">SELECT COLUMNS · FILTER ROWS · CLEAN</span>
         </button>
       </div>
