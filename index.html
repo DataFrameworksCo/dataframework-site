@@ -4829,7 +4829,13 @@ function renderDsList(){
 function renameDs(idx){const el=G('dsn-'+idx);if(!el)return;const old=DS[idx].name;el.innerHTML='';const inp=document.createElement('input');inp.className='dsc-ren';inp.value=old;el.appendChild(inp);inp.focus();inp.select();const done=()=>{const v=inp.value.trim()||old;DS[idx].name=v;renderDsList();syncDDs();toast('"'+v+'" renamed','success');};inp.addEventListener('blur',done);inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();if(e.key==='Escape'){inp.value=old;inp.blur();}});}
 function dupeDs(idx){const s=DS[idx];addDataset(JSON.parse(JSON.stringify(s.data)),s.columns.map(c=>c.name),s.name+' (copy)');if(s.group)DS[DS.length-1].group=s.group;renderDsList();syncDDs();renderTable();toast('Duplicated','success');}
 function deleteDs(idx){if(DS.length<=1)return toast('Cannot delete the only dataset','error');openModal('Delete Dataset','Remove "'+DS[idx].name+'"? Cannot be undone.','',()=>{DS.splice(idx,1);if(ACT>=DS.length)ACT=Math.max(0,DS.length-1);renderDsList();syncDDs();renderTable();toast('Deleted','info');});}
-function syncDDs(){const opts=DS.map((d,i)=>`<option value="${i}" ${i===ACT?'selected':''}>${d.name}</option>`).join('');['active-ds','clean-ds','pv-ds','cb-ds'].forEach(id=>{const el=G(id);if(!el)return;el.innerHTML=opts||'<option value="">No datasets</option>';});}
+function syncDDs(){
+  ['active-ds','clean-ds','pv-ds','cb-ds'].forEach(id=>{
+    const el=G(id);if(!el)return;
+    const sel=id==='cb-ds'?(DS[CB.dsIdx]?CB.dsIdx:ACT):ACT;
+    el.innerHTML=DS.map((d,i)=>`<option value="${i}" ${i===sel?'selected':''}>${htmlEsc(d.name)}</option>`).join('')||'<option value="">No datasets</option>';
+  });
+}
 
 // ═══════════════════════════ IMPORT ═══════════════════════════
 function triggerImport(t){G('fi-'+t)?.click();}
@@ -5697,11 +5703,136 @@ function executeMerge(){
   G('mg-preview').textContent='Result: '+result.length+' rows × '+allCols.length+' columns';
 }
 // ═══════════════════════════ CHART BUILDER ═══════════════════════════
-function populateCBFields(){const d=DS[CB.dsIdx]||ds();if(!d)return;G('cb-x').innerHTML=d.columns.map(c=>`<option value="${c.name}" ${c.name===CB.xCol?'selected':''}>${c.name}</option>`).join('');if(!CB.xCol)CB.xCol=d.columns[0]?.name;if(!CB.series.length){const fn=d.columns.find(c=>c.type==='number');if(fn)addSeriesObj(fn.name);}renderSeriesList();if(typeof renderAnnotList==='function')renderAnnotList();if(typeof renderGoalLines==='function')renderGoalLines();if(typeof renderPresetList==='function')renderPresetList();}
-function onCbDsChange(){CB.dsIdx=+G('cb-ds').value;CB.series=[];populateCBFields();rebuildPreview();}
-function addSeriesObj(col){CB.series.push({col,label:col,color:SC[CB.series.length%SC.length],chartType:'',yAxis:'y1',showTrend:false,trendType:'linear',opacity:85,bw:2,dashed:false});}
-function addSeries(){if(!ds())return toast('Load data first','error');const d=DS[CB.dsIdx]||ds();const nc=d.columns.filter(c=>c.type==='number');if(!nc.length)return toast('No numeric columns','error');openModal('Add Series','',`<select class="fsel" id="ns-c">${nc.map(c=>`<option value="${c.name}">${c.name}</option>`).join('')}</select>`,()=>{addSeriesObj(G('ns-c').value);renderSeriesList();rebuildPreview();});}
-function renderSeriesList(){G('series-list').innerHTML=CB.series.map((s,i)=>`<div class="ser-card"><div class="ser-head" onclick="toggleSB(${i})"><div class="ser-dot" style="background:${s.color}"></div><div class="ser-nm">${s.label||s.col}</div><span style="font-size:9px;padding:1px 5px;border-radius:10px;background:var(--surface-3);color:var(--text-3);font-family:var(--mono)">${s.col}</span><button class="ser-del" onclick="event.stopPropagation();CB.series.splice(${i},1);renderSeriesList();rebuildPreview()">✕</button></div><div class="ser-body" id="sb-${i}"><div class="flbl">Label</div><input class="fin" value="${s.label}" oninput="CB.series[${i}].label=this.value;rebuildPreview()" style="margin-bottom:6px"><div class="flbl">Column</div><select class="fsel" onchange="CB.series[${i}].col=this.value;rebuildPreview()" style="margin-bottom:6px">${(DS[CB.dsIdx]||ds())?.columns.filter(c=>c.type==='number').map(c=>`<option value="${c.name}" ${c.name===s.col?'selected':''}>${c.name}</option>`).join('')}</select><div class="flbl">Y Axis</div><select class="fsel" onchange="CB.series[${i}].yAxis=this.value;rebuildPreview()" style="margin-bottom:6px"><option value="y1" ${s.yAxis==='y1'?'selected':''}>Left (Y1)</option><option value="y2" ${s.yAxis==='y2'?'selected':''}>Right (Y2)</option></select><div class="flbl">Color</div><div class="chips">${SC.map(c=>`<div class="chip ${s.color===c?'on':''}" style="background:${c}" onclick="CB.series[${i}].color='${c}';renderSeriesList();rebuildPreview()"></div>`).join('')}<input type="color" value="${s.color}" onchange="CB.series[${i}].color=this.value;renderSeriesList();rebuildPreview()" style="width:18px;height:18px;border:none;cursor:pointer;padding:0;background:none"></div><div class="tog-row" style="margin-top:6px"><span class="tog-lbl">Trendline</span><label class="tog"><input type="checkbox" ${s.showTrend?'checked':''} onchange="CB.series[${i}].showTrend=this.checked;renderSeriesList();rebuildPreview()"><span class="tog-sl"></span></label></div>${s.showTrend?`<select class="fsel" onchange="CB.series[${i}].trendType=this.value;rebuildPreview()"><option value="linear">Linear</option><option value="exponential">Exponential</option><option value="moving">Moving Avg</option></select>`:''}<div class="tog-row"><span class="tog-lbl">Dashed</span><label class="tog"><input type="checkbox" ${s.dashed?'checked':''} onchange="CB.series[${i}].dashed=this.checked;rebuildPreview()"><span class="tog-sl"></span></label></div><div class="nr"><label>Opacity %</label><input class="nin" type="number" value="${s.opacity}" min="10" max="100" onchange="CB.series[${i}].opacity=+this.value;rebuildPreview()"></div></div></div>`).join('');}
+function htmlEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
+function chartDsLabel(idx){
+  const d=DS[idx]; if(!d) return 'Dataset';
+  if(d.group){
+    const prefix=d.group+'_';
+    const sheet=d.name.startsWith(prefix)?d.name.slice(prefix.length):d.name;
+    return d.group+' / '+sheet;
+  }
+  return d.name;
+}
+function chartScopeIndexes(baseIdx){
+  const base=DS[baseIdx]||ds(); if(!base) return [];
+  if(base.group) return DS.map((d,i)=>d.group===base.group?i:-1).filter(i=>i>=0);
+  return [DS.indexOf(base)].filter(i=>i>=0);
+}
+function seriesDsIdx(s, cb=CB){
+  const idx=Number.isInteger(+s?.dsIdx)?+s.dsIdx:+cb.dsIdx;
+  return DS[idx]?idx:(DS[cb.dsIdx]?+cb.dsIdx:ACT);
+}
+function chartNumericCols(idx){return (DS[idx]?.columns||[]).filter(c=>c.type==='number');}
+function chartDatasetOptions(selectedIdx, baseIdx=CB.dsIdx){
+  return chartScopeIndexes(baseIdx).map(i=>`<option value="${i}" ${i===selectedIdx?'selected':''}>${htmlEsc(chartDsLabel(i))}</option>`).join('');
+}
+function chartColumnOptions(dsIdx, selectedCol){
+  return chartNumericCols(dsIdx).map(c=>`<option value="${htmlEsc(c.name)}" ${c.name===selectedCol?'selected':''}>${htmlEsc(c.name)}</option>`).join('');
+}
+function normalizeChartState(target=CB){
+  if(!DS.length) return;
+  if(!DS[target.dsIdx]) target.dsIdx=ACT;
+  const xDs=DS[target.dsIdx]||ds();
+  if(xDs&&!xDs.columns.some(c=>c.name===target.xCol)) target.xCol=xDs.columns[0]?.name||'';
+  const scope=chartScopeIndexes(target.dsIdx);
+  target.series=target.series||[];
+  target.series.forEach(s=>{
+    if(s.dsIdx==null) s.dsIdx=target.dsIdx;
+    if(!scope.includes(+s.dsIdx)) s.dsIdx=target.dsIdx;
+    const nums=chartNumericCols(+s.dsIdx);
+    if(!nums.some(c=>c.name===s.col)) s.col=nums[0]?.name||'';
+    if(!s.label) s.label=s.col||'Series';
+  });
+  if(!target.series.length){
+    const scopedWithNum=scope.find(i=>chartNumericCols(i).length);
+    const firstIdx=scopedWithNum>=0?scopedWithNum:target.dsIdx;
+    const fn=chartNumericCols(firstIdx)[0];
+    if(fn) target.series.push({dsIdx:firstIdx,col:fn.name,label:fn.name,color:SC[target.series.length%SC.length],chartType:'',yAxis:'y1',showTrend:false,trendType:'linear',opacity:85,bw:2,dashed:false});
+  }
+}
+function populateCBFields(){
+  normalizeChartState();
+  const d=DS[CB.dsIdx]||ds(); if(!d)return;
+  const dsSel=G('cb-ds'); if(dsSel) dsSel.value=String(CB.dsIdx);
+  G('cb-x').innerHTML=d.columns.map(c=>`<option value="${htmlEsc(c.name)}" ${c.name===CB.xCol?'selected':''}>${htmlEsc(c.name)}</option>`).join('');
+  if(!CB.xCol)CB.xCol=d.columns[0]?.name;
+  renderSeriesList();
+  if(typeof renderAnnotList==='function')renderAnnotList();
+  if(typeof renderGoalLines==='function')renderGoalLines();
+  if(typeof renderPresetList==='function')renderPresetList();
+}
+function onCbDsChange(){
+  CB.dsIdx=+G('cb-ds').value;
+  const d=DS[CB.dsIdx];
+  if(d&&!d.columns.some(c=>c.name===CB.xCol)) CB.xCol=d.columns[0]?.name||'';
+  normalizeChartState();
+  populateCBFields();
+  rebuildPreview();
+}
+function addSeriesObj(col, dsIdx=CB.dsIdx){CB.series.push({dsIdx,col,label:col,color:SC[CB.series.length%SC.length],chartType:'',yAxis:'y1',showTrend:false,trendType:'linear',opacity:85,bw:2,dashed:false});}
+function refreshNewSeriesCols(){
+  const dsIdx=+G('ns-ds')?.value;
+  const colSel=G('ns-c'); if(!colSel) return;
+  colSel.innerHTML=chartColumnOptions(dsIdx,'');
+}
+function addSeries(){
+  if(!ds())return toast('Load data first','error');
+  normalizeChartState();
+  const scope=chartScopeIndexes(CB.dsIdx).filter(i=>chartNumericCols(i).length);
+  if(!scope.length)return toast('No numeric columns in this dataset group','error');
+  const initial=scope[0];
+  openModal('Add Series','',`
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div><div class="flbl">Y Dataset</div><select class="fsel" id="ns-ds" onchange="refreshNewSeriesCols()">${scope.map(i=>`<option value="${i}">${htmlEsc(chartDsLabel(i))}</option>`).join('')}</select></div>
+      <div><div class="flbl">Y Column</div><select class="fsel" id="ns-c">${chartColumnOptions(initial,'')}</select></div>
+    </div>`,()=>{
+      addSeriesObj(G('ns-c').value,+G('ns-ds').value);
+      renderSeriesList();
+      rebuildPreview();
+    });
+}
+function onSeriesDsChange(i, val){
+  const s=CB.series[i]; if(!s) return;
+  s.dsIdx=+val;
+  const nums=chartNumericCols(s.dsIdx);
+  s.col=nums[0]?.name||'';
+  if(!s.label||s.label==='Series') s.label=s.col;
+  renderSeriesList();
+  rebuildPreview();
+}
+function renderSeriesList(){
+  const el=G('series-list'); if(!el) return;
+  normalizeChartState();
+  el.innerHTML=CB.series.map((s,i)=>{
+    const dsIdx=seriesDsIdx(s,CB);
+    const colOptions=chartColumnOptions(dsIdx,s.col);
+    const dsName=chartDsLabel(dsIdx);
+    return `<div class="ser-card">
+      <div class="ser-head" onclick="toggleSB(${i})">
+        <div class="ser-dot" style="background:${htmlEsc(s.color)}"></div>
+        <div class="ser-nm">${htmlEsc(s.label||s.col)}</div>
+        <span style="font-size:9px;padding:1px 5px;border-radius:10px;background:var(--surface-3);color:var(--text-3);font-family:var(--mono)" title="${htmlEsc(dsName)}">${htmlEsc(s.col)}</span>
+        <button class="ser-del" onclick="event.stopPropagation();CB.series.splice(${i},1);renderSeriesList();rebuildPreview()">✕</button>
+      </div>
+      <div class="ser-body" id="sb-${i}">
+        <div class="flbl">Label</div>
+        <input class="fin" value="${htmlEsc(s.label)}" oninput="CB.series[${i}].label=this.value;rebuildPreview()" style="margin-bottom:6px">
+        <div class="flbl">Y Dataset</div>
+        <select class="fsel" onchange="onSeriesDsChange(${i},this.value)" style="margin-bottom:6px">${chartDatasetOptions(dsIdx,CB.dsIdx)}</select>
+        <div class="flbl">Y Column</div>
+        <select class="fsel" onchange="CB.series[${i}].col=this.value;rebuildPreview()" style="margin-bottom:6px">${colOptions}</select>
+        <div class="flbl">Y Axis</div>
+        <select class="fsel" onchange="CB.series[${i}].yAxis=this.value;rebuildPreview()" style="margin-bottom:6px"><option value="y1" ${s.yAxis==='y1'?'selected':''}>Left (Y1)</option><option value="y2" ${s.yAxis==='y2'?'selected':''}>Right (Y2)</option></select>
+        <div class="flbl">Color</div>
+        <div class="chips">${SC.map(c=>`<div class="chip ${s.color===c?'on':''}" style="background:${c}" onclick="CB.series[${i}].color='${c}';renderSeriesList();rebuildPreview()"></div>`).join('')}<input type="color" value="${htmlEsc(s.color)}" onchange="CB.series[${i}].color=this.value;renderSeriesList();rebuildPreview()" style="width:18px;height:18px;border:none;cursor:pointer;padding:0;background:none"></div>
+        <div class="tog-row" style="margin-top:6px"><span class="tog-lbl">Trendline</span><label class="tog"><input type="checkbox" ${s.showTrend?'checked':''} onchange="CB.series[${i}].showTrend=this.checked;renderSeriesList();rebuildPreview()"><span class="tog-sl"></span></label></div>
+        ${s.showTrend?`<select class="fsel" onchange="CB.series[${i}].trendType=this.value;rebuildPreview()"><option value="linear" ${s.trendType==='linear'?'selected':''}>Linear</option><option value="exponential" ${s.trendType==='exponential'?'selected':''}>Exponential</option><option value="moving" ${s.trendType==='moving'?'selected':''}>Moving Avg</option></select>`:''}
+        <div class="tog-row"><span class="tog-lbl">Dashed</span><label class="tog"><input type="checkbox" ${s.dashed?'checked':''} onchange="CB.series[${i}].dashed=this.checked;rebuildPreview()"><span class="tog-sl"></span></label></div>
+        <div class="nr"><label>Opacity %</label><input class="nin" type="number" value="${s.opacity}" min="10" max="100" onchange="CB.series[${i}].opacity=+this.value;rebuildPreview()"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
 function toggleSB(i){G('sb-'+i)?.classList.toggle('open');}
 function addRefLine(){CB.refLines.push({value:'',label:'Ref',color:'#fbbf24',axis:'y1'});renderRefLines();}
 function renderRefLines(){G('ref-lines').innerHTML=CB.refLines.map((rl,i)=>`<div style="display:flex;gap:5px;align-items:center;margin-bottom:5px"><input class="fin" type="number" value="${rl.value}" placeholder="Value" style="width:65px;margin:0" onchange="CB.refLines[${i}].value=+this.value;rebuildPreview()"><input class="fin" value="${rl.label}" placeholder="Label" style="flex:1;margin:0" oninput="CB.refLines[${i}].label=this.value;rebuildPreview()"><input type="color" value="${rl.color}" onchange="CB.refLines[${i}].color=this.value;rebuildPreview()" style="width:22px;height:22px;border:none;cursor:pointer;padding:0;background:none"><select class="fsel" style="width:52px;margin:0" onchange="CB.refLines[${i}].axis=this.value;rebuildPreview()"><option value="y1">Y1</option><option value="y2">Y2</option></select><button class="tbtn" style="padding:3px 6px;border-color:var(--err);color:var(--err)" onclick="CB.refLines.splice(${i},1);renderRefLines();rebuildPreview()">✕</button></div>`).join('');}
@@ -5799,25 +5930,52 @@ function syncCBUI() {
   CB.y2 = {en:G('y2-en')?.checked, min:G('y2-min')?.value||'', max:G('y2-max')?.value||'', label:G('y2-label')?.value||''};
 }
 
-function aggData(xCol, yCol, fn, dsIdx, cbOpts) {
-  const src = (dsIdx!==undefined ? DS[dsIdx] : ds())?.data || [];
-  const skip = cbOpts?.skip ?? CB.skip ?? 0;
-  const groups = {}, order = [];
-  src.forEach(row => {
-    const k = String(row[xCol] ?? 'null');
-    if (!groups[k]) { groups[k] = []; order.push(k); }
-    const v = row[yCol];
-    if (fn === 'none') { groups[k].push(v); }
-    else { const n=+v; if(!isNaN(n)) groups[k].push(n); }
-  });
+function buildChartXLabels(xCol, cbOpts=CB) {
+  const xDs = DS[cbOpts?.dsIdx] || ds();
+  const order = [];
+  (xDs?.data||[]).forEach(row => order.push(String(row[xCol] ?? 'null')));
   let labels = [...new Set(order)];
   const sortX = cbOpts?.sortX ?? CB.sortX;
   const sortXDesc = cbOpts?.sortXDesc ?? CB.sortXDesc;
-  if (sortX && !sortXDesc) labels.sort((a,b)=>a.localeCompare(a,undefined,{numeric:true}));
+  if (sortX && !sortXDesc) labels.sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
   if (sortX && sortXDesc) labels.sort((a,b)=>b.localeCompare(a,undefined,{numeric:true}));
+  const skip = cbOpts?.skip ?? CB.skip ?? 0;
   if (skip > 0) labels = labels.slice(skip);
   const lim = +(cbOpts?.limit ?? G('cb-limit')?.value ?? CB.limit ?? 0);
   if (lim > 0) labels = labels.slice(0, lim);
+  return labels;
+}
+
+function aggData(xCol, yCol, fn, dsIdx, cbOpts) {
+  const xDs = DS[cbOpts?.dsIdx] || ds();
+  const yDs = (dsIdx!==undefined ? DS[dsIdx] : xDs) || ds();
+  const xRows = xDs?.data || [];
+  const yRows = yDs?.data || [];
+  const skip = cbOpts?.skip ?? CB.skip ?? 0;
+  const groups = {}, order = [];
+  const yHasX = !!yDs?.columns?.some(c=>c.name===xCol);
+  const sameDataset = xDs && yDs && xDs === yDs;
+  const addValue = (k, row) => {
+    if (!groups[k]) { groups[k] = []; order.push(k); }
+    const v = row?.[yCol];
+    if (fn === 'none') { groups[k].push(v); }
+    else { const n=+v; if(!isNaN(n)) groups[k].push(n); }
+  };
+  if (sameDataset || yHasX) {
+    yRows.forEach(row => addValue(String(row?.[xCol] ?? 'null'), row));
+  } else {
+    xRows.forEach((xRow,i) => addValue(String(xRow?.[xCol] ?? 'null'), yRows[i]));
+  }
+  let labels = cbOpts?.baseLabels ? [...cbOpts.baseLabels] : [...new Set(order)];
+  const sortX = cbOpts?.sortX ?? CB.sortX;
+  const sortXDesc = cbOpts?.sortXDesc ?? CB.sortXDesc;
+  if (!cbOpts?.baseLabels) {
+    if (sortX && !sortXDesc) labels.sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
+    if (sortX && sortXDesc) labels.sort((a,b)=>b.localeCompare(a,undefined,{numeric:true}));
+    if (skip > 0) labels = labels.slice(skip);
+    const lim = +(cbOpts?.limit ?? G('cb-limit')?.value ?? CB.limit ?? 0);
+    if (lim > 0) labels = labels.slice(0, lim);
+  }
   const values = labels.map(k => {
     const arr = groups[k]||[];
     if (!arr.length) return fn==='count'?0:null;
@@ -5902,6 +6060,7 @@ function buildWaterfallData(labels, values) {
 }
 
 function buildConfig(cb, forDash) {
+  normalizeChartState(cb);
   const srcDs = DS[cb.dsIdx]||ds(); if(!srcDs||!cb.series.length) return null;
   const pal = PALETTES[CB_PALETTE]||PALETTES.default;
   const isPie    = ['pie','doughnut','polarArea'].includes(cb.type);
@@ -5924,7 +6083,8 @@ function buildConfig(cb, forDash) {
   // ─── HISTOGRAM ───
   if (isHisto) {
     const col=cb.series[0]?.col; if(!col) return null;
-    const {labels,values}=buildHistogramData(col,cb.bins||20,cb.dsIdx);
+    const yDsIdx=seriesDsIdx(cb.series[0],cb);
+    const {labels,values}=buildHistogramData(col,cb.bins||20,yDsIdx);
     const color=cb.series[0]?.color||pal[0];
     return {type:'bar',data:{labels,datasets:[{label:col,data:values,backgroundColor:hexA(color,.7),borderColor:color,borderWidth:1,borderRadius:2}]},
       options:{responsive:true,maintainAspectRatio:!forDash,plugins:{legend:{display:false},title:titlePlugin,subtitle:subPlugin,
@@ -5936,7 +6096,10 @@ function buildConfig(cb, forDash) {
   // ─── BOX PLOT ───
   if (isBox) {
     const col=cb.series[0]?.col; if(!col) return null;
-    const stats=buildBoxPlotData(col,cb.xCol!==col?cb.xCol:null,cb.dsIdx);
+    const yDsIdx=seriesDsIdx(cb.series[0],cb);
+    const yDs=DS[yDsIdx];
+    const groupCol=(cb.xCol!==col&&yDs?.columns?.some(c=>c.name===cb.xCol))?cb.xCol:null;
+    const stats=buildBoxPlotData(col,groupCol,yDsIdx);
     const color=cb.series[0]?.color||pal[0];
     return {type:'bar',
       data:{labels:stats.map(s=>s.label),datasets:[
@@ -5951,25 +6114,24 @@ function buildConfig(cb, forDash) {
   }
 
   // ─── STANDARD CHARTS ───
-  const base=aggData(cb.xCol,cb.series[0].col,cb.agg,cb.dsIdx,cb);
-  const rawLabels=base.labels;
+  const rawLabels=buildChartXLabels(cb.xCol,cb);
   const tickLabels=rawLabels.map(l=>fmtTick(l,cb.tickFmt||''));
 
   const datasets=[];
 
   if (isPie) {
     const s=cb.series[0];
-    const {values}=aggData(cb.xCol,s.col,cb.agg,cb.dsIdx,cb);
+    const {values}=aggData(cb.xCol,s.col,cb.agg,seriesDsIdx(s,cb),Object.assign({},cb,{baseLabels:rawLabels}));
     const colors=rawLabels.map((_,i)=>pal[i%pal.length]);
     datasets.push({label:s.label||s.col,data:values,backgroundColor:colors.map(c=>hexA(c,(s.opacity||85)/100)),borderColor:colors,borderWidth:s.bw||2});
   } else if (isWfall) {
     const s=cb.series[0];
-    const {values}=aggData(cb.xCol,s.col,cb.agg,cb.dsIdx,cb);
+    const {values}=aggData(cb.xCol,s.col,cb.agg,seriesDsIdx(s,cb),Object.assign({},cb,{baseLabels:rawLabels}));
     const {data,colors}=buildWaterfallData(rawLabels,values);
     datasets.push({label:s.label||s.col,data:data.map(d=>d.value),base:data.map(d=>d.base),backgroundColor:colors,borderColor:colors.map(c=>c.replace(/[\d.]+\)$/,'1)')),borderWidth:1,borderRadius:3});
   } else {
     cb.series.forEach((s,si)=>{
-      const {values}=aggData(cb.xCol,s.col,cb.agg,cb.dsIdx,cb);
+      const {values}=aggData(cb.xCol,s.col,cb.agg,seriesDsIdx(s,cb),Object.assign({},cb,{baseLabels:rawLabels}));
       const color=s.color||pal[si%pal.length];
       const alpha=(s.opacity||85)/100;
       const st=s.chartType||cb.type;
@@ -7978,22 +8140,50 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ── SETTINGS ──
 const THEMES=[
-  {name:'Default',     vars:{'--bg':'#0c0c0e','--surface':'#141416','--surface-2':'#1c1c1f','--surface-3':'#242428','--border':'#2e2e33','--border-2':'#48484f','--text':'#f0f0f2','--text-2':'#c4c4cc','--text-3':'#8b8b96','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
-  {name:'Deep Navy',   vars:{'--bg':'#0d0f17','--surface':'#161b28','--surface-2':'#1d2436','--surface-3':'#242d44','--border':'#2a3350','--border-2':'#364265','--text':'#f0f4ff','--text-2':'#b8c8e8','--text-3':'#6b7ea8','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
-  {name:'Midnight',    vars:{'--bg':'#07070f','--surface':'#0e0e1a','--surface-2':'#141427','--surface-3':'#1b1b35','--border':'#1c1c40','--border-2':'#252550','--text':'#dde0f0','--text-2':'#9e9ec8','--text-3':'#5a5a90','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
-  {name:'Forest',      vars:{'--bg':'#080f0a','--surface':'#0e1a10','--surface-2':'#152318','--surface-3':'#1c2d20','--border':'#213a25','--border-2':'#2d4d31','--text':'#dff2e0','--text-2':'#9fc8a0','--text-3':'#5a8a5c','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
-  {name:'Charcoal',    vars:{'--bg':'#0e0e0e','--surface':'#181818','--surface-2':'#212121','--surface-3':'#2a2a2a','--border':'#2e2e2e','--border-2':'#3a3a3a','--text':'#eeeeee','--text-2':'#b8b8b8','--text-3':'#737373','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
-  {name:'Warm Dark',   vars:{'--bg':'#120e09','--surface':'#1c1510','--surface-2':'#251c16','--surface-3':'#2e231b','--border':'#3a2c1e','--border-2':'#4d3c2a','--text':'#f2e8e0','--text-2':'#c8b098','--text-3':'#8a7060','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
-  {name:'Slate',       vars:{'--bg':'#0f1117','--surface':'#171c26','--surface-2':'#1e2535','--surface-3':'#252e42','--border':'#2e3a52','--border-2':'#3a4c6a','--text':'#e8eaf6','--text-2':'#b0b8d0','--text-3':'#6a7490','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
-  {name:'Rose Dark',   vars:{'--bg':'#130a0d','--surface':'#1e1014','--surface-2':'#27151a','--surface-3':'#311b22','--border':'#42202a','--border-2':'#5a2c38','--text':'#fce8ec','--text-2':'#e0a8b0','--text-3':'#a06070','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
-  {name:'Light',       vars:{'--bg':'#f2f4f8','--surface':'#ffffff','--surface-2':'#edf0f7','--surface-3':'#e2e6f0','--border':'#d0d5e8','--border-2':'#b8c0d8','--text':'#1a2238','--text-2':'#3d4f72','--text-3':'#6a7a9a','--ok':'#16a34a','--warn':'#d97706','--err':'#dc2626'}},
-  {name:'Light Warm',  vars:{'--bg':'#f7f3ef','--surface':'#ffffff','--surface-2':'#f0ece8','--surface-3':'#e8e2da','--border':'#ddd5c8','--border-2':'#c8bca8','--text':'#2a1f14','--text-2':'#5a4a38','--text-3':'#8a7868','--ok':'#16a34a','--warn':'#d97706','--err':'#dc2626'}},
+  {name:'Light', vars:{'--bg':'#f5f7fb','--surface':'#ffffff','--surface-2':'#eef2f7','--surface-3':'#e2e8f0','--border':'#d8dee8','--border-2':'#b9c4d4','--text':'#172033','--text-2':'#41516d','--text-3':'#78869c','--highlight':'#2563eb','--highlight-dim':'rgba(37,99,235,.11)','--highlight-hover':'#1d4ed8','--hdr-bg':'#ffffff','--hdr-border':'#d8dee8','--hdr-text':'#172033','--hdr-text-2':'#526174','--hdr-tab-on':'#2563eb','--hdr-tab-on-bg':'rgba(37,99,235,.09)','--hdr-tab-hover':'#eef2f7','--hdr-stripe':'#2563eb','--sb-bg':'#ffffff','--sb-border':'#d8dee8','--sb-text':'#617084','--sb-text-hover':'#172033','--sb-on-bg':'rgba(37,99,235,.09)','--sb-on-text':'#2563eb','--sb-on-bar':'#2563eb','--sb-label':'#8a97aa','--ok':'#15803d','--warn':'#b45309','--err':'#dc2626'}},
+  {name:'Soft Light', vars:{'--bg':'#f6f5f2','--surface':'#ffffff','--surface-2':'#efeee9','--surface-3':'#e6e3dc','--border':'#d9d4ca','--border-2':'#bfb7a9','--text':'#211f1c','--text-2':'#514b43','--text-3':'#82786b','--highlight':'#0f766e','--highlight-dim':'rgba(15,118,110,.12)','--highlight-hover':'#0d5f59','--hdr-bg':'#ffffff','--hdr-border':'#d9d4ca','--hdr-text':'#211f1c','--hdr-text-2':'#5f574d','--hdr-tab-on':'#0f766e','--hdr-tab-on-bg':'rgba(15,118,110,.09)','--hdr-tab-hover':'#efeee9','--hdr-stripe':'#0f766e','--sb-bg':'#ffffff','--sb-border':'#d9d4ca','--sb-text':'#6f665b','--sb-text-hover':'#211f1c','--sb-on-bg':'rgba(15,118,110,.1)','--sb-on-text':'#0f766e','--sb-on-bar':'#0f766e','--sb-label':'#958b7e','--ok':'#15803d','--warn':'#b45309','--err':'#b91c1c'}},
+  {name:'Graphite', vars:{'--bg':'#0f1115','--surface':'#171a21','--surface-2':'#20242d','--surface-3':'#2a303b','--border':'#313743','--border-2':'#465061','--text':'#f0f3f7','--text-2':'#c2cbd8','--text-3':'#7b8798','--highlight':'#60a5fa','--highlight-dim':'rgba(96,165,250,.16)','--highlight-hover':'#3b82f6','--hdr-bg':'#13161c','--hdr-border':'#303642','--hdr-text':'#f0f3f7','--hdr-text-2':'#aeb8c7','--hdr-tab-on':'#93c5fd','--hdr-tab-on-bg':'rgba(96,165,250,.13)','--hdr-tab-hover':'#20242d','--hdr-stripe':'#60a5fa','--sb-bg':'#12151b','--sb-border':'#303642','--sb-text':'#aeb8c7','--sb-text-hover':'#ffffff','--sb-on-bg':'rgba(96,165,250,.14)','--sb-on-text':'#93c5fd','--sb-on-bar':'#60a5fa','--sb-label':'#697386','--ok':'#34d399','--warn':'#f59e0b','--err':'#fb7185'}},
+  {name:'Deep Navy', vars:{'--bg':'#0a1020','--surface':'#111a2e','--surface-2':'#18233a','--surface-3':'#22304b','--border':'#2b3a58','--border-2':'#3e5277','--text':'#edf5ff','--text-2':'#b8c9e4','--text-3':'#7183a3','--highlight':'#38bdf8','--highlight-dim':'rgba(56,189,248,.16)','--highlight-hover':'#0ea5e9','--hdr-bg':'#0d1628','--hdr-border':'#2b3a58','--hdr-text':'#edf5ff','--hdr-text-2':'#a8bbd8','--hdr-tab-on':'#7dd3fc','--hdr-tab-on-bg':'rgba(56,189,248,.13)','--hdr-tab-hover':'#18233a','--hdr-stripe':'#38bdf8','--sb-bg':'#0d1628','--sb-border':'#2b3a58','--sb-text':'#a8bbd8','--sb-text-hover':'#ffffff','--sb-on-bg':'rgba(56,189,248,.14)','--sb-on-text':'#7dd3fc','--sb-on-bar':'#38bdf8','--sb-label':'#637797','--ok':'#34d399','--warn':'#fbbf24','--err':'#fb7185'}},
+  {name:'Midnight', vars:{'--bg':'#080914','--surface':'#111224','--surface-2':'#1a1c33','--surface-3':'#242743','--border':'#2d3150','--border-2':'#424768','--text':'#f1f2ff','--text-2':'#c6c8e8','--text-3':'#777ba8','--highlight':'#a78bfa','--highlight-dim':'rgba(167,139,250,.16)','--highlight-hover':'#8b5cf6','--hdr-bg':'#0c0d1a','--hdr-border':'#2d3150','--hdr-text':'#f1f2ff','--hdr-text-2':'#b8badb','--hdr-tab-on':'#c4b5fd','--hdr-tab-on-bg':'rgba(167,139,250,.13)','--hdr-tab-hover':'#1a1c33','--hdr-stripe':'#a78bfa','--sb-bg':'#0c0d1a','--sb-border':'#2d3150','--sb-text':'#b8badb','--sb-text-hover':'#ffffff','--sb-on-bg':'rgba(167,139,250,.14)','--sb-on-text':'#c4b5fd','--sb-on-bar':'#a78bfa','--sb-label':'#696d98','--ok':'#34d399','--warn':'#fbbf24','--err':'#fb7185'}},
+  {name:'Forest', vars:{'--bg':'#07110c','--surface':'#0f1d15','--surface-2':'#17271e','--surface-3':'#203329','--border':'#294133','--border-2':'#3b5d49','--text':'#e9f7ed','--text-2':'#b9d4c1','--text-3':'#74917d','--highlight':'#4ade80','--highlight-dim':'rgba(74,222,128,.14)','--highlight-hover':'#22c55e','--hdr-bg':'#0b1710','--hdr-border':'#294133','--hdr-text':'#e9f7ed','--hdr-text-2':'#abcab5','--hdr-tab-on':'#86efac','--hdr-tab-on-bg':'rgba(74,222,128,.12)','--hdr-tab-hover':'#17271e','--hdr-stripe':'#4ade80','--sb-bg':'#0b1710','--sb-border':'#294133','--sb-text':'#abcab5','--sb-text-hover':'#ffffff','--sb-on-bg':'rgba(74,222,128,.12)','--sb-on-text':'#86efac','--sb-on-bar':'#4ade80','--sb-label':'#678872','--ok':'#34d399','--warn':'#fbbf24','--err':'#fb7185'}},
+  {name:'Plum', vars:{'--bg':'#150c15','--surface':'#211322','--surface-2':'#2c1a2e','--surface-3':'#38233b','--border':'#4a2d4d','--border-2':'#67406b','--text':'#fbeafa','--text-2':'#dfb9df','--text-3':'#9c759f','--highlight':'#f472b6','--highlight-dim':'rgba(244,114,182,.14)','--highlight-hover':'#ec4899','--hdr-bg':'#1a0f1b','--hdr-border':'#4a2d4d','--hdr-text':'#fbeafa','--hdr-text-2':'#d5afd6','--hdr-tab-on':'#f9a8d4','--hdr-tab-on-bg':'rgba(244,114,182,.12)','--hdr-tab-hover':'#2c1a2e','--hdr-stripe':'#f472b6','--sb-bg':'#1a0f1b','--sb-border':'#4a2d4d','--sb-text':'#d5afd6','--sb-text-hover':'#ffffff','--sb-on-bg':'rgba(244,114,182,.12)','--sb-on-text':'#f9a8d4','--sb-on-bar':'#f472b6','--sb-label':'#8d6890','--ok':'#34d399','--warn':'#fbbf24','--err':'#fb7185'}},
 ];
 const ACCENTS=['#5b9cf6','#3b82f6','#6366f1','#8b5cf6','#ec4899','#ef4444','#f97316','#eab308','#10b981','#06b6d4','#22d3ee','#84cc16'];
 let tablePref={zebra:false,freeze:false,rownum:true,numfmt:'',pagesize:2000};
+let currentThemeIdx = 0;
+
+function themeIsLight(vars) {
+  const hex = (vars?.['--bg'] || '#000000').replace('#','');
+  if (hex.length < 6) return false;
+  const r=parseInt(hex.slice(0,2),16), g=parseInt(hex.slice(2,4),16), b=parseInt(hex.slice(4,6),16);
+  return ((r*299 + g*587 + b*114) / 1000) > 150;
+}
+
+function refreshThemeChrome(vars) {
+  const root = document.documentElement;
+  const css = vars || Object.fromEntries(CONFIG_CSS_VARS.map(v=>[v,getComputedStyle(root).getPropertyValue(v).trim()]));
+  const isLight = themeIsLight(css);
+  root.setAttribute('data-theme', isLight ? 'light' : 'dark');
+  root.style.colorScheme = isLight ? 'light' : 'dark';
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', css['--hdr-bg'] || css['--bg'] || (isLight ? '#ffffff' : '#0f1115'));
+  document.querySelectorAll('[id="theme-toggle-btn"]').forEach(btn => { btn.textContent = isLight ? '☀️' : '🌙'; });
+  if(typeof _applyChartDefaults === 'function') _applyChartDefaults();
+  if(typeof rebuildPreview === 'function') rebuildPreview();
+  if(typeof renderDashboard === 'function' && G('dcanvas')) renderDashboard();
+}
+
+function detectThemeIndex(cssVars) {
+  const src = cssVars || {};
+  const idx = THEMES.findIndex(t =>
+    t.vars['--bg'] === src['--bg'] &&
+    t.vars['--surface'] === src['--surface'] &&
+    t.vars['--highlight'] === src['--highlight']
+  );
+  return idx >= 0 ? idx : currentThemeIdx;
+}
 
 function renderSettings(){
-  G('theme-grid').innerHTML=THEMES.map((t,i)=>`<div class="tsw" id="tsw-${i}" onclick="applyTheme(${i})"><div class="tsw-prev" style="background:${t.vars['--surface']}"><div class="tsw-bar" style="background:${t.vars['--surface-2']||t.vars['--surf2']||'#222'}"></div><div class="tsw-bar" style="background:${t.vars['--border-2']||t.vars['--bdr2']||'#333'}"></div><div class="tsw-bar" style="background:${t.vars['--highlight']||'#4f8ef7'};width:30%"></div></div><div class="tsw-nm">${t.name}</div></div>`).join('');
+  G('theme-grid').innerHTML=THEMES.map((t,i)=>`<div class="tsw ${i===currentThemeIdx?'on':''}" id="tsw-${i}" onclick="applyTheme(${i})"><div class="tsw-prev" style="background:${t.vars['--surface']}"><div class="tsw-bar" style="background:${t.vars['--hdr-bg']}"></div><div class="tsw-bar" style="background:${t.vars['--sb-bg']}"></div><div class="tsw-bar" style="background:${t.vars['--surface-2']}"></div><div class="tsw-bar" style="background:${t.vars['--highlight']};width:30%"></div></div><div class="tsw-nm">${t.name}</div></div>`).join('');
   G('ac-row').innerHTML=ACCENTS.map(c=>`<div class="ac-chip" style="background:${c}" onclick="setAccent('${c}',this)"></div>`).join('');
   const overrides=[['--text','Primary Text','Main text'],['--text-2','Secondary Text','Muted labels'],['--text-3','Tertiary Text','Subtle hints'],['--bg','Background','Page background'],['--surface','Surface','Cards & panels'],['--surface-2','Surface 2','Inputs & dropdowns'],['--surface-3','Surface 3','Hover states'],['--border','Border','Default borders'],['--border-2','Border 2','Stronger borders'],['--highlight','Accent','Highlights (also above)'],['--ok','Success Green','Success states'],['--warn','Warning Yellow','Warnings'],['--err','Error Red','Errors & delete']];
   G('color-overrides').innerHTML=overrides.map(([v,lbl,desc])=>`<div class="s-row"><div class="s-ri"><div class="s-rl">${lbl} <span style="font-size:10px;color:var(--text-3);font-family:var(--mono)">${v}</span></div><div class="s-rd">${desc}</div></div><div class="s-rc"><input type="color" class="s-color" value="${r2h(getComputedStyle(document.documentElement).getPropertyValue(v).trim())}" onchange="applyVar('${v}',this.value)"></div></div>`).join('');
@@ -8075,6 +8265,7 @@ function applyTheme(idx){const t=THEMES[idx];Object.entries(t.vars).forEach(([v,
 let _avTmr = {};
 function applyVar(v,val){
   document.documentElement.style.setProperty(v,val);
+  if(CONFIG_CSS_VARS.includes(v)) refreshThemeChrome();
   // Re-render table so --tfs takes effect on new cells
   if(v==='--tfs') { clearTimeout(_avTmr['__tfs_rt']); _avTmr['__tfs_rt']=setTimeout(()=>renderTable&&renderTable(),60); }
   // Debounce save per-variable to handle rapid color-picker dragging
@@ -8083,6 +8274,7 @@ function applyVar(v,val){
 }
 function setAccent(hex,chip){applyVar('--highlight',hex);applyVar('--acch',shadeHex(hex,-.1));if(G('custom-accent'))G('custom-accent').value=hex;document.querySelectorAll('.ac-chip').forEach(c=>c.classList.remove('on'));if(chip)chip.classList.add('on');renderSettings();}
 function shadeHex(hex,pct){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16),adj=n=>Math.min(255,Math.max(0,Math.round(n*(1+pct))));return'#'+[r,g,b].map(adj).map(n=>(n<16?'0':'')+n.toString(16)).join('');}
+function hexToRgba(hex,a){if(!hex||!/^#[0-9a-f]{6}$/i.test(hex))return`rgba(91,156,246,${a})`;const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},${a})`;}
 function applyFont(type,val){if(type==='font')applyVar('--font',val);else applyVar('--mono',val);saveConfig();}
 
 
@@ -9351,7 +9543,9 @@ show(head(result, 20))</code></pre>`
 
 // ═══════════════════════════ CONFIG SYSTEM ═══════════════════════════
 const CONFIG_CSS_VARS = ['--bg','--surface','--surface-2','--surface-3','--border','--border-2',
-  '--highlight','--acch','--highlight-dim','--text','--text-2','--text-3','--ok','--warn','--err',
+  '--highlight','--acch','--highlight-dim','--highlight-hover','--text','--text-2','--text-3','--ok','--warn','--err',
+  '--hdr-bg','--hdr-border','--hdr-text','--hdr-text-2','--hdr-tab-on','--hdr-tab-on-bg','--hdr-tab-hover','--hdr-stripe',
+  '--sb-bg','--sb-border','--sb-text','--sb-text-hover','--sb-on-bg','--sb-on-text','--sb-on-bar','--sb-label',
   '--font','--mono','--fs','--tfs','--sidebar-w','--header-h','--row-h'];
 const CONFIG_VERSION = 1;
 const LS_KEY = 'dfwio_config_v3'; // v3: new var names
@@ -9367,6 +9561,7 @@ function captureConfig() {
     savedAt: new Date().toISOString(),
     app: 'DataFramework.io',
     cssVars,
+    currentThemeIdx,
     tablePref: JSON.parse(JSON.stringify(tablePref)),
     appPrefs: JSON.parse(JSON.stringify(appPrefs)),
     customKeys: typeof customKeys!=='undefined'?JSON.parse(JSON.stringify(customKeys)):{},
@@ -9381,7 +9576,9 @@ function applyConfig(cfg, silent) {
   // Clear ALL possible var names (old and new) to remove stale inline styles
   const CLEAR_VARS = [
     '--bg','--surface','--surface-2','--surface-3','--border','--border-2',
-    '--text','--text-2','--text-3','--highlight','--highlight-dim','--ok','--warn','--err',
+    '--text','--text-2','--text-3','--highlight','--highlight-dim','--highlight-hover','--ok','--warn','--err',
+    '--hdr-bg','--hdr-border','--hdr-text','--hdr-text-2','--hdr-tab-on','--hdr-tab-on-bg','--hdr-tab-hover','--hdr-stripe',
+    '--sb-bg','--sb-border','--sb-text','--sb-text-hover','--sb-on-bg','--sb-on-text','--sb-on-bar','--sb-label',
     '--font','--mono','--fs','--tfs','--sidebar-w','--header-h','--row-h',
     '--surf2','--surf3','--bdr2','--bdr','--bdr3','--txt','--txt2','--txt3',
     '--acc','--acch','--sbw','--hh','--rh',
@@ -9398,6 +9595,8 @@ function applyConfig(cfg, silent) {
       document.documentElement.style.setProperty(legacyMap[v] || v, val);
     });
   }
+  if (Number.isInteger(cfg.currentThemeIdx) && THEMES[cfg.currentThemeIdx]) currentThemeIdx = cfg.currentThemeIdx;
+  else currentThemeIdx = detectThemeIndex(cfg.cssVars);
   // Apply table prefs
   if (cfg.tablePref) {
     tablePref = Object.assign({zebra:false,freeze:false,rownum:true,numfmt:'',pagesize:2000}, cfg.tablePref);
@@ -9406,12 +9605,7 @@ function applyConfig(cfg, silent) {
   if (cfg.appPrefs) {
     appPrefs = Object.assign(appPrefs, cfg.appPrefs);
   }
-  // Set data-theme attribute
-  if (cfg.cssVars && cfg.cssVars['--bg']) {
-    const bgHex = cfg.cssVars['--bg'].replace('#','');
-    const isLight = parseInt(bgHex.slice(0,2),16) > 128;
-    document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
-  }
+  refreshThemeChrome(cfg.cssVars);
   // Apply custom key bindings
   if (cfg.customKeys && typeof customKeys!=='undefined') {
     customKeys = Object.assign({}, cfg.customKeys);
@@ -9517,27 +9711,30 @@ function importSystemConfig() {
 // Wrap every settings mutation to auto-save
 function applyTheme(idx) {
   const t=THEMES[idx];
+  if(!t) return;
   // Clear ALL possible stale vars first
-  ['--bg','--surface','--surface-2','--surface-3','--border','--border-2',
-   '--text','--text-2','--text-3','--ok','--warn','--err'].forEach(v=>document.documentElement.style.removeProperty(v));
+  CONFIG_CSS_VARS.forEach(v=>document.documentElement.style.removeProperty(v));
   Object.entries(t.vars).forEach(([v,val])=>document.documentElement.style.setProperty(v,val));
-  // Recompute highlight-dim based on current highlight
-  const hl = getComputedStyle(document.documentElement).getPropertyValue('--highlight').trim() || '#4f8ef7';
-  document.documentElement.style.setProperty('--highlight-dim', hl.replace('#','').length===6 ? 
-    'rgba('+parseInt(hl.slice(1,3),16)+','+parseInt(hl.slice(3,5),16)+','+parseInt(hl.slice(5,7),16)+',.14)' : 
-    'rgba(79,142,247,.14)');
+  currentThemeIdx = idx;
   document.querySelectorAll('.tsw').forEach((el,i)=>el.classList.toggle('on',i===idx));
-  // Set data-theme attribute for CSS overrides
-  const isLight = t.vars['--bg'] && parseInt(t.vars['--bg'].replace('#','').slice(0,2),16) > 128;
-  document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
+  refreshThemeChrome(t.vars);
   renderSettings(); saveConfig(); toast('Theme: '+t.name,'info');
 }
 function setAccent(hex, chip) {
   document.documentElement.style.setProperty('--highlight', hex);
   document.documentElement.style.setProperty('--acch', shadeHex(hex, -.1));
+  document.documentElement.style.setProperty('--highlight-hover', shadeHex(hex, -.12));
+  document.documentElement.style.setProperty('--highlight-dim', hexToRgba(hex, .14));
+  document.documentElement.style.setProperty('--hdr-tab-on', hex);
+  document.documentElement.style.setProperty('--hdr-tab-on-bg', hexToRgba(hex, .12));
+  document.documentElement.style.setProperty('--hdr-stripe', hex);
+  document.documentElement.style.setProperty('--sb-on-bg', hexToRgba(hex, .13));
+  document.documentElement.style.setProperty('--sb-on-text', hex);
+  document.documentElement.style.setProperty('--sb-on-bar', hex);
   if (G('custom-accent')) G('custom-accent').value = hex;
   document.querySelectorAll('.ac-chip').forEach(c => c.classList.remove('on'));
   if (chip) chip.classList.add('on');
+  refreshThemeChrome();
   renderSettings(); saveConfig();
 }
 /* applyFont defined above in main block */
@@ -9548,22 +9745,22 @@ function debounceSave() { clearTimeout(_saveTmr); _saveTmr = setTimeout(saveConf
 
 function resetSettings() {
   openModal('Reset to Defaults', 'This will clear your saved browser configuration and restore all settings to factory defaults.', '', () => {
-    const def = {
-      '--bg':'#0c0c0e','--surface':'#141416','--surface-2':'#1c1c1f','--surface-3':'#242428',
-      '--border':'#2e2e33','--border-2':'#48484f','--highlight':'#4f8ef7','--acch':'#3b7de8',
-      '--text':'#f0f4ff','--text-2':'#b8c8e8','--text-3':'#6b7ea8',
-      '--ok':'#4ade80','--warn':'#fbbf24','--err':'#f87171',
-      '--font':"'Inter',sans-serif",'--mono':"'JetBrains Mono',monospace",
-      '--fs':'13px','--tfs':'13px','--sidebar-w':'56px','--header-h':'48px','--row-h':'34px'
-    };
+    CONFIG_CSS_VARS.forEach(v => document.documentElement.style.removeProperty(v));
+    currentThemeIdx = 0;
+    const def = Object.assign({}, THEMES[0].vars, {
+      '--font':"'DM Sans', 'Segoe UI', system-ui, -apple-system, sans-serif",
+      '--mono':"'DM Mono', 'Cascadia Code', 'Consolas', monospace",
+      '--fs':'13.5px','--tfs':'13px','--sidebar-w':'48px','--header-h':'48px','--row-h':'32px'
+    });
     Object.entries(def).forEach(([v,val]) => document.documentElement.style.setProperty(v, val));
     ['set-fs','set-tfs'].forEach(id => { const el=G(id); if(el) el.value='13'; });
-    if (G('set-sbw')) G('set-sbw').value = '230';
+    if (G('set-sbw')) G('set-sbw').value = '220';
     tablePref = {zebra:false,freeze:false,rownum:true,numfmt:'',pagesize:2000};
     if(typeof customKeys!=='undefined') customKeys = {};
     CB_PALETTE = 'default';
     chartPresets = [];
     try { localStorage.removeItem(LS_KEY); } catch(e) {}
+    refreshThemeChrome(def);
     renderSettings(); toast('Settings reset to factory defaults','info');
     updateConfigStatus('cleared');
   });
@@ -14985,43 +15182,34 @@ if (!_themePrefVersion) {
 }
 
 function quickToggleTheme() {
-  _isLightMode = !_isLightMode;
+  const isLightNow = document.documentElement.getAttribute('data-theme') === 'light';
+  const targetIdx = THEMES.findIndex(t => themeIsLight(t.vars) !== isLightNow);
+  if (targetIdx >= 0) {
+    _isLightMode = themeIsLight(THEMES[targetIdx].vars);
+    try {
+      localStorage.setItem('df_light_mode', _isLightMode ? '1' : '0');
+      localStorage.setItem('df_theme_pref_v2', '1');
+    } catch(e) {}
+    applyTheme(targetIdx);
+  }
+}
+
+function _applyQuickTheme() {
+  const hasFullConfig = !!localStorage.getItem(LS_KEY);
+  if (!hasFullConfig && _themePrefVersion) {
+    const wantedLight = _storedLightMode !== '0';
+    const idx = THEMES.findIndex(t => themeIsLight(t.vars) === wantedLight);
+    if (idx >= 0) { applyTheme(idx); return; }
+  }
+  refreshThemeChrome();
+}
+
+/* Legacy signature kept for older saved onclick handlers. */
+function _legacyQuickThemeWrite() {
   try {
     localStorage.setItem('df_light_mode', _isLightMode ? '1' : '0');
     localStorage.setItem('df_theme_pref_v2', '1');
   } catch(e) {}
-  _applyQuickTheme();
-}
-
-function _applyQuickTheme() {
-  const root = document.documentElement;
-  const btn = G('theme-toggle-btn');
-  // Override whatever detectTheme set — we own the theme decision here
-  if (_isLightMode) {
-    root.setAttribute('data-theme', 'light');
-    // Light mode vars
-    root.style.setProperty('--bg',        '#f5f5f7');
-    root.style.setProperty('--surface',   '#ffffff');
-    root.style.setProperty('--surface-2', '#f0f0f3');
-    root.style.setProperty('--surface-3', '#e5e5ea');
-    root.style.setProperty('--border',    '#d1d1d6');
-    root.style.setProperty('--text',      '#1c1c1e');
-    root.style.setProperty('--text-2',    '#3c3c43');
-    root.style.setProperty('--text-3',    '#8e8e93');
-    if (btn) btn.textContent = '☀️';
-  } else {
-    root.setAttribute('data-theme', 'dark');
-    // Restore dark defaults
-    root.style.setProperty('--bg',        '#0c0c0e');
-    root.style.setProperty('--surface',   '#141417');
-    root.style.setProperty('--surface-2', '#1c1c21');
-    root.style.setProperty('--surface-3', '#252530');
-    root.style.setProperty('--border',    '#2a2a35');
-    root.style.setProperty('--text',      '#e8e8f0');
-    root.style.setProperty('--text-2',    '#a0a0b8');
-    root.style.setProperty('--text-3',    '#52526a');
-    if (btn) btn.textContent = '🌙';
-  }
 }
 
 // Apply on load
