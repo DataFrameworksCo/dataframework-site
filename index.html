@@ -2508,6 +2508,7 @@ button, input, select { letter-spacing: 0; }
   background: rgba(6,18,9,.94);
   border-bottom-color: rgba(31,77,45,.7);
   border-right-color: rgba(23,53,31,.75);
+  color: var(--highlight) !important;
 }
 [data-theme-id="forest"] .dtbl tbody tr:nth-child(even) td {
   background: rgba(9,25,12,.96);
@@ -2519,18 +2520,19 @@ button, input, select { letter-spacing: 0; }
   background: rgba(92,255,135,.18) !important;
 }
 [data-theme-id="forest"] .tdi {
-  color: #d7ffe0;
-  text-shadow: 0 0 7px rgba(92,255,135,.08);
+  color: var(--highlight) !important;
+  text-shadow: 0 0 9px rgba(92,255,135,.18);
 }
 [data-theme-id="forest"] .tdi.num {
-  color: #98ffb6;
+  color: var(--highlight) !important;
 }
 [data-theme-id="forest"] .idx,
 [data-theme-id="forest"] .tdi.nul {
-  color: #5ea470;
+  color: rgba(92,255,135,.72) !important;
 }
 [data-theme-id="forest"] .td-inp {
   background: rgba(17,40,22,.98);
+  color: var(--highlight) !important;
 }
 [data-theme="light"] .dtbl tr:hover td { background: rgba(0,120,212,.05) !important; }
 [data-theme="light"] .dtbl th { background: var(--surface-2) !important; color: var(--text-2) !important; }
