@@ -2497,6 +2497,41 @@ button, input, select { letter-spacing: 0; }
   border-right: 1px solid var(--border);
   color: var(--text);
 }
+[data-theme-id="forest"] .dtbl th {
+  background: rgba(92,255,135,.14) !important;
+  color: #caffd4 !important;
+  border-right-color: rgba(92,255,135,.16) !important;
+  border-bottom-color: rgba(92,255,135,.34) !important;
+  text-shadow: 0 0 8px rgba(92,255,135,.16);
+}
+[data-theme-id="forest"] .dtbl td {
+  background: rgba(6,18,9,.94);
+  border-bottom-color: rgba(31,77,45,.7);
+  border-right-color: rgba(23,53,31,.75);
+}
+[data-theme-id="forest"] .dtbl tbody tr:nth-child(even) td {
+  background: rgba(9,25,12,.96);
+}
+[data-theme-id="forest"] .dtbl tr:hover td {
+  background: rgba(17,48,26,.92) !important;
+}
+[data-theme-id="forest"] .dtbl tr.sel td {
+  background: rgba(92,255,135,.18) !important;
+}
+[data-theme-id="forest"] .tdi {
+  color: #d7ffe0;
+  text-shadow: 0 0 7px rgba(92,255,135,.08);
+}
+[data-theme-id="forest"] .tdi.num {
+  color: #98ffb6;
+}
+[data-theme-id="forest"] .idx,
+[data-theme-id="forest"] .tdi.nul {
+  color: #5ea470;
+}
+[data-theme-id="forest"] .td-inp {
+  background: rgba(17,40,22,.98);
+}
 [data-theme="light"] .dtbl tr:hover td { background: rgba(0,120,212,.05) !important; }
 [data-theme="light"] .dtbl th { background: var(--surface-2) !important; color: var(--text-2) !important; }
 
@@ -8255,7 +8290,7 @@ const THEMES=[
   {id:'default', mode:'dark', name:'Default', vars:{'--bg':'#0c0c0e','--surface':'#141416','--surface-2':'#1c1c1f','--surface-3':'#242428','--border':'#2e2e33','--border-2':'#48484f','--highlight':'#5b9cf6','--text':'#f0f0f2','--text-2':'#c4c4cc','--text-3':'#8b8b96','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
   {id:'deep-navy', mode:'dark', name:'Deep Navy', vars:{'--bg':'#0d0f17','--surface':'#161b28','--surface-2':'#1d2436','--surface-3':'#242d44','--border':'#2a3350','--border-2':'#364265','--highlight':'#67a5ff','--text':'#f0f4ff','--text-2':'#b8c8e8','--text-3':'#6b7ea8','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
   {id:'midnight', mode:'dark', name:'Midnight', vars:{'--bg':'#07070f','--surface':'#0e0e1a','--surface-2':'#141427','--surface-3':'#1b1b35','--border':'#1c1c40','--border-2':'#252550','--highlight':'#818cf8','--text':'#dde0f0','--text-2':'#9e9ec8','--text-3':'#5a5a90','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
-  {id:'forest', mode:'dark', name:'Forest', vars:{'--bg':'#080f0a','--surface':'#0e1a10','--surface-2':'#152318','--surface-3':'#1c2d20','--border':'#213a25','--border-2':'#2d4d31','--highlight':'#4ade80','--text':'#dff2e0','--text-2':'#9fc8a0','--text-3':'#5a8a5c','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
+  {id:'forest', mode:'dark', name:'Binary', vars:{'--bg':'#050806','--surface':'#08120a','--surface-2':'#0d1c10','--surface-3':'#132817','--border':'#17351f','--border-2':'#1f4d2d','--highlight':'#5cff87','--text':'#d7ffe0','--text-2':'#98ffb6','--text-3':'#5ea470','--ok':'#5cff87','--warn':'#eab308','--err':'#fb7185'}},
   {id:'charcoal', mode:'dark', name:'Charcoal', vars:{'--bg':'#0e0e0e','--surface':'#181818','--surface-2':'#212121','--surface-3':'#2a2a2a','--border':'#2e2e2e','--border-2':'#3a3a3a','--highlight':'#94a3b8','--text':'#eeeeee','--text-2':'#b8b8b8','--text-3':'#737373','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
   {id:'warm-dark', mode:'dark', name:'Warm Dark', vars:{'--bg':'#120e09','--surface':'#1c1510','--surface-2':'#251c16','--surface-3':'#2e231b','--border':'#3a2c1e','--border-2':'#4d3c2a','--highlight':'#f59e0b','--text':'#f2e8e0','--text-2':'#c8b098','--text-3':'#8a7060','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
   {id:'slate', mode:'dark', name:'Slate', vars:{'--bg':'#0f1117','--surface':'#171c26','--surface-2':'#1e2535','--surface-3':'#252e42','--border':'#2e3a52','--border-2':'#3a4c6a','--highlight':'#60a5fa','--text':'#e8eaf6','--text-2':'#b0b8d0','--text-3':'#6a7490','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
@@ -9760,6 +9795,7 @@ function applyConfig(cfg, silent) {
   if (THEMES[currentThemeIdx]) lastThemeByMode[themeMode(THEMES[currentThemeIdx])] = currentThemeIdx;
   const highlight = getComputedStyle(document.documentElement).getPropertyValue('--highlight').trim();
   if (highlight) applyHighlightDerivedVars(r2h(highlight));
+  document.documentElement.setAttribute('data-theme-id', THEMES[currentThemeIdx]?.id || '');
   // Apply table prefs
   if (cfg.tablePref) {
     tablePref = Object.assign({zebra:false,freeze:false,rownum:true,numfmt:'',pagesize:2000}, cfg.tablePref);
@@ -9883,6 +9919,7 @@ function applyTheme(idx) {
    '--text','--text-2','--text-3','--highlight','--highlight-dim','--ok','--warn','--err'].forEach(v=>document.documentElement.style.removeProperty(v));
   Object.entries(t.vars).forEach(([v,val])=>document.documentElement.style.setProperty(v,val));
   applyHighlightDerivedVars(t.vars['--highlight'] || '#4f8ef7');
+  document.documentElement.setAttribute('data-theme-id', t.id || '');
   setThemeModeAttr(themeMode(t));
   syncThemeToggleButtons();
   updateThemeMetaColor();
@@ -9918,6 +9955,7 @@ function resetSettings() {
     currentThemeIdx = defaultThemeIdx;
     lastThemeByMode.dark = defaultThemeIdx;
     applyHighlightDerivedVars(THEMES[defaultThemeIdx].vars['--highlight']);
+    document.documentElement.setAttribute('data-theme-id', THEMES[defaultThemeIdx].id || '');
     setThemeModeAttr('dark');
     syncThemeToggleButtons();
     updateThemeMetaColor();
