@@ -582,26 +582,6 @@ button, .ni, .abar-btn, .htab, .tbtn, .hbtn { cursor: pointer; }
   --border: #e1dfdd;
   --border-2: #c8c6c4;
 
-  /* Header — PowerBI uses white with a colored top stripe */
-  --hdr-bg: #ffffff;
-  --hdr-border: #e1dfdd;
-  --hdr-text: #323130;
-  --hdr-text-2: #605e5c;
-  --hdr-tab-on: #0078d4;
-  --hdr-tab-on-bg: rgba(0,120,212,.06);
-  --hdr-tab-hover: #f3f2f1;
-  --hdr-stripe: #f2c811; /* PowerBI yellow accent stripe */
-
-  /* Sidebar — light gray, like PowerBI's left nav */
-  --sb-bg: #ffffff;
-  --sb-border: #e1dfdd;
-  --sb-text: #605e5c;
-  --sb-text-hover: #323130;
-  --sb-on-bg: rgba(0,120,212,.08);
-  --sb-on-text: #0078d4;
-  --sb-on-bar: #0078d4;
-  --sb-label: #a19f9d;
-
   /* Accent — PowerBI blue */
   --highlight: #0078d4;
   --highlight-dim: rgba(0,120,212,.1);
@@ -642,56 +622,54 @@ input, select, textarea, button { font-family: var(--font); font-size: inherit; 
 ::-webkit-scrollbar-thumb { background: var(--border-2); border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--text-3); }
 
-/* ═══ HEADER — PowerBI white ribbon style ═══ */
+/* ═══ HEADER ═══ */
 #hdr {
   height: var(--header-h);
-  background: var(--hdr-bg);
-  border-bottom: 1px solid var(--hdr-border);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
-  padding: 0 12px 0 0;
+  padding: 0 16px 0 0;
   gap: 0;
   flex-shrink: 0;
   z-index: 100;
-  /* PowerBI yellow top stripe */
-  box-shadow: inset 0 3px 0 var(--hdr-stripe);
+  letter-spacing: -.01em;
 }
 
 .logo {
-  width: 52px;
+  width: 48px;
   height: var(--header-h);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
-  border-right: 1px solid var(--hdr-border);
-  padding-top: 3px;
+  border-right: 1px solid var(--border);
 }
 .logo-mark {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   background: var(--highlight);
-  border-radius: 3px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 600;
   color: #fff;
   letter-spacing: -.5px;
 }
 .logo-txt { display: none; }
 .logo-txt small { display: none; }
 
-.hdr-divider { width: 1px; height: 18px; background: var(--hdr-border); margin: 0 10px; flex-shrink: 0; }
+.hdr-divider { width: 1px; height: 20px; background: var(--border); margin: 0 14px; flex-shrink: 0; }
 
 #proj-name {
   background: transparent;
   border: none;
   border-radius: var(--radius);
   padding: 4px 8px;
-  color: var(--hdr-text);
+  color: var(--text);
   font-size: 13px;
   font-weight: 600;
   outline: none;
@@ -713,21 +691,20 @@ input, select, textarea, button { font-family: var(--font); font-size: inherit; 
   padding: 0 16px;
   border-radius: 0;
   border: none;
-  border-top: 3px solid transparent;
-  border-bottom: none;
+  border-bottom: 2px solid transparent;
   background: transparent;
-  color: var(--hdr-text-2);
+  color: var(--text-3);
   font-size: 12.5px;
-  font-weight: 400;
+  font-weight: 500;
   cursor: pointer;
   transition: color .1s, background .1s;
   white-space: nowrap;
   display: flex;
   align-items: center;
-  padding-top: 6px; /* offset for top stripe */
+  padding-top: 0;
 }
-.htab:hover { background: var(--hdr-tab-hover); color: var(--hdr-text); }
-.htab.on { color: var(--hdr-tab-on); border-top-color: var(--highlight); background: var(--hdr-tab-on-bg); font-weight: 600; }
+.htab:hover { background: var(--surface-2); color: var(--text); }
+.htab.on { color: var(--highlight); border-bottom-color: var(--highlight); background: var(--highlight-dim); font-weight: 600; }
 .htab:disabled { opacity: .3; cursor: not-allowed; }
 
 .hsp { flex: 1; }
@@ -737,15 +714,15 @@ input, select, textarea, button { font-family: var(--font); font-size: inherit; 
   border-radius: var(--radius);
   border: 1px solid var(--border);
   background: var(--surface);
-  color: var(--hdr-text-2);
+  color: var(--text-2);
   font-size: 12px;
-  font-weight: 400;
+  font-weight: 500;
   cursor: pointer;
   white-space: nowrap;
   margin-left: 6px;
-  transition: background .1s, color .1s;
+  transition: background .1s, color .1s, border-color .1s, opacity .1s;
 }
-.hbtn:hover { background: var(--surface-3); color: var(--hdr-text); }
+.hbtn:hover { background: var(--surface-3); color: var(--text); border-color: var(--border-2); }
 .hbtn.pri {
   background: var(--highlight);
   color: #fff;
@@ -761,11 +738,11 @@ input, select, textarea, button { font-family: var(--font); font-size: inherit; 
    ACTIVITY BAR + SLIDE PANEL (VS Code-style)
 ═══════════════════════════════════════════════════ */
 
-/* ── Activity bar: slim icon rail — dark sidebar ── */
+/* ── Activity bar: slim icon rail ── */
 #abar {
   width: 48px;
-  background: var(--sb-bg);
-  border-right: 1px solid var(--sb-border);
+  background: var(--surface-2);
+  border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -778,31 +755,31 @@ input, select, textarea, button { font-family: var(--font); font-size: inherit; 
 .abar-btn {
   width: 36px;
   height: 36px;
-  border-radius: 6px;
+  border-radius: 8px;
   border: none;
   background: none;
-  color: var(--sb-text);
+  color: var(--text-3);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background .1s, color .1s;
+  transition: background .1s, color .1s, border-color .1s, opacity .1s;
   position: relative;
   font-size: 15px;
   flex-shrink: 0;
 }
-.abar-btn:hover { background: rgba(255,255,255,.08); color: var(--sb-text-hover); }
+.abar-btn:hover { background: var(--surface-3); color: var(--text); }
 .abar-btn.abar-on {
-  background: var(--sb-on-bg);
+  background: var(--highlight-dim);
   color: var(--highlight);
 }
 .abar-btn.abar-on::before {
   content: '';
   position: absolute;
   left: 0; top: 6px; bottom: 6px;
-  width: 2px;
+  width: 3px;
   background: var(--highlight);
-  border-radius: 0 2px 2px 0;
+  border-radius: 0 3px 3px 0;
 }
 
 .abar-count {
@@ -2099,11 +2076,11 @@ td.editing .td-inp { display: block; }
 /* Ensure modal overlays are readable */
 [data-theme="light"] .modal-ovl { background: rgba(0,0,0,.25); }
 
-/* Sidebar labels — keep dark theme on sidebar even in light mode */
-[data-theme="light"] .sb-lbl { color: var(--sb-label); }
+/* Sidebar labels */
+[data-theme="light"] .sb-lbl { color: var(--text-3); }
 
 /* Status bar */
-[data-theme="light"] .sbar { background: var(--sb-bg); border-top: 1px solid var(--sb-border); color: var(--sb-text); }
+[data-theme="light"] .sbar { background: var(--surface); border-top: 1px solid var(--border); color: var(--text-2); }
 
 /* Formula bar */
 [data-theme="light"] .fbar { background: var(--surface); border-bottom: 1px solid var(--border); }
@@ -2112,7 +2089,7 @@ td.editing .td-inp { display: block; }
 [data-theme="light"] .toolbar { background: var(--surface); border-bottom: 1px solid var(--border); }
 
 /* Section labels */
-[data-theme="light"] .sb-lbl { color: var(--sb-label); }
+[data-theme="light"] .sb-lbl { color: var(--text-3); }
 
 /* Drop zone */
 [data-theme="light"] .dz { background: var(--surface); }
@@ -2379,7 +2356,7 @@ pre:hover .kb-copy-btn{opacity:1;}
 .diff-hdr{background:rgba(251,191,36,.08);color:#fbbf24;}
 
 /* ── Theme toggle ── */
-#theme-toggle-btn { font-size: 15px; padding: 4px 8px; }
+[data-theme-toggle] { font-size: 15px; padding: 4px 8px; }
 
 /* ── Outlier highlighting ── */
 .tdi.outlier-hi { background: rgba(251,191,36,.18) !important; }
@@ -2704,7 +2681,7 @@ button, input, select { letter-spacing: 0; }
   </div>
   <div class="hsp"></div>
   <button class="hbtn" onclick="newProject()" title="Start a new project with clean slate" style="color:var(--text-3)">New</button>
-  <button class="hbtn" id="theme-toggle-btn" onclick="quickToggleTheme()" title="Toggle dark/light mode">☀️</button>
+  <button class="hbtn" data-theme-toggle onclick="quickToggleTheme()" title="Switch to dark theme">🌙</button>
   <button class="hbtn" onclick="showExportMenu()">Export</button>
   <button class="hbtn pri" onclick="saveDDF()">Save</button>
 </div>
@@ -2718,7 +2695,7 @@ button, input, select { letter-spacing: 0; }
     <span id="abar-ds-count" class="abar-count" style="display:none">0</span>
   </button>
   <div style="flex:1"></div>
-  <button class="abar-btn" id="theme-toggle-btn" onclick="quickToggleTheme()" title="Toggle theme" style="font-size:15px">☀️</button>
+  <button class="abar-btn" data-theme-toggle onclick="quickToggleTheme()" title="Switch to dark theme" style="font-size:15px">🌙</button>
 </div>
 
 <div id="sb-panel">
@@ -8275,22 +8252,33 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // ── SETTINGS ──
 const THEMES=[
-  {name:'Default',     vars:{'--bg':'#0c0c0e','--surface':'#141416','--surface-2':'#1c1c1f','--surface-3':'#242428','--border':'#2e2e33','--border-2':'#48484f','--text':'#f0f0f2','--text-2':'#c4c4cc','--text-3':'#8b8b96','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
-  {name:'Deep Navy',   vars:{'--bg':'#0d0f17','--surface':'#161b28','--surface-2':'#1d2436','--surface-3':'#242d44','--border':'#2a3350','--border-2':'#364265','--text':'#f0f4ff','--text-2':'#b8c8e8','--text-3':'#6b7ea8','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
-  {name:'Midnight',    vars:{'--bg':'#07070f','--surface':'#0e0e1a','--surface-2':'#141427','--surface-3':'#1b1b35','--border':'#1c1c40','--border-2':'#252550','--text':'#dde0f0','--text-2':'#9e9ec8','--text-3':'#5a5a90','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
-  {name:'Forest',      vars:{'--bg':'#080f0a','--surface':'#0e1a10','--surface-2':'#152318','--surface-3':'#1c2d20','--border':'#213a25','--border-2':'#2d4d31','--text':'#dff2e0','--text-2':'#9fc8a0','--text-3':'#5a8a5c','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
-  {name:'Charcoal',    vars:{'--bg':'#0e0e0e','--surface':'#181818','--surface-2':'#212121','--surface-3':'#2a2a2a','--border':'#2e2e2e','--border-2':'#3a3a3a','--text':'#eeeeee','--text-2':'#b8b8b8','--text-3':'#737373','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
-  {name:'Warm Dark',   vars:{'--bg':'#120e09','--surface':'#1c1510','--surface-2':'#251c16','--surface-3':'#2e231b','--border':'#3a2c1e','--border-2':'#4d3c2a','--text':'#f2e8e0','--text-2':'#c8b098','--text-3':'#8a7060','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
-  {name:'Slate',       vars:{'--bg':'#0f1117','--surface':'#171c26','--surface-2':'#1e2535','--surface-3':'#252e42','--border':'#2e3a52','--border-2':'#3a4c6a','--text':'#e8eaf6','--text-2':'#b0b8d0','--text-3':'#6a7490','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
-  {name:'Rose Dark',   vars:{'--bg':'#130a0d','--surface':'#1e1014','--surface-2':'#27151a','--surface-3':'#311b22','--border':'#42202a','--border-2':'#5a2c38','--text':'#fce8ec','--text-2':'#e0a8b0','--text-3':'#a06070','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
-  {name:'Light',       vars:{'--bg':'#f2f4f8','--surface':'#ffffff','--surface-2':'#edf0f7','--surface-3':'#e2e6f0','--border':'#d0d5e8','--border-2':'#b8c0d8','--text':'#1a2238','--text-2':'#3d4f72','--text-3':'#6a7a9a','--ok':'#16a34a','--warn':'#d97706','--err':'#dc2626'}},
-  {name:'Light Warm',  vars:{'--bg':'#f7f3ef','--surface':'#ffffff','--surface-2':'#f0ece8','--surface-3':'#e8e2da','--border':'#ddd5c8','--border-2':'#c8bca8','--text':'#2a1f14','--text-2':'#5a4a38','--text-3':'#8a7868','--ok':'#16a34a','--warn':'#d97706','--err':'#dc2626'}},
+  {id:'default', mode:'dark', name:'Default', vars:{'--bg':'#0c0c0e','--surface':'#141416','--surface-2':'#1c1c1f','--surface-3':'#242428','--border':'#2e2e33','--border-2':'#48484f','--highlight':'#5b9cf6','--text':'#f0f0f2','--text-2':'#c4c4cc','--text-3':'#8b8b96','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
+  {id:'deep-navy', mode:'dark', name:'Deep Navy', vars:{'--bg':'#0d0f17','--surface':'#161b28','--surface-2':'#1d2436','--surface-3':'#242d44','--border':'#2a3350','--border-2':'#364265','--highlight':'#67a5ff','--text':'#f0f4ff','--text-2':'#b8c8e8','--text-3':'#6b7ea8','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
+  {id:'midnight', mode:'dark', name:'Midnight', vars:{'--bg':'#07070f','--surface':'#0e0e1a','--surface-2':'#141427','--surface-3':'#1b1b35','--border':'#1c1c40','--border-2':'#252550','--highlight':'#818cf8','--text':'#dde0f0','--text-2':'#9e9ec8','--text-3':'#5a5a90','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
+  {id:'forest', mode:'dark', name:'Forest', vars:{'--bg':'#080f0a','--surface':'#0e1a10','--surface-2':'#152318','--surface-3':'#1c2d20','--border':'#213a25','--border-2':'#2d4d31','--highlight':'#4ade80','--text':'#dff2e0','--text-2':'#9fc8a0','--text-3':'#5a8a5c','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
+  {id:'charcoal', mode:'dark', name:'Charcoal', vars:{'--bg':'#0e0e0e','--surface':'#181818','--surface-2':'#212121','--surface-3':'#2a2a2a','--border':'#2e2e2e','--border-2':'#3a3a3a','--highlight':'#94a3b8','--text':'#eeeeee','--text-2':'#b8b8b8','--text-3':'#737373','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
+  {id:'warm-dark', mode:'dark', name:'Warm Dark', vars:{'--bg':'#120e09','--surface':'#1c1510','--surface-2':'#251c16','--surface-3':'#2e231b','--border':'#3a2c1e','--border-2':'#4d3c2a','--highlight':'#f59e0b','--text':'#f2e8e0','--text-2':'#c8b098','--text-3':'#8a7060','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
+  {id:'slate', mode:'dark', name:'Slate', vars:{'--bg':'#0f1117','--surface':'#171c26','--surface-2':'#1e2535','--surface-3':'#252e42','--border':'#2e3a52','--border-2':'#3a4c6a','--highlight':'#60a5fa','--text':'#e8eaf6','--text-2':'#b0b8d0','--text-3':'#6a7490','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
+  {id:'rose-dark', mode:'dark', name:'Rose Dark', vars:{'--bg':'#130a0d','--surface':'#1e1014','--surface-2':'#27151a','--surface-3':'#311b22','--border':'#42202a','--border-2':'#5a2c38','--highlight':'#fb7185','--text':'#fce8ec','--text-2':'#e0a8b0','--text-3':'#a06070','--ok':'#34d399','--warn':'#fbbf24','--err':'#f87171'}},
+  {id:'aurora', mode:'dark', name:'Aurora', vars:{'--bg':'#07131a','--surface':'#0d1d26','--surface-2':'#132834','--surface-3':'#1a3544','--border':'#234758','--border-2':'#2f5d72','--highlight':'#22d3ee','--text':'#e4fbff','--text-2':'#a7d9e3','--text-3':'#5e95a2','--ok':'#2dd4bf','--warn':'#fbbf24','--err':'#fb7185'}},
+  {id:'ember', mode:'dark', name:'Ember', vars:{'--bg':'#150b08','--surface':'#21110d','--surface-2':'#2d1711','--surface-3':'#3a2017','--border':'#563125','--border-2':'#6f4230','--highlight':'#f97316','--text':'#fff0e6','--text-2':'#efc2a8','--text-3':'#b07c61','--ok':'#34d399','--warn':'#f59e0b','--err':'#fb7185'}},
+  {id:'light', mode:'light', name:'Light', vars:{'--bg':'#f2f4f8','--surface':'#ffffff','--surface-2':'#edf0f7','--surface-3':'#e2e6f0','--border':'#d0d5e8','--border-2':'#b8c0d8','--highlight':'#4f8ef7','--text':'#1a2238','--text-2':'#3d4f72','--text-3':'#6a7a9a','--ok':'#16a34a','--warn':'#d97706','--err':'#dc2626'}},
+  {id:'light-warm', mode:'light', name:'Light Warm', vars:{'--bg':'#f7f3ef','--surface':'#ffffff','--surface-2':'#f0ece8','--surface-3':'#e8e2da','--border':'#ddd5c8','--border-2':'#c8bca8','--highlight':'#d97706','--text':'#2a1f14','--text-2':'#5a4a38','--text-3':'#8a7868','--ok':'#16a34a','--warn':'#d97706','--err':'#dc2626'}},
+  {id:'paper', mode:'light', name:'Paper', vars:{'--bg':'#f8f7f2','--surface':'#fffdf8','--surface-2':'#f1eee3','--surface-3':'#e7e2d3','--border':'#d8d0bc','--border-2':'#bfb59c','--highlight':'#6366f1','--text':'#232038','--text-2':'#514b6c','--text-3':'#807894','--ok':'#16a34a','--warn':'#ca8a04','--err':'#dc2626'}},
+  {id:'arctic', mode:'light', name:'Arctic', vars:{'--bg':'#eef6fb','--surface':'#ffffff','--surface-2':'#e5f0f7','--surface-3':'#d6e6f0','--border':'#bfd4e0','--border-2':'#9fbccd','--highlight':'#0ea5e9','--text':'#163042','--text-2':'#36576c','--text-3':'#6a8799','--ok':'#0f9f6e','--warn':'#d97706','--err':'#dc2626'}},
+  {id:'sage-light', mode:'light', name:'Sage Light', vars:{'--bg':'#f1f5f0','--surface':'#fbfdf9','--surface-2':'#e8efe5','--surface-3':'#dbe5d7','--border':'#c8d5c3','--border-2':'#a8ba9f','--highlight':'#10b981','--text':'#1e3328','--text-2':'#466253','--text-3':'#72897a','--ok':'#16a34a','--warn':'#ca8a04','--err':'#dc2626'}},
 ];
 const ACCENTS=['#5b9cf6','#3b82f6','#6366f1','#8b5cf6','#ec4899','#ef4444','#f97316','#eab308','#10b981','#06b6d4','#22d3ee','#84cc16'];
+const THEME_MATCH_VARS=['--bg','--surface','--surface-2','--surface-3','--border','--border-2','--text','--text-2','--text-3'];
+const DEFAULT_THEME_ID='light';
+const DEFAULT_DARK_THEME_ID='default';
+let currentThemeIdx=Math.max(0,THEMES.findIndex(t=>t.id===DEFAULT_THEME_ID));
+let lastThemeByMode={light:currentThemeIdx,dark:Math.max(0,THEMES.findIndex(t=>t.id===DEFAULT_DARK_THEME_ID))};
 let tablePref={zebra:false,freeze:false,rownum:true,numfmt:'',pagesize:2000};
 
 function renderSettings(){
-  G('theme-grid').innerHTML=THEMES.map((t,i)=>`<div class="tsw" id="tsw-${i}" onclick="applyTheme(${i})"><div class="tsw-prev" style="background:${t.vars['--surface']}"><div class="tsw-bar" style="background:${t.vars['--surface-2']||t.vars['--surf2']||'#222'}"></div><div class="tsw-bar" style="background:${t.vars['--border-2']||t.vars['--bdr2']||'#333'}"></div><div class="tsw-bar" style="background:${t.vars['--highlight']||'#4f8ef7'};width:30%"></div></div><div class="tsw-nm">${t.name}</div></div>`).join('');
+  const activeThemeIdx=getCurrentThemeIndex();
+  G('theme-grid').innerHTML=THEMES.map((t,i)=>`<div class="tsw ${i===activeThemeIdx?'on':''}" id="tsw-${i}" onclick="applyTheme(${i})"><div class="tsw-prev" style="background:${t.vars['--surface']}"><div class="tsw-bar" style="background:${t.vars['--surface-2']}"></div><div class="tsw-bar" style="background:${t.vars['--border-2']}"></div><div class="tsw-bar" style="background:${t.vars['--highlight']||'#4f8ef7'};width:30%"></div></div><div class="tsw-nm">${t.name}</div></div>`).join('');
   G('ac-row').innerHTML=ACCENTS.map(c=>`<div class="ac-chip" style="background:${c}" onclick="setAccent('${c}',this)"></div>`).join('');
   const overrides=[['--text','Primary Text','Main text'],['--text-2','Secondary Text','Muted labels'],['--text-3','Tertiary Text','Subtle hints'],['--bg','Background','Page background'],['--surface','Surface','Cards & panels'],['--surface-2','Surface 2','Inputs & dropdowns'],['--surface-3','Surface 3','Hover states'],['--border','Border','Default borders'],['--border-2','Border 2','Stronger borders'],['--highlight','Accent','Highlights (also above)'],['--ok','Success Green','Success states'],['--warn','Warning Yellow','Warnings'],['--err','Error Red','Errors & delete']];
   G('color-overrides').innerHTML=overrides.map(([v,lbl,desc])=>`<div class="s-row"><div class="s-ri"><div class="s-rl">${lbl} <span style="font-size:10px;color:var(--text-3);font-family:var(--mono)">${v}</span></div><div class="s-rd">${desc}</div></div><div class="s-rc"><input type="color" class="s-color" value="${r2h(getComputedStyle(document.documentElement).getPropertyValue(v).trim())}" onchange="applyVar('${v}',this.value)"></div></div>`).join('');
@@ -8407,17 +8395,47 @@ function applyDashPref(key, val) {
 }
 
 function r2h(rgb){if(!rgb)return'#000000';if(rgb.startsWith('#'))return rgb.length===4?'#'+rgb[1]+rgb[1]+rgb[2]+rgb[2]+rgb[3]+rgb[3]:rgb;const m=rgb.match(/\d+/g);if(!m)return'#000000';return'#'+m.slice(0,3).map(n=>(+n<16?'0':'')+Number(n).toString(16)).join('');}
-function applyTheme(idx){const t=THEMES[idx];Object.entries(t.vars).forEach(([v,val])=>document.documentElement.style.setProperty(v,val));document.querySelectorAll('.tsw').forEach((el,i)=>el.classList.toggle('on',i===idx));renderSettings();toast('Theme: '+t.name,'info');}
+function normColor(v){if(!v)return'';const s=v.trim().toLowerCase();return s.startsWith('rgb')?r2h(s).toLowerCase():s;}
+function themeMode(theme){return theme?.mode||'dark';}
+function findThemeIndexById(id){return THEMES.findIndex(t=>t.id===id);}
+function getCurrentThemeIndex(){
+  if(THEMES[currentThemeIdx]) return currentThemeIdx;
+  const detected=detectThemeIndexFromStyles();
+  return detected>-1?detected:Math.max(0,findThemeIndexById(DEFAULT_THEME_ID));
+}
+function detectThemeIndexFromStyles(cssVars){
+  const src=cssVars||{};
+  return THEMES.findIndex(theme=>THEME_MATCH_VARS.every(v=>{
+    const actual=src[v]!==undefined?src[v]:getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+    return normColor(actual)===normColor(theme.vars[v]);
+  }));
+}
+function applyHighlightDerivedVars(hex){
+  if(!hex||!hex.startsWith('#')) return;
+  document.documentElement.style.setProperty('--acch', shadeHex(hex,-.1));
+  document.documentElement.style.setProperty('--highlight-dim','rgba('+parseInt(hex.slice(1,3),16)+','+parseInt(hex.slice(3,5),16)+','+parseInt(hex.slice(5,7),16)+',.14)');
+}
+function setThemeModeAttr(mode){document.documentElement.setAttribute('data-theme',mode==='light'?'light':'dark');}
+function updateThemeMetaColor(){const meta=document.querySelector('meta[name=\"theme-color\"]');if(meta) meta.setAttribute('content',getComputedStyle(document.documentElement).getPropertyValue('--surface').trim()||'#131416');}
+function syncThemeToggleButtons(){
+  const activeTheme=THEMES[getCurrentThemeIndex()]||THEMES[0];
+  const targetMode=themeMode(activeTheme)==='light'?'dark':'light';
+  document.querySelectorAll('[data-theme-toggle]').forEach(btn=>{
+    btn.textContent=targetMode==='light'?'☀️':'🌙';
+    btn.title='Switch to '+targetMode+' theme';
+    btn.setAttribute('aria-label','Switch to '+targetMode+' theme');
+  });
+}
 let _avTmr = {};
 function applyVar(v,val){
   document.documentElement.style.setProperty(v,val);
+  if(v==='--highlight') applyHighlightDerivedVars(val);
   // Re-render table so --tfs takes effect on new cells
   if(v==='--tfs') { clearTimeout(_avTmr['__tfs_rt']); _avTmr['__tfs_rt']=setTimeout(()=>renderTable&&renderTable(),60); }
   // Debounce save per-variable to handle rapid color-picker dragging
   clearTimeout(_avTmr[v]);
   _avTmr[v] = setTimeout(debounceSave, 80);
 }
-function setAccent(hex,chip){applyVar('--highlight',hex);applyVar('--acch',shadeHex(hex,-.1));if(G('custom-accent'))G('custom-accent').value=hex;document.querySelectorAll('.ac-chip').forEach(c=>c.classList.remove('on'));if(chip)chip.classList.add('on');renderSettings();}
 function shadeHex(hex,pct){const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16),adj=n=>Math.min(255,Math.max(0,Math.round(n*(1+pct))));return'#'+[r,g,b].map(adj).map(n=>(n<16?'0':'')+n.toString(16)).join('');}
 function applyFont(type,val){if(type==='font')applyVar('--font',val);else applyVar('--mono',val);saveConfig();}
 
@@ -9702,6 +9720,8 @@ function captureConfig() {
     version: CONFIG_VERSION,
     savedAt: new Date().toISOString(),
     app: 'DataFramework.io',
+    themeId: THEMES[getCurrentThemeIndex()]?.id || null,
+    themeMode: themeMode(THEMES[getCurrentThemeIndex()] || THEMES[0]),
     cssVars,
     tablePref: JSON.parse(JSON.stringify(tablePref)),
     appPrefs: JSON.parse(JSON.stringify(appPrefs)),
@@ -9734,6 +9754,12 @@ function applyConfig(cfg, silent) {
       document.documentElement.style.setProperty(legacyMap[v] || v, val);
     });
   }
+  const themeIdxFromConfig = cfg.themeId ? findThemeIndexById(cfg.themeId) : -1;
+  const detectedThemeIdx = detectThemeIndexFromStyles(cfg.cssVars);
+  currentThemeIdx = themeIdxFromConfig > -1 ? themeIdxFromConfig : (detectedThemeIdx > -1 ? detectedThemeIdx : currentThemeIdx);
+  if (THEMES[currentThemeIdx]) lastThemeByMode[themeMode(THEMES[currentThemeIdx])] = currentThemeIdx;
+  const highlight = getComputedStyle(document.documentElement).getPropertyValue('--highlight').trim();
+  if (highlight) applyHighlightDerivedVars(r2h(highlight));
   // Apply table prefs
   if (cfg.tablePref) {
     tablePref = Object.assign({zebra:false,freeze:false,rownum:true,numfmt:'',pagesize:2000}, cfg.tablePref);
@@ -9742,12 +9768,9 @@ function applyConfig(cfg, silent) {
   if (cfg.appPrefs) {
     appPrefs = Object.assign(appPrefs, cfg.appPrefs);
   }
-  // Set data-theme attribute
-  if (cfg.cssVars && cfg.cssVars['--bg']) {
-    const bgHex = cfg.cssVars['--bg'].replace('#','');
-    const isLight = parseInt(bgHex.slice(0,2),16) > 128;
-    document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
-  }
+  setThemeModeAttr(cfg.themeMode || themeMode(THEMES[currentThemeIdx] || THEMES[0]));
+  syncThemeToggleButtons();
+  updateThemeMetaColor();
   // Apply custom key bindings
   if (cfg.customKeys && typeof customKeys!=='undefined') {
     customKeys = Object.assign({}, cfg.customKeys);
@@ -9853,27 +9876,25 @@ function importSystemConfig() {
 // Wrap every settings mutation to auto-save
 function applyTheme(idx) {
   const t=THEMES[idx];
-  // Clear ALL possible stale vars first
+  if(!t) return;
+  currentThemeIdx=idx;
+  lastThemeByMode[themeMode(t)]=idx;
   ['--bg','--surface','--surface-2','--surface-3','--border','--border-2',
-   '--text','--text-2','--text-3','--ok','--warn','--err'].forEach(v=>document.documentElement.style.removeProperty(v));
+   '--text','--text-2','--text-3','--highlight','--highlight-dim','--ok','--warn','--err'].forEach(v=>document.documentElement.style.removeProperty(v));
   Object.entries(t.vars).forEach(([v,val])=>document.documentElement.style.setProperty(v,val));
-  // Recompute highlight-dim based on current highlight
-  const hl = getComputedStyle(document.documentElement).getPropertyValue('--highlight').trim() || '#4f8ef7';
-  document.documentElement.style.setProperty('--highlight-dim', hl.replace('#','').length===6 ? 
-    'rgba('+parseInt(hl.slice(1,3),16)+','+parseInt(hl.slice(3,5),16)+','+parseInt(hl.slice(5,7),16)+',.14)' : 
-    'rgba(79,142,247,.14)');
-  document.querySelectorAll('.tsw').forEach((el,i)=>el.classList.toggle('on',i===idx));
-  // Set data-theme attribute for CSS overrides
-  const isLight = t.vars['--bg'] && parseInt(t.vars['--bg'].replace('#','').slice(0,2),16) > 128;
-  document.documentElement.setAttribute('data-theme', isLight ? 'light' : 'dark');
+  applyHighlightDerivedVars(t.vars['--highlight'] || '#4f8ef7');
+  setThemeModeAttr(themeMode(t));
+  syncThemeToggleButtons();
+  updateThemeMetaColor();
   renderSettings(); saveConfig(); toast('Theme: '+t.name,'info');
 }
 function setAccent(hex, chip) {
   document.documentElement.style.setProperty('--highlight', hex);
-  document.documentElement.style.setProperty('--acch', shadeHex(hex, -.1));
+  applyHighlightDerivedVars(hex);
   if (G('custom-accent')) G('custom-accent').value = hex;
   document.querySelectorAll('.ac-chip').forEach(c => c.classList.remove('on'));
   if (chip) chip.classList.add('on');
+  updateThemeMetaColor();
   renderSettings(); saveConfig();
 }
 /* applyFont defined above in main block */
@@ -9884,15 +9905,22 @@ function debounceSave() { clearTimeout(_saveTmr); _saveTmr = setTimeout(saveConf
 
 function resetSettings() {
   openModal('Reset to Defaults', 'This will clear your saved browser configuration and restore all settings to factory defaults.', '', () => {
+    const defaultThemeIdx = Math.max(0, findThemeIndexById(DEFAULT_DARK_THEME_ID));
     const def = {
       '--bg':'#0c0c0e','--surface':'#141416','--surface-2':'#1c1c1f','--surface-3':'#242428',
-      '--border':'#2e2e33','--border-2':'#48484f','--highlight':'#4f8ef7','--acch':'#3b7de8',
+      '--border':'#2e2e33','--border-2':'#48484f','--highlight':THEMES[defaultThemeIdx].vars['--highlight'],'--acch':shadeHex(THEMES[defaultThemeIdx].vars['--highlight'],-.1),
       '--text':'#f0f4ff','--text-2':'#b8c8e8','--text-3':'#6b7ea8',
       '--ok':'#4ade80','--warn':'#fbbf24','--err':'#f87171',
       '--font':"'Inter',sans-serif",'--mono':"'JetBrains Mono',monospace",
       '--fs':'13px','--tfs':'13px','--sidebar-w':'56px','--header-h':'48px','--row-h':'34px'
     };
     Object.entries(def).forEach(([v,val]) => document.documentElement.style.setProperty(v, val));
+    currentThemeIdx = defaultThemeIdx;
+    lastThemeByMode.dark = defaultThemeIdx;
+    applyHighlightDerivedVars(THEMES[defaultThemeIdx].vars['--highlight']);
+    setThemeModeAttr('dark');
+    syncThemeToggleButtons();
+    updateThemeMetaColor();
     ['set-fs','set-tfs'].forEach(id => { const el=G(id); if(el) el.value='13'; });
     if (G('set-sbw')) G('set-sbw').value = '230';
     tablePref = {zebra:false,freeze:false,rownum:true,numfmt:'',pagesize:2000};
@@ -11528,8 +11556,11 @@ function pwaTriggerInstall() {
 }
 
 (function initApp() {
-  _applyQuickTheme();
   const restored = loadConfig();
+  if (!restored) {
+    const defaultThemeIdx = Math.max(0, findThemeIndexById(DEFAULT_THEME_ID));
+    applyConfig({app:'DataFramework.io', themeId:THEMES[defaultThemeIdx].id, themeMode:'light', cssVars:THEMES[defaultThemeIdx].vars}, true);
+  }
   setTimeout(() => updateConfigStatus(restored ? 'loaded' : 'none'), 200);
   setTimeout(() => { renderModules(); renderModuleNavItems(); }, 100);
   setTimeout(() => { const ok = restoreAutosave(); if (!ok) { const i=G('autosave-indicator'); if(i) i.style.display='none'; } }, 300);
@@ -15310,58 +15341,14 @@ function atRenderStepExtended(s, i, a) {
 // ═══════════════════════════════════════════════════════════════
 // DARK / LIGHT THEME QUICK TOGGLE
 // ═══════════════════════════════════════════════════════════════
-var _themePrefVersion = localStorage.getItem('df_theme_pref_v2');
-var _storedLightMode = localStorage.getItem('df_light_mode');
-var _isLightMode = _themePrefVersion ? _storedLightMode !== '0' : true; // default: light
-if (!_themePrefVersion) {
-  try {
-    localStorage.setItem('df_light_mode', '1');
-    localStorage.setItem('df_theme_pref_v2', '1');
-  } catch(e) {}
-}
-
 function quickToggleTheme() {
-  _isLightMode = !_isLightMode;
-  try {
-    localStorage.setItem('df_light_mode', _isLightMode ? '1' : '0');
-    localStorage.setItem('df_theme_pref_v2', '1');
-  } catch(e) {}
-  _applyQuickTheme();
+  const activeTheme = THEMES[getCurrentThemeIndex()] || THEMES[0];
+  const nextMode = themeMode(activeTheme) === 'light' ? 'dark' : 'light';
+  const fallbackThemeId = nextMode === 'light' ? DEFAULT_THEME_ID : DEFAULT_DARK_THEME_ID;
+  const fallbackThemeIdx = Math.max(0, findThemeIndexById(fallbackThemeId));
+  const nextThemeIdx = lastThemeByMode[nextMode] ?? THEMES.findIndex(t => themeMode(t) === nextMode);
+  applyTheme(nextThemeIdx > -1 ? nextThemeIdx : fallbackThemeIdx);
 }
-
-function _applyQuickTheme() {
-  const root = document.documentElement;
-  const btn = G('theme-toggle-btn');
-  // Override whatever detectTheme set — we own the theme decision here
-  if (_isLightMode) {
-    root.setAttribute('data-theme', 'light');
-    // Light mode vars
-    root.style.setProperty('--bg',        '#f5f5f7');
-    root.style.setProperty('--surface',   '#ffffff');
-    root.style.setProperty('--surface-2', '#f0f0f3');
-    root.style.setProperty('--surface-3', '#e5e5ea');
-    root.style.setProperty('--border',    '#d1d1d6');
-    root.style.setProperty('--text',      '#1c1c1e');
-    root.style.setProperty('--text-2',    '#3c3c43');
-    root.style.setProperty('--text-3',    '#8e8e93');
-    if (btn) btn.textContent = '☀️';
-  } else {
-    root.setAttribute('data-theme', 'dark');
-    // Restore dark defaults
-    root.style.setProperty('--bg',        '#0c0c0e');
-    root.style.setProperty('--surface',   '#141417');
-    root.style.setProperty('--surface-2', '#1c1c21');
-    root.style.setProperty('--surface-3', '#252530');
-    root.style.setProperty('--border',    '#2a2a35');
-    root.style.setProperty('--text',      '#e8e8f0');
-    root.style.setProperty('--text-2',    '#a0a0b8');
-    root.style.setProperty('--text-3',    '#52526a');
-    if (btn) btn.textContent = '🌙';
-  }
-}
-
-// Apply on load
-document.addEventListener('DOMContentLoaded', _applyQuickTheme);
 
 
 // ═══════════════════════════════════════════════════════════════
