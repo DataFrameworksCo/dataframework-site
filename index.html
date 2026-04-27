@@ -4871,9 +4871,9 @@ print(df.describe())
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
     Rename Column
   </div>
-  <div class="col-ctx-item" id="ctx-type">
+  <div class="col-ctx-item" id="ctx-type" onclick="ctxFormatCol()">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
-    Change Type
+    Type &amp; Format
     <span id="ctx-type-val" style="margin-left:auto;font-size:10px;color:var(--text-3);background:var(--surface-2);padding:1px 6px;border-radius:4px"></span>
   </div>
   <div class="col-ctx-sep"></div>
@@ -4959,6 +4959,79 @@ const data=()=>DS[ACT]?.data||[];
 const genId=()=>'ds_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
 const hexA=(hex,a)=>{if(!hex||hex.length<7)return`rgba(91,156,246,${a})`;const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);return`rgba(${r},${g},${b},${a})`;};
 const inferType=(rows,col)=>{const vals=rows.slice(0,40).map(r=>r[col]).filter(v=>v!=null&&v!=='');if(!vals.length)return'string';const nc=vals.filter(v=>typeof v==='number'||(!isNaN(+String(v).replace(/[,$%]/g,''))&&String(v).trim()!=='')).length;if(nc>vals.length*.75)return'number';if(vals.filter(v=>!isNaN(Date.parse(String(v)))).length>vals.length*.7)return'date';return'string';};
+const clampNum=(n,min,max)=>Math.min(max,Math.max(min,n));
+const escHtml=s=>String(s).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+function normalizeColFormatMode(mode){return mode==='integer'||mode==='fixed'?mode:'auto';}
+function normalizeColDef(col, rows=[]){
+  const raw=typeof col==='string'?{name:col}:((col&&typeof col==='object')?col:{name:String(col??'')});
+  const type=raw.type||inferType(rows,raw.name);
+  const mode=normalizeColFormatMode(raw.formatMode);
+  const decimals=mode==='fixed'?clampNum(Math.round(Number.isFinite(+raw.decimals)?+raw.decimals:2),0,6):null;
+  return {
+    name: raw.name,
+    type,
+    visible: raw.visible!==false,
+    formatMode: mode,
+    decimals,
+    useThousands: raw.useThousands!==false
+  };
+}
+function normalizeDatasetColumns(dataset){
+  if(!dataset)return dataset;
+  dataset.columns=(dataset.columns||[]).map(col=>normalizeColDef(col,dataset.data||[]));
+  return dataset;
+}
+function normalizeAllDatasets(){DS.forEach(normalizeDatasetColumns);}
+function formatColumnBadge(col){
+  if(!col)return'';
+  if(col.type!=='number')return col.type;
+  if(col.formatMode==='integer')return'number · whole';
+  if(col.formatMode==='fixed')return`number · ${col.decimals??2}dp`;
+  return'number · auto';
+}
+function castValueToType(value, type){
+  if(type==='number'){
+    const raw=String(value??'').trim();
+    if(raw==='')return null;
+    const pct=raw.includes('%');
+    const n=+raw.replace(/[$,%\s,]/g,'');
+    return isNaN(n)?null:(pct?n/100:n);
+  }
+  if(type==='date'){
+    if(value==null||value==='')return null;
+    const dt=new Date(String(value));
+    return isNaN(dt)?null:dt.toISOString().slice(0,10);
+  }
+  if(type==='boolean'){
+    if(value==null||value==='')return null;
+    const s=String(value).trim().toLowerCase();
+    if(['true','1','yes','y'].includes(s))return true;
+    if(['false','0','no','n'].includes(s))return false;
+    return null;
+  }
+  return value==null?'':String(value);
+}
+function applyNumberSeparators(str, useThousands=true){
+  const parts=String(str).split('.');
+  let intPart=parts[0], decPart=parts[1];
+  let sign='';
+  if(intPart.startsWith('-')){sign='-';intPart=intPart.slice(1);}
+  if(useThousands)intPart=intPart.replace(/\B(?=(\d{3})+(?!\d))/g, appPrefs.thouSep||',');
+  return sign+intPart+(decPart!=null&&decPart!==''?(appPrefs.decSep||'.')+decPart:'');
+}
+function formatNumberDisplay(value, col){
+  if(value==null||value==='')return'';
+  const rawNum=typeof value==='number'?value:+String(value).replace(/[$,%\s,]/g,'');
+  if(!Number.isFinite(rawNum))return String(value);
+  if(col?.formatMode==='integer')return applyNumberSeparators(String(Math.round(rawNum)), col?.useThousands!==false);
+  if(col?.formatMode==='fixed')return applyNumberSeparators(rawNum.toFixed(col?.decimals??2), col?.useThousands!==false);
+  return applyNumberSeparators(String(rawNum), col?.useThousands!==false);
+}
+function formatCellHTML(value, col){
+  if(value==null||value==='')return`<em style="opacity:.4">${escHtml(appPrefs.nullText||'null')}</em>`;
+  if(col?.type==='number')return escHtml(formatNumberDisplay(value,col));
+  return escHtml(String(value));
+}
 
 // ═══════════════════════════ NAVIGATION ═══════════════════════════
 // Views that are tool panels - don't clear the current data/view tab
@@ -5038,7 +5111,7 @@ function unlock(){['data','charts','dashboard','merge','clean','pivot'].forEach(
 
 // ═══════════════════════════ DATASETS ═══════════════════════════
 function addDataset(rows,cols,name){
-  const d={id:genId(),name:name||'Dataset '+(DS.length+1),data:rows,columns:cols.map(c=>({name:c,type:inferType(rows,c),visible:true})),color:DSC[DS.length%DSC.length]};
+  const d=normalizeDatasetColumns({id:genId(),name:name||'Dataset '+(DS.length+1),data:rows,columns:(cols||[]),color:DSC[DS.length%DSC.length]});
   DS.push(d);ACT=DS.length-1;unlock();renderDsList();syncDDs();
   // Show autosave indicator now that we have data
   const ind=G('autosave-indicator');if(ind)ind.style.display='flex';
@@ -5123,7 +5196,7 @@ function renderDsList(){
   DS.forEach((_, i) => G('dsc-'+i)?.classList.toggle('on', i === ACT));
 }
 function renameDs(idx){const el=G('dsn-'+idx);if(!el)return;const old=DS[idx].name;el.innerHTML='';const inp=document.createElement('input');inp.className='dsc-ren';inp.value=old;el.appendChild(inp);inp.focus();inp.select();const done=()=>{const v=inp.value.trim()||old;DS[idx].name=v;renderDsList();syncDDs();toast('"'+v+'" renamed','success');};inp.addEventListener('blur',done);inp.addEventListener('keydown',e=>{if(e.key==='Enter')inp.blur();if(e.key==='Escape'){inp.value=old;inp.blur();}});}
-function dupeDs(idx){const s=DS[idx];addDataset(JSON.parse(JSON.stringify(s.data)),s.columns.map(c=>c.name),s.name+' (copy)');if(s.group)DS[DS.length-1].group=s.group;renderDsList();syncDDs();renderTable();toast('Duplicated','success');}
+function dupeDs(idx){const s=normalizeDatasetColumns(DS[idx]);addDataset(JSON.parse(JSON.stringify(s.data)),JSON.parse(JSON.stringify(s.columns)),s.name+' (copy)');if(s.group)DS[DS.length-1].group=s.group;renderDsList();syncDDs();renderTable();toast('Duplicated','success');}
 function deleteDs(idx){if(DS.length<=1)return toast('Cannot delete the only dataset','error');openModal('Delete Dataset','Remove "'+DS[idx].name+'"? Cannot be undone.','',()=>{DS.splice(idx,1);if(ACT>=DS.length)ACT=Math.max(0,DS.length-1);renderDsList();syncDDs();renderTable();toast('Deleted','info');});}
 function syncDDs(){const opts=DS.map((d,i)=>`<option value="${i}" ${i===ACT?'selected':''}>${d.name}</option>`).join('');['active-ds','clean-ds','pv-ds','cb-ds'].forEach(id=>{const el=G(id);if(!el)return;el.innerHTML=opts||'<option value="">No datasets</option>';});}
 
@@ -5206,7 +5279,7 @@ function importXLSX(inp){
   rd.readAsArrayBuffer(f);
 }
 function importJSON(inp){const f=inp.files[0];if(!f)return;inp.value='';const rd=new FileReader();rd.onload=e=>{try{const d=JSON.parse(e.target.result);const arr=Array.isArray(d)?d:(d.data||Object.values(d)[0]);if(!Array.isArray(arr)||!arr.length)return toast('Invalid JSON','error');addDataset(arr,Object.keys(arr[0]),f.name.replace(/\.[^/.]+$/,''));renderTable();show('data');toast('Loaded '+arr.length,'success');}catch(err){toast('JSON error: '+err.message,'error');}};rd.readAsText(f);}
-function importDDF(inp){const f=inp.files[0];if(!f)return;inp.value='';const rd=new FileReader();rd.onload=e=>{try{const parts=e.target.result.split('|DFP1|');if(parts.length<2)throw new Error('Not valid .dfp');const p=JSON.parse(decodeURIComponent(escape(atob(parts[1].trim()))));DS=[];if(p.datasets&&Array.isArray(p.datasets)){p.datasets.forEach(d=>{const ds={id:genId(),name:d.name,data:d.data,columns:d.columns.map(c=>({name:c,type:inferType(d.data,c),visible:true})),color:DSC[DS.length%DSC.length]};if(d.group)ds.group=d.group;DS.push(ds);});}else if(p.data){DS.push({id:genId(),name:p.name||'Dataset',data:p.data,columns:(p.columns||Object.keys(p.data[0]||{})).map(c=>({name:c,type:inferType(p.data,c),visible:true})),color:DSC[0]});}ACT=0;DASH=p.dashboard||[];if(p.chartState)CB=Object.assign(CB,p.chartState);if(p.projectName)G('proj-name').value=p.projectName;unlock();renderDsList();syncDDs();renderTable();renderDashboard();show('data');toast('Loaded .dfp','success');}catch(err){toast('DFP error: '+err.message,'error');}};rd.readAsText(f);}
+function importDDF(inp){const f=inp.files[0];if(!f)return;inp.value='';const rd=new FileReader();rd.onload=e=>{try{const parts=e.target.result.split('|DFP1|');if(parts.length<2)throw new Error('Not valid .dfp');const p=JSON.parse(decodeURIComponent(escape(atob(parts[1].trim()))));DS=[];if(p.datasets&&Array.isArray(p.datasets)){p.datasets.forEach(d=>{const ds=normalizeDatasetColumns({id:genId(),name:d.name,data:d.data,columns:d.columns||Object.keys(d.data?.[0]||{}),color:DSC[DS.length%DSC.length]});if(d.group)ds.group=d.group;DS.push(ds);});}else if(p.data){DS.push(normalizeDatasetColumns({id:genId(),name:p.name||'Dataset',data:p.data,columns:(p.columns||Object.keys(p.data[0]||{})),color:DSC[0]}));}ACT=0;DASH=p.dashboard||[];if(p.chartState)CB=Object.assign(CB,p.chartState);if(p.projectName)G('proj-name').value=p.projectName;unlock();renderDsList();syncDDs();renderTable();renderDashboard();show('data');toast('Loaded .dfp','success');}catch(err){toast('DFP error: '+err.message,'error');}};rd.readAsText(f);}
 function onDrop(e){e.preventDefault();G('dz').classList.remove('drag');const f=e.dataTransfer.files[0];if(!f)return;const fake={files:[f],value:''};if(f.name.endsWith('.dfp'))importDDF(fake);else if(f.name.match(/\.xlsx?$/i))importXLSX(fake);else if(f.name.endsWith('.json'))importJSON(fake);else importCSV(fake);}
 function onDO(e){e.preventDefault();G('dz').classList.add('drag');}
 function onDL(){G('dz').classList.remove('drag');}
@@ -5288,10 +5361,10 @@ function showColCtxMenu(e, colName) {
   _ctxColName = colName;
   const m = G('col-ctx-menu');
   if (!m) return;
-  const d = ds();
+  const d = normalizeDatasetColumns(ds());
   const col = d?.columns.find(c => c.name === colName);
   const typeVal = G('ctx-type-val');
-  if (typeVal && col) typeVal.textContent = col.type;
+  if (typeVal && col) typeVal.textContent = formatColumnBadge(col);
   m.style.top  = e.clientY + 'px';
   m.style.left = Math.min(e.clientX, window.innerWidth - 200) + 'px';
   m.style.display = 'block';
@@ -5301,6 +5374,74 @@ function showColCtxMenu(e, colName) {
       document.removeEventListener('click', _close);
     });
   }, 10);
+}
+
+function syncColFormatFields(){
+  const type=G('cfmt-type')?.value;
+  const wrap=G('cfmt-num-wrap');
+  if(wrap)wrap.style.display=type==='number'?'':'none';
+}
+
+function ctxFormatCol() {
+  G('col-ctx-menu').style.display = 'none';
+  if (!_ctxColName) return;
+  const d = normalizeDatasetColumns(ds()); if (!d) return;
+  const col = d.columns.find(c => c.name === _ctxColName);
+  if (!col) return;
+  const mode = col.type === 'number' ? normalizeColFormatMode(col.formatMode) : 'auto';
+  const decimals = col.decimals == null ? 2 : clampNum(col.decimals, 0, 6);
+  const body = `
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div>
+        <div style="font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;font-weight:700">Column</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text-2)">${escHtml(_ctxColName)}</div>
+      </div>
+      <div>
+        <div style="font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;font-weight:700">Type</div>
+        <select class="fsel" id="cfmt-type" style="width:100%" onchange="syncColFormatFields()">
+          <option value="number" ${col.type==='number'?'selected':''}>Number</option>
+          <option value="string" ${col.type==='string'?'selected':''}>Text / String</option>
+          <option value="date" ${col.type==='date'?'selected':''}>Date</option>
+          <option value="boolean" ${col.type==='boolean'?'selected':''}>Boolean</option>
+        </select>
+      </div>
+      <div id="cfmt-num-wrap" style="display:${col.type==='number'?'':'none'};padding:10px;border:1px solid var(--border);border-radius:10px;background:var(--surface-2)">
+        <div style="font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-weight:700">Number Display</div>
+        <select class="fsel" id="cfmt-mode" style="width:100%;margin-bottom:8px">
+          <option value="auto" ${mode==='auto'?'selected':''}>Auto</option>
+          <option value="integer" ${mode==='integer'?'selected':''}>Whole number</option>
+          <option value="fixed:1" ${mode==='fixed'&&decimals===1?'selected':''}>1 decimal</option>
+          <option value="fixed:2" ${mode==='fixed'&&decimals===2?'selected':''}>2 decimals</option>
+          <option value="fixed:3" ${mode==='fixed'&&decimals===3?'selected':''}>3 decimals</option>
+          <option value="fixed:4" ${mode==='fixed'&&decimals===4?'selected':''}>4 decimals</option>
+        </select>
+        <label style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-2)">
+          <input type="checkbox" id="cfmt-thou" ${col.useThousands!==false?'checked':''} style="accent-color:var(--highlight)">
+          Use thousands separator
+        </label>
+      </div>
+    </div>`;
+  openModal('Format Column', 'Change data type and table display for this column.', body, () => {
+    pushH();
+    const nextType = G('cfmt-type').value;
+    const nextModeRaw = G('cfmt-mode')?.value || 'auto';
+    const useThousands = !!G('cfmt-thou')?.checked;
+    const nextMode = nextType === 'number' ? (nextModeRaw.startsWith('fixed:') ? 'fixed' : nextModeRaw) : 'auto';
+    const nextDecimals = nextType === 'number' && nextModeRaw.startsWith('fixed:') ? clampNum(parseInt(nextModeRaw.split(':')[1], 10) || 2, 0, 6) : null;
+    if (col.type !== nextType) d.data = d.data.map(row => ({ ...row, [_ctxColName]: castValueToType(row[_ctxColName], nextType) }));
+    col.type = nextType;
+    col.formatMode = nextMode;
+    col.decimals = nextMode === 'fixed' ? nextDecimals : null;
+    col.useThousands = useThousands;
+    renderTable();
+    renderDsList();
+    syncDDs();
+    populateCBFields && populateCBFields();
+    buildProfile && buildProfile();
+    debounceSave && debounceSave();
+    toast(`"${_ctxColName}" updated`, 'success');
+  });
+  setTimeout(syncColFormatFields, 0);
 }
 
 function ctxRenameCol() {
@@ -5344,6 +5485,7 @@ function ctxDeleteCol() {
 
 function renderTable(){
   if(!ds()){G('dscroll').innerHTML='<div class="loading">No data loaded</div>';G('row-info').textContent='—';return;}
+  normalizeDatasetColumns(ds());
   const vis=ds().columns.filter(c=>c.visible),rows=getRows(),all=data();
   G('row-info').textContent=rows.length+' / '+all.length+' rows · '+vis.length+' cols';
   syncDDs();
@@ -5355,13 +5497,13 @@ function renderTable(){
     const oi=all.indexOf(row);
     h+=`<tr id="tr-${oi}" onclick="selRow(this)" oncontextmenu="showRowCtxMenu(event,${oi})"><td><div class="tdi idx">${ri+1}</div></td>`;
     vis.forEach(col=>{
-      const v=row[col.name],isNull=v==null||v==='',isEd=pending[oi]&&pending[oi][col.name]!==undefined;
-      const dispV=isEd?pending[oi][col.name]:v;
+      const v=row[col.name],isEd=pending[oi]&&pending[oi][col.name]!==undefined;
+      const dispV=isEd?pending[oi][col.name]:v,isNull=dispV==null||dispV==='';
       let style='';
       condFmt.forEach(rule=>{if(rule.col!==col.name||isNull)return;let m=false;if(rule.op==='>'&&!isNaN(+v)&&+v>+rule.val)m=true;else if(rule.op==='<'&&!isNaN(+v)&&+v<+rule.val)m=true;else if(rule.op==='='&&String(v)===rule.val)m=true;else if(rule.op==='contains'&&String(v).toLowerCase().includes(rule.val.toLowerCase()))m=true;if(m)style=`background:${rule.bg};color:${rule.fg}`;});
       const outlierCls=(!isEd&&!isNull&&outlierMode&&outlierMap[col.name])?outlierMap[col.name][oi]||'':'';const cls=(isEd?'tdi chg':(isNull?'tdi nul':(col.type==='number'?'tdi num':'tdi')))+' '+outlierCls;
-      const disp=isNull&&!isEd?'<em style="opacity:.4">null</em>':(dispV??'');
-      h+=`<td data-oi="${oi}" data-col="${col.name}" ${style?`style="${style}"`:''}><div class="${cls}" onclick="cellClick(this)" title="${editMode?'Click to edit':''}">${disp}</div><input class="td-inp" value="${String(dispV??'').replace(/"/g,'&quot;')}" onblur="cellBlur(this,${oi},'${col.name}')" onkeydown="cellKey(event,this,${oi},'${col.name}')"></td>`;
+      const disp=isEd?escHtml(String(dispV??'')):formatCellHTML(dispV,col);
+      h+=`<td data-oi="${oi}" data-col="${col.name}" ${style?`style="${style}"`:''}><div class="${cls}" onclick="cellClick(this)" title="${editMode?'Click to edit':''}">${disp}</div><input class="td-inp" value="${escHtml(String(dispV??''))}" onblur="cellBlur(this,${oi},'${col.name}')" onkeydown="cellKey(event,this,${oi},'${col.name}')"></td>`;
     });
     h+='</tr>';
   });
@@ -7513,7 +7655,7 @@ function opFillBackward(){const d=ds();pushH();let n=0;d.columns.forEach(col=>{l
 
 function opParseDates(){const d=ds();pushH();let n=0;d.columns.forEach(col=>{const sample=d.data.slice(0,50).map(r=>r[col.name]).filter(v=>v!=null&&v!=='');const parsed=sample.filter(v=>{const dt=new Date(String(v));return !isNaN(dt)&&String(v).length>4;});if(parsed.length>sample.length*0.7){d.data=d.data.map(r=>{const raw=r[col.name];if(raw==null||raw==='')return r;const dt=new Date(String(raw));if(!isNaN(dt)){r[col.name]=dt.toISOString().slice(0,10);n++;}return r;});col.type='date';}});logOp('Parse dates: '+n+' values standardized to YYYY-MM-DD');renderTable();buildProfile();}
 
-function opCastType(){const d=ds();if(!d)return;const opts=d.columns.map(c=>`<option value="${c.name}">${c.name} (${c.type})</option>`).join('');openModal('Change Column Type','',`<div style="display:flex;flex-direction:column;gap:8px"><div><div style="font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;font-weight:700">Column</div><select class="fsel" id="ct-col" style="width:100%">${opts}</select></div><div><div style="font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;font-weight:700">Cast to</div><select class="fsel" id="ct-type" style="width:100%"><option value="number">Number</option><option value="string">Text / String</option><option value="date">Date (YYYY-MM-DD)</option><option value="boolean">Boolean (true/false)</option></select></div></div>`,()=>{pushH();const col=G('ct-col').value,t=G('ct-type').value;const casters={number:v=>{const n=+String(v??'').replace(/[$,%\s,]/g,'');return isNaN(n)?null:n;},string:v=>v==null?'':String(v),date:v=>{const dt=new Date(String(v));return isNaN(dt)?null:dt.toISOString().slice(0,10);},boolean:v=>{const s=String(v??'').toLowerCase();return s==='true'||s==='1'||s==='yes'||s==='y';} };let n=0;d.data=d.data.map(r=>{r[col]=casters[t](r[col]);n++;return r;});const colObj=d.columns.find(c=>c.name===col);if(colObj)colObj.type=t;logOp(`Cast "${col}" → ${t} (${n} rows)`);renderTable();buildProfile();});}
+function opCastType(){const d=normalizeDatasetColumns(ds());if(!d)return;const opts=d.columns.map(c=>`<option value="${c.name}">${c.name} (${c.type})</option>`).join('');openModal('Change Column Type','',`<div style="display:flex;flex-direction:column;gap:8px"><div><div style="font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;font-weight:700">Column</div><select class="fsel" id="ct-col" style="width:100%">${opts}</select></div><div><div style="font-size:10px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px;font-weight:700">Cast to</div><select class="fsel" id="ct-type" style="width:100%"><option value="number">Number</option><option value="string">Text / String</option><option value="date">Date (YYYY-MM-DD)</option><option value="boolean">Boolean (true/false)</option></select></div></div>`,()=>{pushH();const col=G('ct-col').value,t=G('ct-type').value;let n=0;d.data=d.data.map(r=>{r[col]=castValueToType(r[col],t);n++;return r;});const colObj=d.columns.find(c=>c.name===col);if(colObj){colObj.type=t;colObj.formatMode='auto';colObj.decimals=null;colObj.useThousands=true;}logOp(`Cast "${col}" → ${t} (${n} rows)`);renderTable();buildProfile();});}
 
 function opNormalize(){const d=ds();if(!d)return;const numCols=d.columns.filter(c=>c.type==='number');if(!numCols.length){toast('No numeric columns','error');return;}const opts=numCols.map(c=>`<option>${c.name}</option>`).join('');openModal('Normalize Column (0–1)','',`<select class="fsel" id="nm-c">${opts}</select>`,()=>{pushH();const col=G('nm-c').value;const vals=d.data.map(r=>+r[col]).filter(v=>!isNaN(v));const mn=Math.min(...vals),mx=Math.max(...vals),rng=mx-mn;if(rng===0){toast('All values are the same, cannot normalize','error');return;}d.data=d.data.map(r=>{if(r[col]!=null&&!isNaN(+r[col]))r[col]=+((+r[col]-mn)/rng).toFixed(6);return r;});logOp(`Normalize "${col}" → 0–1`);renderTable();});}
 
@@ -7713,7 +7855,7 @@ function pivotToNewDS() {
 }
 
 // ═══════════════════════════ SAVE / EXPORT ═══════════════════════════
-function saveDDF(){if(!DS.length)return toast('No data','error');syncCBUI();const payload={version:3,projectName:G('proj-name').value,created:new Date().toISOString(),datasets:DS.map(d=>{const o={name:d.name,columns:d.columns.map(c=>c.name),data:d.data};if(d.group)o.group=d.group;return o;}),dashboard:DASH,chartState:CB};const enc=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));dl('DataFramework.io v3\n|DFP1|'+enc,(G('proj-name').value||'project')+'.dfp','text/plain');toast('Saved as .dfp','success');}
+function saveDDF(){if(!DS.length)return toast('No data','error');syncCBUI();normalizeAllDatasets();const payload={version:4,projectName:G('proj-name').value,created:new Date().toISOString(),datasets:DS.map(d=>{const o={name:d.name,columns:d.columns.map(c=>({...c})),data:d.data};if(d.group)o.group=d.group;return o;}),dashboard:DASH,chartState:CB};const enc=btoa(unescape(encodeURIComponent(JSON.stringify(payload))));dl('DataFramework.io v4\n|DFP1|'+enc,(G('proj-name').value||'project')+'.dfp','text/plain');toast('Saved as .dfp','success');}
 function showExportMenu(){if(!DS.length)return toast('No data','error');G('exp-body').innerHTML=`<div style="display:flex;flex-direction:column;gap:5px"><button class="tbtn" style="justify-content:flex-start;padding:9px 12px" onclick="expCSV();closeExp()">📄 Active Dataset → CSV</button><button class="tbtn" style="justify-content:flex-start;padding:9px 12px" onclick="expXLSX();closeExp()">📗 Active Dataset → XLSX</button><button class="tbtn" style="justify-content:flex-start;padding:9px 12px" onclick="expAllXLSX();closeExp()">📗 All Datasets → XLSX (multi-sheet)</button><button class="tbtn" style="justify-content:flex-start;padding:9px 12px" onclick="expJSON();closeExp()">📋 Active Dataset → JSON</button><button class="tbtn" style="justify-content:flex-start;padding:9px 12px" onclick="expMD();closeExp()">📝 Active Dataset → Markdown</button><div style="height:1px;background:var(--border);margin:3px 0"></div><button class="tbtn" style="justify-content:flex-start;padding:9px 12px" onclick="exportDashHTML();closeExp()">🌐 Dashboard → HTML</button><button class="tbtn" style="justify-content:flex-start;padding:9px 12px" onclick="exportDashXLSX();closeExp()">📗 Dashboard + Data → XLSX</button><button class="tbtn" style="justify-content:flex-start;padding:9px 12px" onclick="exportPivotCSV();closeExp()">🔀 Pivot → CSV</button><button class="tbtn" style="justify-content:flex-start;padding:9px 12px" onclick="exportPivotXLSX();closeExp()">🔀 Pivot → XLSX</button><div style="height:1px;background:var(--border);margin:3px 0"></div><button class="tbtn" style="justify-content:flex-start;padding:9px 12px;border-color:#a78bfa;color:#a78bfa" onclick="saveDDF();closeExp()">📦 Save as .dfp (full project)</button><button class="mbtn" onclick="closeExp()" style="margin-top:4px;align-self:flex-end">Close</button></div>`;G('exp-ov').classList.add('on');}
 function closeExp(){G('exp-ov').classList.remove('on');}
 function expCSV(){const d=ds();if(!d)return;const cols=d.columns.filter(c=>c.visible);let csv=cols.map(c=>JSON.stringify(c.name)).join(',')+'\n';d.data.forEach(r=>{csv+=cols.map(c=>{const v=r[c.name];return v==null?'':(typeof v==='string'?JSON.stringify(v):v);}).join(',')+'\n';});dl(csv,d.name+'.csv','text/csv');toast('CSV exported','success');}
@@ -18663,8 +18805,7 @@ function gpqlSaveAsDS() {
   if (!gpqlResultRows || !gpqlResultCols) return toast('Run a GPQL query first', 'info');
   const name = prompt('Save result as dataset named:', 'GPQL Result');
   if (!name) return;
-  const cols = gpqlResultCols.map(c => ({ name: c, type: inferType(gpqlResultRows.map(r => r[c])) }));
-  DS.push({ name, data: gpqlResultRows, columns: cols, id: Date.now() });
+  DS.push(normalizeDatasetColumns({ name, data: gpqlResultRows, columns: gpqlResultCols, id: Date.now(), color: DSC[DS.length%DSC.length] }));
   ACT = DS.length - 1;
   renderDsList(); renderTable(); updateAllDSSelects();
   toast(`Saved "${name}" (${gpqlResultRows.length} rows)`, 'success');
