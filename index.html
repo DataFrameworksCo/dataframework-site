@@ -3012,6 +3012,7 @@ button, input, select { letter-spacing: 0; }
       <span style="font-size:10px;color:var(--text-3);margin-right:4px">Quick insert:</span>
       <button class="tbtn" onclick="gpqlSnip('FETCH')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">FETCH</button>
       <button class="tbtn" onclick="gpqlSnip('SHOW WHERE')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">SHOW WHERE</button>
+      <button class="tbtn" onclick="gpqlSnip('SHOW BETWEEN WHERE')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">SHOW BETWEEN</button>
       <button class="tbtn" onclick="gpqlSnip('PICK')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">PICK</button>
       <button class="tbtn" onclick="gpqlSnip('SORT')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">SORT</button>
       <button class="tbtn" onclick="gpqlSnip('GROUP')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">GROUP</button>
@@ -16864,12 +16865,12 @@ SORT Revenue DESC<button class="kb-copy-btn" onclick="kbCopy(this)">Copy</button
   },
 
   // ── SHOW / FILTER ─────────────────────────────────────────────
-  { id:'show', icon:'🔍', title:'SHOW / SHOW WHERE',
-    desc:'Display all rows or filter by condition',
+  { id:'show', icon:'🔍', title:'SHOW / SHOW WHERE / SHOW BETWEEN WHERE',
+    desc:'Display all rows or filter by condition or range',
     tabs:['Operators','String Ops','Examples'],
     content:[
-`<h2>SHOW ALL &nbsp;·&nbsp; SHOW WHERE <em>condition</em></h2>
-<p><code>SHOW ALL</code> keeps every row. <code>SHOW WHERE</code> keeps only rows matching the condition.</p>
+`<h2>SHOW ALL &nbsp;·&nbsp; SHOW WHERE <em>condition</em> &nbsp;·&nbsp; SHOW BETWEEN WHERE <em>column = start,end</em></h2>
+<p><code>SHOW ALL</code> keeps every row. <code>SHOW WHERE</code> keeps only rows matching the condition. <code>SHOW BETWEEN WHERE</code> keeps rows whose value falls inside an inclusive range.</p>
 <table style="width:100%;border-collapse:collapse;font-size:12px">
 <thead><tr style="border-bottom:1px solid var(--border)"><th style="padding:6px 8px;text-align:left;color:var(--text-3)">Operator</th><th style="padding:6px 8px;text-align:left;color:var(--text-3)">Meaning</th><th style="padding:6px 8px;text-align:left;color:var(--text-3)">Example</th></tr></thead>
 <tbody>
@@ -16906,6 +16907,12 @@ SHOW WHERE Status IN (New, Open, Pending)<button class="kb-copy-btn" onclick="kb
 <pre>-- Comma-separated values: match any of the listed values
 FETCH History
 SHOW WHERE Year = 1990,1991,1992 AND WHERE Country = USA<button class="kb-copy-btn" onclick="kbCopy(this)">Copy</button></pre>
+<pre>-- Inclusive numeric range
+FETCH History
+SHOW BETWEEN WHERE Year = 1950,1960<button class="kb-copy-btn" onclick="kbCopy(this)">Copy</button></pre>
+<pre>-- Inclusive date range
+FETCH Orders
+SHOW BETWEEN WHERE OrderDate = "2024-01-01","2024-01-31"<button class="kb-copy-btn" onclick="kbCopy(this)">Copy</button></pre>
 <pre>FETCH Products
 SHOW WHERE Name CONTAINS "pro" AND Price < 100<button class="kb-copy-btn" onclick="kbCopy(this)">Copy</button></pre>
 <pre>-- Find rows with missing emails
@@ -17778,7 +17785,7 @@ function showRowCtxMenu(e, rowIdx) {
 // ═══════════════════════════════════════════════════════════════
 
 const GPQL_KEYWORDS = [
-  'FETCH', 'FETCH SUB', 'SHOW ALL', 'SHOW WHERE',
+  'FETCH', 'FETCH SUB', 'SHOW ALL', 'SHOW WHERE', 'SHOW BETWEEN WHERE',
   'PICK', 'DROP COLS', 'DROP COL',
   'SORT', 'LIMIT', 'SKIP', 'TOP',
   'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'STATS',
@@ -17874,7 +17881,7 @@ function gpqlGetACItems(ta) {
   }
 
   // In SHOW WHERE / GROUP BY → suggest column names for partial words
-  if (/^(SHOW WHERE|GROUP BY|GROUP)\s+.+$/i.test(trimmed)) {
+  if (/^(SHOW WHERE|SHOW BETWEEN WHERE|GROUP BY|GROUP)\s+.+$/i.test(trimmed)) {
     const lastWord = trimmed.match(/(\w+)$/)?.[1] || '';
     if (lastWord.length >= 1) {
       _acInsertStart = pos - lastWord.length;
@@ -18818,6 +18825,7 @@ function gpqlSnip(cmd) {
   const snippets = {
     'FETCH':      'FETCH datasetName',
     'SHOW WHERE': 'SHOW WHERE ColumnName > value',
+    'SHOW BETWEEN WHERE': 'SHOW BETWEEN WHERE Year = 1950,1960',
     'PICK':       'PICK Col1, Col2, Col3',
     'SORT':       'SORT ColumnName DESC',
     'GROUP':      'GROUP BY ColumnName COUNT, SUM Revenue',
@@ -18994,6 +19002,13 @@ function executeGPQL(raw) {
     else if (up === 'SHOW ALL' || up === 'SHOW') {
       requireRows();
       // no-op, just confirm
+    }
+
+    // ── SHOW BETWEEN WHERE <col> = start,end ────────────────
+    else if (up.startsWith('SHOW BETWEEN WHERE ')) {
+      requireRows();
+      const clause = line.replace(/^SHOW BETWEEN WHERE /i, '').trim();
+      rows = rows.filter(row => { try { return gpqlEvalBetweenClause(row, clause); } catch(e) { return false; } });
     }
 
     // ── SHOW WHERE <expr> ────────────────────────────────────
@@ -19346,6 +19361,72 @@ function gpqlEvalMath(row, expr) {
     e = e.replaceAll('[' + k + ']', isNaN(+row[k]) ? JSON.stringify(String(row[k])) : (+row[k]));
   });
   try { return Function('"use strict"; return (' + e + ')')(); } catch(_) { return null; }
+}
+
+function gpqlRowVal(row, name) {
+  if (name in row) return row[name];
+  const k = Object.keys(row).find(k => k.toLowerCase() === name.toLowerCase());
+  return k ? row[k] : undefined;
+}
+
+function gpqlUnquote(val) {
+  return String(val ?? '').trim().replace(/^['"]|['"]$/g, '');
+}
+
+function gpqlSplitRangeValues(raw) {
+  const vals = [];
+  let cur = '', inQ = false, qChar = null;
+  for (let i = 0; i < raw.length; i++) {
+    const ch = raw[i];
+    if ((ch === '"' || ch === "'") && (!inQ || qChar === ch)) {
+      inQ = !inQ;
+      qChar = inQ ? ch : null;
+      cur += ch;
+      continue;
+    }
+    if (ch === ',' && !inQ) {
+      vals.push(cur.trim());
+      cur = '';
+      continue;
+    }
+    cur += ch;
+  }
+  if (cur.trim() || raw.endsWith(',')) vals.push(cur.trim());
+  return vals.filter(v => v.length);
+}
+
+function gpqlComparableValue(val) {
+  if (typeof val === 'number' && Number.isFinite(val)) return { kind: 'number', value: val };
+  const cleaned = gpqlUnquote(val);
+  if (/^-?\d+(?:\.\d+)?$/.test(cleaned)) return { kind: 'number', value: parseFloat(cleaned) };
+  const looksLikeDate = /^\d{4}-\d{1,2}-\d{1,2}(?:[ T]\d{1,2}:\d{2}(?::\d{2})?)?$/.test(cleaned) || /^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(cleaned);
+  if (looksLikeDate) {
+    const ts = Date.parse(cleaned);
+    if (!Number.isNaN(ts)) return { kind: 'date', value: ts };
+  }
+  return { kind: 'string', value: cleaned.toLowerCase() };
+}
+
+function gpqlEvalBetweenClause(row, clause) {
+  const m = clause.match(/^(.+?)\s*(?:=|BETWEEN)\s*(.+)$/i);
+  if (!m) throw new Error('SHOW BETWEEN WHERE syntax: SHOW BETWEEN WHERE Column = start,end');
+  const col = m[1].trim();
+  const bounds = gpqlSplitRangeValues(m[2]);
+  if (bounds.length !== 2) throw new Error('SHOW BETWEEN WHERE requires exactly two values: start,end');
+  const cell = gpqlComparableValue(gpqlRowVal(row, col));
+  const a = gpqlComparableValue(bounds[0]);
+  const b = gpqlComparableValue(bounds[1]);
+  if (cell.kind === a.kind && a.kind === b.kind) {
+    const low = a.value <= b.value ? a.value : b.value;
+    const high = a.value <= b.value ? b.value : a.value;
+    return cell.value >= low && cell.value <= high;
+  }
+  const cellStr = String(gpqlRowVal(row, col) ?? '').toLowerCase();
+  const left = gpqlUnquote(bounds[0]).toLowerCase();
+  const right = gpqlUnquote(bounds[1]).toLowerCase();
+  const low = left <= right ? left : right;
+  const high = left <= right ? right : left;
+  return cellStr >= low && cellStr <= high;
 }
 
 function gpqlEvalExpr(row, expr) {
