@@ -4,12 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#131416">
-<meta name="description" content="Import, clean, merge, visualize, and export data — all in one place.">
+<meta name="description" content="DataFrameworkBI: import, clean, query, visualize, and export business data in one workspace.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="DataFramework">
+<meta name="apple-mobile-web-app-title" content="DataFrameworkBI">
 <link rel="manifest" id="pwa-manifest">
-<title>DataFramework.io v1.0.5</title>
+<title>DataFrameworkBI v1.0.6</title>
 <!-- DM Sans + DM Mono — clean, professional, modern data tool aesthetic -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -637,14 +637,17 @@ input, select, textarea, button { font-family: var(--font); font-size: inherit; 
 }
 
 .logo {
-  width: 48px;
+  min-width: 48px;
+  width: auto;
   height: var(--header-h);
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   cursor: pointer;
   flex-shrink: 0;
   border-right: 1px solid var(--border);
+  gap: 10px;
+  padding: 0 14px;
 }
 .logo-mark {
   width: 28px;
@@ -658,11 +661,124 @@ input, select, textarea, button { font-family: var(--font); font-size: inherit; 
   font-weight: 600;
   color: #fff;
   letter-spacing: -.5px;
+  flex-shrink: 0;
 }
-.logo-txt { display: none; }
-.logo-txt small { display: none; }
+.logo-txt {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.05;
+}
+.logo-txt span {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -.02em;
+}
+.logo-txt small {
+  display: block;
+  font-size: 9.5px;
+  color: var(--text-3);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
 
 .hdr-divider { width: 1px; height: 20px; background: var(--border); margin: 0 14px; flex-shrink: 0; }
+
+/* ═══ APP SPLASH ═══ */
+#app-splash {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background:
+    radial-gradient(circle at top, rgba(79,142,247,.18), transparent 34%),
+    linear-gradient(180deg, #12141a 0%, #0d1016 100%);
+  transition: opacity .38s ease, visibility .38s ease;
+}
+body.app-ready #app-splash {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+.app-splash-card {
+  width: min(420px, calc(100vw - 40px));
+  padding: 28px 26px 24px;
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(17,20,27,.82);
+  box-shadow: 0 24px 80px rgba(0,0,0,.42);
+  backdrop-filter: blur(14px);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+.app-splash-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.app-splash-mark {
+  width: 54px;
+  height: 54px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, var(--highlight), #2468d8);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -.04em;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
+}
+.app-splash-wordmark {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.app-splash-wordmark strong {
+  font-size: 24px;
+  line-height: 1;
+  color: #f7f9fc;
+  letter-spacing: -.04em;
+}
+.app-splash-wordmark span {
+  font-size: 11px;
+  color: #98a7bf;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+}
+.app-splash-tag {
+  font-size: 13px;
+  color: #c6d0df;
+  line-height: 1.55;
+  max-width: 34ch;
+}
+.app-splash-loading {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: #9fb0ca;
+}
+.app-splash-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255,255,255,.12);
+  border-top-color: var(--highlight);
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+.app-splash-foot {
+  font-size: 10.5px;
+  color: #75849c;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
 
 #proj-name {
   background: transparent;
@@ -2689,9 +2805,27 @@ button, input, select { letter-spacing: 0; }
 </style>
 </head>
 <body>
+<div id="app-splash" aria-hidden="true">
+  <div class="app-splash-card">
+    <div class="app-splash-brand">
+      <div class="app-splash-mark">DF</div>
+      <div class="app-splash-wordmark">
+        <strong>DataFrameworkBI</strong>
+        <span>Business Intelligence Workspace</span>
+      </div>
+    </div>
+    <div class="app-splash-tag">Loading datasets, visuals, query tools, and local workspace settings.</div>
+    <div class="app-splash-loading">
+      <div class="app-splash-spinner"></div>
+      <span>Starting DataFrameworkBI…</span>
+    </div>
+    <div class="app-splash-foot">Data, dashboards, and analysis in one browser app</div>
+  </div>
+</div>
 <div id="hdr">
-  <div class="logo" onclick="show('home')" title="DataFramework">
-    <div class="logo-mark">Df</div>
+  <div class="logo" onclick="show('home')" title="DataFrameworkBI">
+    <div class="logo-mark">DF</div>
+    <div class="logo-txt"><span>DataFrameworkBI</span><small>Business Intelligence</small></div>
   </div>
   <div class="hdr-divider"></div>
   <input id="proj-name" onchange="saveConfig()" oninput="debounceSave()" value="Untitled Project" spellcheck="false" title="Click to rename project">
@@ -2858,8 +2992,8 @@ button, input, select { letter-spacing: 0; }
 <!-- HOME -->
 <div class="view on" id="v-home">
   <div class="hi">
-    <div class="hi-logo">Data<em>Framework</em></div>
-    <div class="hi-tag">Import, clean, merge, visualize, and export — all in one place.</div>
+    <div class="hi-logo">DataFramework<em>BI</em></div>
+    <div class="hi-tag">Import, clean, query, visualize, and export business data in one place.</div>
     <div class="dz" id="dz" ondrop="onDrop(event)" ondragover="onDO(event)" ondragleave="onDL()">
       <div class="dz-ico"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="opacity:.45;color:var(--text-2)"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
       <div class="dz-title">Drop a file to get started</div>
@@ -9956,7 +10090,7 @@ function captureConfig() {
   return {
     version: CONFIG_VERSION,
     savedAt: new Date().toISOString(),
-    app: 'DataFramework.io',
+    app: 'DataFrameworkBI',
     themeId: THEMES[getCurrentThemeIndex()]?.id || null,
     themeMode: themeMode(THEMES[getCurrentThemeIndex()] || THEMES[0]),
     cssVars,
@@ -9970,7 +10104,7 @@ function captureConfig() {
 }
 
 function applyConfig(cfg, silent) {
-  if (!cfg || cfg.app !== 'DataFramework.io') return false;
+  if (!cfg || !['DataFramework.io','DataFrameworkBI'].includes(cfg.app)) return false;
   // Clear ALL possible var names (old and new) to remove stale inline styles
   const CLEAR_VARS = [
     '--bg','--surface','--surface-2','--surface-3','--border','--border-2',
@@ -11648,8 +11782,8 @@ let _pwaInstalled = false;
   try {
     const iconSvg = _pwaIconSVG(512);
     const manifest = {
-      name: 'DataFramework.io', short_name: 'DataFramework',
-      description: 'Import, clean, merge, visualize, and export data.',
+      name: 'DataFrameworkBI', short_name: 'DFBI',
+      description: 'Import, clean, query, visualize, and export business data.',
       start_url: location.href, display: 'standalone',
       background_color: '#131416', theme_color: '#131416',
       icons: [{ src: iconSvg, sizes: '512x512', type: 'image/svg+xml', purpose: 'any maskable' }]
@@ -11683,7 +11817,7 @@ let _pwaInstalled = false;
   window.addEventListener('appinstalled', () => {
     _pwaInstalled = true; _pwaPrompt = null;
     _pwaUpdateUI();
-    toast('DataFramework installed!', 'success');
+    toast('DataFrameworkBI installed!', 'success');
   });
 
   if (window.matchMedia('(display-mode: standalone)').matches || navigator.standalone)
@@ -11725,7 +11859,7 @@ function _pwaUpdateUI() {
     area.innerHTML =
       '<button class="tbtn" onclick="pwaTriggerInstall()" style="justify-content:flex-start;padding:10px 14px;border-color:var(--highlight);color:var(--highlight);font-weight:600;width:100%;margin-bottom:8px">'
       + '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" style="margin-right:7px"><path d="M12 2v13M8 11l4 4 4-4"/><path d="M20 17v2a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2v-2"/></svg>'
-      + 'Install DataFramework</button>'
+      + 'Install DataFrameworkBI</button>'
       + _pwaBadge('ok', '✓ Install available — click above');
     return;
   }
@@ -11775,7 +11909,7 @@ function pwaOpenAppWindow() {
   const w = screen.availWidth, h = screen.availHeight;
   const win = window.open(
     location.href,
-    'DataFramework',
+    'DataFrameworkBI',
     'width=' + w + ',height=' + h + ',left=0,top=0,menubar=no,toolbar=no,location=no,status=no,scrollbars=yes'
   );
   if (!win) {
@@ -11789,7 +11923,7 @@ function pwaTriggerInstall() {
   if (!_pwaPrompt) return;
   _pwaPrompt.prompt();
   _pwaPrompt.userChoice.then(result => {
-    if (result.outcome === 'accepted') toast('Installing DataFramework…', 'info');
+    if (result.outcome === 'accepted') toast('Installing DataFrameworkBI…', 'info');
     _pwaPrompt = null;
     _pwaUpdateUI();
   });
@@ -11799,7 +11933,7 @@ function pwaTriggerInstall() {
   const restored = loadConfig();
   if (!restored) {
     const defaultThemeIdx = Math.max(0, findThemeIndexById(DEFAULT_THEME_ID));
-    applyConfig({app:'DataFramework.io', themeId:THEMES[defaultThemeIdx].id, themeMode:'light', cssVars:THEMES[defaultThemeIdx].vars}, true);
+    applyConfig({app:'DataFrameworkBI', themeId:THEMES[defaultThemeIdx].id, themeMode:'light', cssVars:THEMES[defaultThemeIdx].vars}, true);
   }
   setTimeout(() => updateConfigStatus(restored ? 'loaded' : 'none'), 200);
   setTimeout(() => { renderModules(); renderModuleNavItems(); }, 100);
@@ -11813,7 +11947,17 @@ function pwaTriggerInstall() {
     if (installedModules.has('timeline')) initTimelineModule();
   }, 500);
   setTimeout(startAutosaveLoop, 1000);
+  setTimeout(hideAppSplash, 650);
 })();
+
+function hideAppSplash() {
+  if (document.body.classList.contains('app-ready')) return;
+  document.body.classList.add('app-ready');
+  const splash = G('app-splash');
+  if (splash) setTimeout(() => splash.remove(), 500);
+}
+
+window.addEventListener('load', () => setTimeout(hideAppSplash, 120));
 
 // ═══════════════════════════ KEYBOARD SHORTCUTS (v1.0.2 — unified handler) ═══════════════════════════
 let finderMatches=[],finderIdx=-1;
