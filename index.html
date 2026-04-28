@@ -5150,6 +5150,8 @@ function addDataset(rows,cols,name){
   return d;
 }
 function switchDS(idx){if(isNaN(idx)||idx<0||idx>=DS.length)return;ACT=idx;filters=[];search={term:'',col:''};sortSt={col:null,dir:1};sqlResultRows=null;sqlResultCols=null;G('sql-result-bar')?.classList.remove('on');setSQLStatus&&setSQLStatus('','');renderDsList();renderTable();['active-ds','clean-ds','pv-ds','cb-ds'].forEach(id=>{const el=G(id);if(el)try{el.value=String(idx);}catch(e){}});}
+function openDS(idx){if(isNaN(idx)||idx<0||idx>=DS.length)return;switchDS(idx);show('data');}
+function openDSByName(name){const idx=DS.findIndex(d=>d.name===name);if(idx>=0)openDS(idx);}
 let _dsListCache='';
 let _dsGroupOpen = {}; // groupKey -> true/false (open/closed)
 
@@ -5171,7 +5173,7 @@ function renderDsList(){
       const prefix = d.group + '_';
       if (displayName.startsWith(prefix)) displayName = displayName.slice(prefix.length);
     }
-    return `<div class="dsc" id="dsc-${i}" onclick="switchDS(${i})" oncontextmenu="showDsCtxMenu(event,${i},false)">
+    return `<div class="dsc" id="dsc-${i}" onclick="openDS(${i})" oncontextmenu="showDsCtxMenu(event,${i},false)">
       <div class="dsc-top">
         <div class="dsc-dot" style="background:${d.color}"></div>
         <div class="dsc-nm" id="dsn-${i}" ondblclick="renameDs(${i})">${displayName}</div>
@@ -8228,7 +8230,7 @@ function renderPyDatasets() {
     el.innerHTML = '<div style="font-size:11px;color:var(--text-3);padding:2px 6px">No datasets loaded</div>'; return;
   }
   el.innerHTML = Object.keys(window.datasets).map(n =>
-    '<div class="py-ds-chip" onclick="pyInsertDatasetLoad(\'' + n + '\')">'
+    '<div class="py-ds-chip" onclick="pyDatasetClick(event,' + JSON.stringify(n) + ')" title="Click to open in Data view · Alt+click to insert get_dataset()">'
     + '<span>&#128202;</span><span style="font-weight:600">' + n + '</span>'
     + '<code style="font-family:var(--mono);font-size:9px;color:var(--text-3)">' + (window.datasets[n].rows||[]).length + 'r</code>'
     + '</div>').join('');
@@ -8258,6 +8260,11 @@ function pySwitchFile(i) {
   pyCurrentFile = i;
   G('py-editor').value = pyFiles[i].code;
   renderPyFiles();
+}
+
+function pyDatasetClick(e, name) {
+  if (e?.altKey) { pyInsertDatasetLoad(name); return; }
+  openDSByName(name);
 }
 
 function pyNewFile() {
@@ -9213,14 +9220,14 @@ function dflOnShow() {
         h += '<div style="font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);padding:6px 8px 2px;margin-top:4px">' + grp + '</div>';
         members.forEach(d => {
           const shortName = d.name.slice(grp.length).replace(/^[_\s]+/, '') || d.name;
-          h += '<div class="dfl-ds-item" onclick="dflInsertDS(' + JSON.stringify(d.name) + ')" title="Click to insert load() call">'
+          h += '<div class="dfl-ds-item" onclick="dflDatasetClick(event,' + JSON.stringify(d.name) + ')" title="Click to open in Data view · Alt+click to insert load() call">'
             + '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:' + (d.color||'#888') + ';flex-shrink:0;margin-right:5px"></span>'
             + '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px">' + shortName + '</span>'
             + '<span style="font-size:10px;color:var(--text-3)">' + d.data.length + '</span></div>';
         });
       });
       ungrouped.forEach(d => {
-        h += '<div class="dfl-ds-item" onclick="dflInsertDS(' + JSON.stringify(d.name) + ')" title="Click to insert load() call">'
+        h += '<div class="dfl-ds-item" onclick="dflDatasetClick(event,' + JSON.stringify(d.name) + ')" title="Click to open in Data view · Alt+click to insert load() call">'
           + '<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:' + (d.color||'#888') + ';flex-shrink:0;margin-right:5px"></span>'
           + '<span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px">' + d.name + '</span>'
           + '<span style="font-size:10px;color:var(--text-3)">' + d.data.length + '</span></div>';
@@ -9249,6 +9256,11 @@ function dflInsertDS(name) {
   ed.value = ed.value.slice(0, s) + ins + ed.value.slice(ed.selectionEnd);
   ed.selectionStart = ed.selectionEnd = s + ins.length;
   ed.focus();
+}
+
+function dflDatasetClick(e, name) {
+  if (e?.altKey) { dflInsertDS(name); return; }
+  openDSByName(name);
 }
 
 function dflClear() {
@@ -16483,9 +16495,9 @@ function renderSQLDatasetChips() {
     const chip = document.createElement('div');
     chip.className = 'sql-ds-chip';
     chip.draggable = true;
-    chip.title = `Click to insert · Drag into query\n${d.data.length} rows · ${d.columns.length} cols`;
+    chip.title = `Click to open in Data view · Alt+click to insert · Drag into query\n${d.data.length} rows · ${d.columns.length} cols`;
     chip.innerHTML = `<span class="sql-ds-chip-dot" style="background:${d.color}"></span>${sn}<span class="sql-ds-chip-meta">${d.data.length.toLocaleString()}r</span>`;
-    chip.onclick = () => sqlChipInsert(sn,d,i);
+    chip.onclick = e => { if (e.altKey) sqlChipInsert(sn,d,i); else openDS(i); };
     chip.ondragstart = e => { e.dataTransfer.setData('text/plain',sn); e.dataTransfer.effectAllowed='copy'; chip.style.opacity='.5'; };
     chip.ondragend   = () => { chip.style.opacity=''; };
     bar.appendChild(chip);
@@ -17723,7 +17735,7 @@ function showDsCtxMenu(e, idx, isGroup, groupKey) {
     ta.value = (ta.value ? ta.value.trimEnd() + '\n' : '') + 'FETCH ' + d.name + '\n';
     ta.focus();
   };
-  _ctxMeta['set-active']  = () => switchDS(idx);
+  _ctxMeta['set-active']  = () => openDS(idx);
   _ctxMeta['export-csv']  = () => { switchDS(idx); exportCSV && exportCSV(); };
   _ctxMeta['delete']      = () => deleteDs(idx);
   const isActive = idx === ACT;
