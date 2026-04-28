@@ -2793,8 +2793,8 @@ button, input, select { letter-spacing: 0; }
       <div class="ni" id="n-fx-kb" onclick="show('fx-kb')" title="Formula Reference">
         <span class="ni-ico">ƒx</span><span class="ni-label">Formula Ref</span>
       </div>
-      <div class="ni" id="n-gpql-kb" onclick="show('gpql-kb')" title="GPQL Reference" style="">
-        <span class="ni-ico" style="font-weight:800;font-size:10px;background:var(--highlight);color:#fff;border-radius:2px;padding:1px 3px;width:auto">GPQL</span><span class="ni-label">GPQL Reference</span>
+      <div class="ni" id="n-gpql-kb" onclick="show('gpql-kb')" title="DFQL Reference" style="">
+        <span class="ni-ico" style="font-weight:800;font-size:10px;background:var(--highlight);color:#fff;border-radius:2px;padding:1px 3px;width:auto">DFQL</span><span class="ni-label">DFQL Reference</span>
       </div>
       <div class="ni ni-module installed" id="n-notes" onclick="show('notes')" title="Notes">
         <span class="ni-ico">📝</span><span class="ni-label">Notes</span>
@@ -2898,7 +2898,7 @@ button, input, select { letter-spacing: 0; }
     <button class="tbtn" onclick="showCondFmt()">Format</button>
     <button class="tbtn" onclick="toggleStats()">Stats</button>
     <button class="tbtn" id="sql-toggle-btn" onclick="toggleSQLPanel()">SQL</button>
-    <button class="tbtn" id="gpql-toggle-btn" onclick="toggleGPQLPanel()" style="color:var(--highlight);font-weight:600">GPQL</button>
+    <button class="tbtn" id="gpql-toggle-btn" onclick="toggleGPQLPanel()" style="color:var(--highlight);font-weight:600">DFQL</button>
     <button class="tbtn" id="outlier-btn" onclick="toggleOutlierMode()" title="Highlight statistical outliers in numeric columns">Outliers</button>
     <button class="tbtn" onclick="showSmartFill()" title="Fill down, fill series, or fill with a value">Smart Fill</button>
     <div class="tsp"></div>
@@ -2984,8 +2984,8 @@ button, input, select { letter-spacing: 0; }
   <div class="sql-bar" id="gpql-bar" style="border-top:2px solid var(--highlight)">
     <div class="sql-tabs" style="background:rgba(0,120,212,.04)">
       <span style="font-size:12px;font-weight:700;color:var(--highlight);padding:0 12px;display:flex;align-items:center;gap:6px;letter-spacing:.02em">
-        <span style="background:var(--highlight);color:#fff;border-radius:3px;padding:2px 7px;font-size:10px;font-weight:800;letter-spacing:.06em">GPQL</span>
-        General Purpose Query Language
+        <span style="background:var(--highlight);color:#fff;border-radius:3px;padding:2px 7px;font-size:10px;font-weight:800;letter-spacing:.06em">DFQL</span>
+        Data Framework Query Language
       </span>
       <div style="flex:1"></div>
       <span id="gpql-status" style="font-size:11px;color:var(--text-3);padding:0 10px;display:flex;align-items:center"></span>
@@ -3001,7 +3001,7 @@ button, input, select { letter-spacing: 0; }
         style="min-height:90px;font-size:13px;border-top:none"></textarea>
     </div>
     <div class="sql-actions" style="gap:6px">
-      <button class="sql-run" onclick="runGPQL()" style="background:var(--highlight)">▶ Run GPQL</button>
+      <button class="sql-run" onclick="runGPQL()" style="background:var(--highlight)">▶ Run DFQL</button>
       <button class="tbtn" onclick="gpqlClear()">Clear</button>
       <button class="tbtn" onclick="gpqlSaveAsDS()">Save as Dataset</button>
       <button class="tbtn" onclick="gpqlHistory()">History</button>
@@ -4139,7 +4139,7 @@ print(df.describe())
         <span class="kbhub-icon">🐍</span><span>Python</span>
       </div>
       <div class="kbhub-nav-item" id="kbhn-gpql-kb"    onclick="kbHubShow('gpql-kb')">
-        <span class="kbhub-icon">⚡</span><span>GPQL</span>
+        <span class="kbhub-icon">⚡</span><span>DFQL</span>
       </div>
     </div>
     <!-- Embedded KB frame -->
@@ -4271,7 +4271,7 @@ print(df.describe())
     <div class="kb-sidebar">
       <div class="kb-search-wrap" style="border-bottom:2px solid var(--highlight);padding-bottom:8px">
         <div style="display:flex;align-items:center;gap:8px;padding:10px 14px 4px">
-          <span style="background:var(--highlight);color:#fff;border-radius:3px;padding:2px 8px;font-size:11px;font-weight:800;letter-spacing:.06em">GPQL</span>
+          <span style="background:var(--highlight);color:#fff;border-radius:3px;padding:2px 8px;font-size:11px;font-weight:800;letter-spacing:.06em">DFQL</span>
           <span style="font-size:11px;font-weight:600;color:var(--text-2)">Reference</span>
         </div>
         <input class="kb-search" id="gpql-kb-search" placeholder="🔍 Search commands…" oninput="kbSearch(this.value,'gpql')">
@@ -4291,8 +4291,8 @@ print(df.describe())
       </div>
       <div class="kb-body" id="gpql-kb-body">
         <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:12px;color:var(--text-3)">
-          <div style="font-size:42px;background:var(--highlight);color:#fff;border-radius:8px;padding:10px 18px;font-weight:800;letter-spacing:.04em">GPQL</div>
-          <div style="font-size:16px;font-weight:700;color:var(--text)">General Purpose Query Language</div>
+          <div style="font-size:42px;background:var(--highlight);color:#fff;border-radius:8px;padding:10px 18px;font-weight:800;letter-spacing:.04em">DFQL</div>
+          <div style="font-size:16px;font-weight:700;color:var(--text)">Data Framework Query Language</div>
           <div style="font-size:13px">Select a command from the sidebar</div>
         </div>
       </div>
@@ -16780,14 +16780,14 @@ function buildGPQLKB() { return [
 
   // ── Getting Started ─────────────────────────────────────────
   { id:'intro', icon:'▶', title:'Getting Started',
-    desc:'What GPQL is and how to write queries',
+    desc:'What DFQL is and how to write queries',
     tabs:['Overview','Syntax Rules','Quick Start'],
     content:[
-`<h2>What is GPQL?</h2>
-<p>GPQL (General Purpose Query Language) is DataFramework's built-in plain-English query language. Write one command per line — no semicolons, no parentheses soup. It reads like English and runs instantly.</p>
+`<h2>What is DFQL?</h2>
+<p>DFQL (Data Framework Query Language) is DataFramework's built-in plain-English query language. Write one command per line — no semicolons, no parentheses soup. It reads like English and runs instantly.</p>
 <div class="kb-callout tip"><div class="kb-callout-icon">💡</div><div>Commands are <strong>case-insensitive</strong>. <code>FETCH</code>, <code>fetch</code>, <code>Fetch</code> all work the same.</div></div>
-<h2>Opening GPQL</h2>
-<p>Click the blue <strong>GPQL</strong> button in the Data View toolbar, or press <kbd>Ctrl+G</kbd>. Press <kbd>Ctrl+Enter</kbd> to run your query.</p>
+<h2>Opening DFQL</h2>
+<p>Click the blue <strong>DFQL</strong> button in the Data View toolbar, or press <kbd>Ctrl+G</kbd>. Press <kbd>Ctrl+Enter</kbd> to run your query.</p>
 <h2>A Complete Query</h2>
 <pre>FETCH Sales
 SHOW WHERE Region = "West" AND Revenue > 500
@@ -16815,7 +16815,7 @@ SAVE AS WestTopSales<button class="kb-copy-btn" onclick="kbCopy(this)">Copy</but
 FETCH Orders  -- inline comments too<button class="kb-copy-btn" onclick="kbCopy(this)">Copy</button></pre>`,
 
 `<h2>Your First Query</h2>
-<p>1. Import a file into DataFramework<br>2. Click <strong>GPQL</strong> in the toolbar<br>3. Type:</p>
+<p>1. Import a file into DataFramework<br>2. Click <strong>DFQL</strong> in the toolbar<br>3. Type:</p>
 <pre>SHOW ALL
 LIMIT 10<button class="kb-copy-btn" onclick="kbCopy(this)">Copy</button></pre>
 <p>Then press <kbd>Ctrl+Enter</kbd>. (No FETCH needed — it uses your active dataset.)</p>
@@ -16826,7 +16826,7 @@ SHOW WHERE Department = "Engineering"
 SORT Salary DESC
 LIMIT 5
 PICK Name, Salary, Title<button class="kb-copy-btn" onclick="kbCopy(this)">Copy</button></pre>
-<div class="kb-callout tip"><div class="kb-callout-icon">💡</div><div>If you skip FETCH, GPQL uses whatever dataset is currently active in the Data View.</div></div>`
+<div class="kb-callout tip"><div class="kb-callout-icon">💡</div><div>If you skip FETCH, DFQL uses whatever dataset is currently active in the Data View.</div></div>`
     ]
   },
 
@@ -16846,7 +16846,7 @@ PICK Name, Salary, Title<button class="kb-copy-btn" onclick="kbCopy(this)">Copy<
 <div class="kb-callout tip"><div class="kb-callout-icon">💡</div><div>FETCH is optional — skip it to use your active dataset automatically.</div></div>`,
 
 `<h2>Working with Multi-Sheet Excel Files</h2>
-<p>When you import an Excel file using <strong>Import All Sheets</strong>, each sheet becomes a dataset grouped under the filename. GPQL lets you navigate these with <code>FETCH</code> and <code>FETCH SUB</code>.</p>
+<p>When you import an Excel file using <strong>Import All Sheets</strong>, each sheet becomes a dataset grouped under the filename. DFQL lets you navigate these with <code>FETCH</code> and <code>FETCH SUB</code>.</p>
 <pre>-- Set group context and load the first sheet
 FETCH us_wars_dataset
 
@@ -17240,10 +17240,10 @@ EXPORT CSV<button class="kb-copy-btn" onclick="kbCopy(this)">Copy</button></pre>
 
   // ── RECIPES ───────────────────────────────────────────────────
   { id:'recipes', icon:'⚡', title:'Common Recipes',
-    desc:'Ready-to-use GPQL patterns for real tasks',
+    desc:'Ready-to-use DFQL patterns for real tasks',
     tabs:['Recipes'],
     content:[
-`<h2>Common GPQL Patterns</h2>
+`<h2>Common DFQL Patterns</h2>
 
 <h3>🔍 Filter & Report</h3>
 <pre>FETCH Sales
@@ -17746,7 +17746,7 @@ function showDsCtxMenu(e, idx, isGroup, groupKey) {
     { id:'rename',      icon:'✏️', text:'Rename',                 kbd: 'dbl-click' },
     { id:'duplicate',   icon:'📋', text:'Duplicate' },
     '-',
-    { id:'fetch-gpql',  icon:'⚡', text:'Use in GPQL (FETCH)' },
+    { id:'fetch-gpql',  icon:'⚡', text:'Use in DFQL (FETCH)' },
     { id:'export-csv',  icon:'⬇️', text:'Export as CSV' },
     '-',
     { id:'delete',      icon:'🗑️', text:'Delete', danger: true },
@@ -18520,7 +18520,7 @@ const MOD_VIEWS = {
   'sql-kb':       { icon: '🗄', title: 'SQL Reference',       w: 780, h: 580 },
   'py-kb':        { icon: '🐍', title: 'Python Reference',    w: 780, h: 580 },
   'fx-kb':        { icon: 'ƒx',  title: 'Formula Reference',  w: 820, h: 600 },
-  'gpql-kb':      { icon: '⚡',  title: 'GPQL Reference',     w: 860, h: 620 },
+  'gpql-kb':      { icon: '⚡',  title: 'DFQL Reference',     w: 860, h: 620 },
   'dfl':          { icon: '🧬', title: 'DFL — Data Framework Language', w: 1020, h: 660 },
   'kb-hub':       { icon: '📚', title: 'Reference Library',   w: 960,  h: 640 },
 };
@@ -18770,7 +18770,7 @@ window.addEventListener('beforeunload', () => {
 
 
 // ═══════════════════════════════════════════════════════════════
-//  GPQL — General Purpose Query Language
+//  GPQL — Data Framework Query Language
 //  Simple, readable, line-by-line data query language
 // ═══════════════════════════════════════════════════════════════
 
@@ -18852,11 +18852,11 @@ function gpqlSnip(cmd) {
 }
 
 function gpqlHistory() {
-  if (!gpqlHistoryLog.length) return toast('No GPQL history yet', 'info');
+  if (!gpqlHistoryLog.length) return toast('No DFQL history yet', 'info');
   const items = gpqlHistoryLog.slice(0,10).map((h,i) =>
     `${i+1}. [${h.time}] ${h.lines} lines → ${h.rows} rows (${h.ms}ms)`
   ).join('\n');
-  alert('GPQL History:\n\n' + items);
+  alert('DFQL History:\n\n' + items);
 }
 
 function clearGPQLResult() {
@@ -18867,8 +18867,8 @@ function clearGPQLResult() {
 }
 
 function gpqlSaveAsDS() {
-  if (!gpqlResultRows || !gpqlResultCols) return toast('Run a GPQL query first', 'info');
-  const name = prompt('Save result as dataset named:', 'GPQL Result');
+  if (!gpqlResultRows || !gpqlResultCols) return toast('Run a DFQL query first', 'info');
+  const name = prompt('Save result as dataset named:', 'DFQL Result');
   if (!name) return;
   DS.push(normalizeDatasetColumns({ name, data: gpqlResultRows, columns: gpqlResultCols, id: Date.now(), color: DSC[DS.length%DSC.length] }));
   ACT = DS.length - 1;
@@ -18879,7 +18879,7 @@ function gpqlSaveAsDS() {
 // ── Main executor ──────────────────────────────────────────────
 function runGPQL() {
   const raw = G('gpql-in').value.trim();
-  if (!raw) return toast('Enter a GPQL query', 'info');
+  if (!raw) return toast('Enter a DFQL query', 'info');
   const start = performance.now();
   try {
     const result = executeGPQL(raw);
@@ -18899,12 +18899,12 @@ function runGPQL() {
     renderSQLResult(result.rows, result.cols); // reuse SQL result renderer
     G('gpql-status').textContent = '✓ ' + result.rows.length + ' rows · ' + elapsed + 'ms';
     G('gpql-result-bar').classList.add('on');
-    G('gpql-result-msg').textContent = 'GPQL Result: ' + result.rows.length + ' rows × ' + result.cols.length + ' cols (' + elapsed + 'ms)';
+    G('gpql-result-msg').textContent = 'DFQL Result: ' + result.rows.length + ' rows × ' + result.cols.length + ' cols (' + elapsed + 'ms)';
     toast(result.rows.length + ' rows returned', 'success');
   } catch(err) {
     G('gpql-status').textContent = '✗ ' + err.message;
-    toast('GPQL: ' + err.message, 'error');
-    console.error('GPQL Error:', err);
+    toast('DFQL: ' + err.message, 'error');
+    console.error('DFQL Error:', err);
   }
 }
 
@@ -19335,7 +19335,7 @@ function executeGPQL(raw) {
 
     // ── Unknown command ───────────────────────────────────────
     else {
-      throw new Error(`Unknown GPQL command: "${line}". Type a command like FETCH, SHOW WHERE, PICK, SORT, etc.`);
+      throw new Error(`Unknown DFQL command: "${line}". Type a command like FETCH, SHOW WHERE, PICK, SORT, etc.`);
     }
   }
 
@@ -19352,7 +19352,7 @@ function executeGPQL(raw) {
     }).join(','))];
     const blob = new Blob([csvLines.join('\n')], {type:'text/csv'});
     const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-    a.download = (saveAsName || fetchedName || 'gpql_export') + '.csv'; a.click();
+    a.download = (saveAsName || fetchedName || 'dfql_export') + '.csv'; a.click();
     toast('CSV exported', 'success');
   }
   if (saveAsName) {
