@@ -6301,15 +6301,26 @@ function executeMerge(){
   const lDs=DS[+li],rDs=DS[+ri];if(!lDs||!rDs)return toast('Invalid selection','error');
   const lCols=[...G('mg-left-cols').querySelectorAll('input:checked')].map(i=>i.value);
   const rCols=[...G('mg-right-cols').querySelectorAll('input:checked')].map(i=>i.value).filter(c=>c!==rk);
+  if(!lCols.length&&!rCols.length)return toast('Select at least one output column','error');
+  const rightOutCols={};
+  const usedCols=new Set(lCols);
+  rCols.forEach(c=>{
+    let out=c;
+    let n=2;
+    while(usedCols.has(out)) out=`${c} (right${n>2?' '+(n-1):''})`,n++;
+    usedCols.add(out);
+    rightOutCols[c]=out;
+  });
+  const joinCols=[...lCols,...rCols.map(c=>rightOutCols[c])];
   let result=[];
   if(mType==='concat'){const allC=[...new Set([...lDs.columns.map(c=>c.name),...rDs.columns.map(c=>c.name)])];result=[...lDs.data,...rDs.data].map(row=>{const r={};allC.forEach(c=>r[c]=row[c]??null);return r;});}
   else{const rMap={};rDs.data.forEach(row=>{const k=String(row[rk]??'');if(!rMap[k])rMap[k]=[];rMap[k].push(row);});
-    if(mType==='inner'||mType==='left'){lDs.data.forEach(lR=>{const k=String(lR[lk]??''),ms=rMap[k]||[];if(ms.length)ms.forEach(rR=>{const r={};lCols.forEach(c=>r[c]=lR[c]??null);rCols.forEach(c=>r[c]=rR[c]??null);result.push(r);});else if(mType==='left'){const r={};lCols.forEach(c=>r[c]=lR[c]??null);rCols.forEach(c=>r[c]=null);result.push(r);}});}
-    else if(mType==='right'){const lMap={};lDs.data.forEach(row=>{const k=String(row[lk]??'');if(!lMap[k])lMap[k]=[];lMap[k].push(row);});rDs.data.forEach(rR=>{const k=String(rR[rk]??''),ms=lMap[k]||[];if(ms.length)ms.forEach(lR=>{const r={};lCols.forEach(c=>r[c]=lR[c]??null);rCols.forEach(c=>r[c]=rR[c]??null);result.push(r);});else{const r={};lCols.forEach(c=>r[c]=null);rCols.forEach(c=>r[c]=rR[c]??null);result.push(r);}});}
-    else if(mType==='full'){const seen=new Set();lDs.data.forEach(lR=>{const k=String(lR[lk]??'');seen.add(k);const ms=rMap[k]||[];if(ms.length)ms.forEach(rR=>{const r={};lCols.forEach(c=>r[c]=lR[c]??null);rCols.forEach(c=>r[c]=rR[c]??null);result.push(r);});else{const r={};lCols.forEach(c=>r[c]=lR[c]??null);rCols.forEach(c=>r[c]=null);result.push(r);}});rDs.data.forEach(rR=>{const k=String(rR[rk]??'');if(!seen.has(k)){const r={};lCols.forEach(c=>r[c]=null);rCols.forEach(c=>r[c]=rR[c]??null);result.push(r);}});}
+    if(mType==='inner'||mType==='left'){lDs.data.forEach(lR=>{const k=String(lR[lk]??''),ms=rMap[k]||[];if(ms.length)ms.forEach(rR=>{const r={};lCols.forEach(c=>r[c]=lR[c]??null);rCols.forEach(c=>r[rightOutCols[c]]=rR[c]??null);result.push(r);});else if(mType==='left'){const r={};lCols.forEach(c=>r[c]=lR[c]??null);rCols.forEach(c=>r[rightOutCols[c]]=null);result.push(r);}});}
+    else if(mType==='right'){const lMap={};lDs.data.forEach(row=>{const k=String(row[lk]??'');if(!lMap[k])lMap[k]=[];lMap[k].push(row);});rDs.data.forEach(rR=>{const k=String(rR[rk]??''),ms=lMap[k]||[];if(ms.length)ms.forEach(lR=>{const r={};lCols.forEach(c=>r[c]=lR[c]??null);rCols.forEach(c=>r[rightOutCols[c]]=rR[c]??null);result.push(r);});else{const r={};lCols.forEach(c=>r[c]=null);rCols.forEach(c=>r[rightOutCols[c]]=rR[c]??null);result.push(r);}});}
+    else if(mType==='full'){const seen=new Set();lDs.data.forEach(lR=>{const k=String(lR[lk]??'');seen.add(k);const ms=rMap[k]||[];if(ms.length)ms.forEach(rR=>{const r={};lCols.forEach(c=>r[c]=lR[c]??null);rCols.forEach(c=>r[rightOutCols[c]]=rR[c]??null);result.push(r);});else{const r={};lCols.forEach(c=>r[c]=lR[c]??null);rCols.forEach(c=>r[rightOutCols[c]]=null);result.push(r);}});rDs.data.forEach(rR=>{const k=String(rR[rk]??'');if(!seen.has(k)){const r={};lCols.forEach(c=>r[c]=null);rCols.forEach(c=>r[rightOutCols[c]]=rR[c]??null);result.push(r);}});}
   }
   if(!result.length)return toast('No rows — check join keys','error');
-  const allCols=Object.keys(result[0]||{});
+  const allCols=mType==='concat'?[...new Set([...lDs.columns.map(c=>c.name),...rDs.columns.map(c=>c.name)])]:joinCols;
   if(G('mg-replace')?.checked){const d=ds();d.data=result;d.columns=allCols.map(c=>({name:c,type:inferType(result,c),visible:true}));d.name=outName;}
   else addDataset(result,allCols,outName);
   renderTable();show('data');renderDsList();syncDDs();
