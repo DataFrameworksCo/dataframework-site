@@ -3152,6 +3152,7 @@ button, input, select { letter-spacing: 0; }
       <button class="tbtn" onclick="gpqlSnip('SORT')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">SORT</button>
       <button class="tbtn" onclick="gpqlSnip('GROUP')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">GROUP</button>
       <button class="tbtn" onclick="gpqlSnip('JOIN')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">JOIN</button>
+      <button class="tbtn" onclick="gpqlSnip('APPLY')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">APPLY</button>
       <button class="tbtn" onclick="gpqlSnip('SAVE AS')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">SAVE AS</button>
       <button class="tbtn" onclick="gpqlSnip('COUNT')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">COUNT</button>
       <button class="tbtn" onclick="gpqlSnip('SUM')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">SUM</button>
@@ -3161,6 +3162,7 @@ button, input, select { letter-spacing: 0; }
   <div class="sql-result-bar" id="gpql-result-bar">
     <span id="gpql-result-msg"></span>
     <div style="flex:1"></div>
+    <button class="tbtn" onclick="gpqlApplyToDataset()" style="font-size:10px;padding:3px 8px">Apply to Dataset</button>
     <button class="tbtn" onclick="clearGPQLResult()" style="font-size:10px;padding:3px 8px">Clear results</button>
   </div>
 
@@ -5284,7 +5286,7 @@ function addDataset(rows,cols,name){
   setTimeout(autosaveProject, 800);
   return d;
 }
-function switchDS(idx){if(isNaN(idx)||idx<0||idx>=DS.length)return;ACT=idx;filters=[];search={term:'',col:''};sortSt={col:null,dir:1};sqlResultRows=null;sqlResultCols=null;G('sql-result-bar')?.classList.remove('on');setSQLStatus&&setSQLStatus('','');renderDsList();renderTable();['active-ds','clean-ds','pv-ds','cb-ds'].forEach(id=>{const el=G(id);if(el)try{el.value=String(idx);}catch(e){}});}
+function switchDS(idx){if(isNaN(idx)||idx<0||idx>=DS.length)return;ACT=idx;filters=[];search={term:'',col:''};sortSt={col:null,dir:1};sqlResultRows=null;sqlResultCols=null;gpqlViewActive=false;gpqlResultRows=null;gpqlResultCols=null;G('sql-result-bar')?.classList.remove('on');G('gpql-result-bar')?.classList.remove('on');setSQLStatus&&setSQLStatus('','');renderDsList();renderTable();['active-ds','clean-ds','pv-ds','cb-ds'].forEach(id=>{const el=G(id);if(el)try{el.value=String(idx);}catch(e){}});}
 function openDS(idx){if(isNaN(idx)||idx<0||idx>=DS.length)return;switchDS(idx);show('data');}
 function openDSByName(name){const idx=DS.findIndex(d=>d.name===name);if(idx>=0)openDS(idx);}
 let _dsListCache='';
@@ -5459,6 +5461,10 @@ function getRows(){
   filters.forEach(f=>{rows=rows.filter(r=>{const v=r[f.col];switch(f.op){case'=':return String(v)===f.val;case'!=':return String(v)!==f.val;case'>':return+v>+f.val;case'<':return+v<+f.val;case'>=':return+v>=+f.val;case'<=':return+v<=+f.val;case'contains':return String(v).toLowerCase().includes(f.val.toLowerCase());case'startswith':return String(v).toLowerCase().startsWith(f.val.toLowerCase());case'notempty':return v!=null&&v!=='';default:return true;}});});
   if(sortSt.col){rows.sort((a,b)=>{const av=a[sortSt.col],bv=b[sortSt.col];if(av==null)return 1;if(bv==null)return-1;return(typeof av==='number'&&typeof bv==='number'?av-bv:String(av).localeCompare(String(bv)))*sortSt.dir;});}
   return rows;
+}
+
+function cloneDatasetRowsWithPending() {
+  return data().map((row, ri) => Object.assign({}, row, pending[ri] || {}));
 }
 
 // ══ COLUMN HEADER RENAME ═══════════════════════════════════════
@@ -5667,6 +5673,7 @@ function ctxDeleteCol() {
 }
 
 function renderTable(){
+  if(isGPQLView()) return renderGPQLResult();
   if(!ds()){G('dscroll').innerHTML='<div class="loading">No data loaded</div>';G('row-info').textContent='—';return;}
   normalizeDatasetColumns(ds());
   const vis=ds().columns.filter(c=>c.visible),rows=getRows(),all=data();
@@ -5718,10 +5725,10 @@ function toggleEditMode(){
   editMode=!editMode;
   G('edbanner').classList.toggle('on',editMode);
   const btn=G('edit-btn');btn.textContent=editMode?'✏ Editing…':'✏ Edit Mode';btn.classList.toggle('on',editMode);
-  G('save-btn').style.display=editMode?'flex':'none';
+  G('save-btn').style.display=editMode&&!isGPQLView()?'flex':'none';
   const hasEdits=Object.keys(pending).length>0;
-  G('undo-btn').style.display=hasEdits?'flex':'none';
-  if(!editMode&&hasEdits)openModal('Save Edits?',Object.keys(pending).length+' row(s) have pending changes.','',()=>commitEdits());
+  G('undo-btn').style.display=!isGPQLView()&&hasEdits?'flex':'none';
+  if(!editMode&&hasEdits&&!isGPQLView())openModal('Save Edits?',Object.keys(pending).length+' row(s) have pending changes.','',()=>commitEdits());
   renderTable();
 }
 function cellClick(div){
@@ -5740,10 +5747,16 @@ function cellClick(div){
 function cellBlur(inp,oi,col){
   const td=inp.parentElement;td.classList.remove('editing');
   const di=td.querySelector('.tdi');di.style.display='';inp.style.display='none';
-  const nv=inp.value;const orig=data()[oi]?.[col];
+  const srcRows=isGPQLView()?gpqlResultRows:data();
+  const nv=inp.value;const orig=srcRows[oi]?.[col];
   if(String(nv)===String(orig??''))return;
-  const colDef=ds()?.columns.find(c=>c.name===col);
+  const colDef=isGPQLView()?{name:col,type:inferColTypeFromRows(gpqlResultRows,col)}:ds()?.columns.find(c=>c.name===col);
   const parsed=colDef?.type==='number'?(nv===''?'':(parseNumberInput(nv)??nv)):nv;
+  if(isGPQLView()){
+    if(srcRows[oi]) srcRows[oi][col]=parsed;
+    const isNull=parsed==null||parsed==='';di.className='tdi'+(isNull?' nul':(colDef?.type==='number'?' num':''));di.innerHTML=isNull?`<em style="opacity:.4">${escHtml(appPrefs.nullText||'null')}</em>`:(colDef?.type==='number'?formatCellHTML(parsed,colDef):escHtml(String(parsed)));
+    return;
+  }
   if(!pending[oi])pending[oi]={};
   pending[oi][col]=parsed;
   // update display immediately
@@ -5886,7 +5899,8 @@ function _seqOfferFill(tdEl, oi, colName, newVal) {
 }
 
 function cellKey(e,inp,oi,col){
-  if(e.key==='Escape'){inp.value=String(data()[oi]?.[col]??'');inp.blur();}
+  const srcRows=isGPQLView()?gpqlResultRows:data();
+  if(e.key==='Escape'){inp.value=String(srcRows[oi]?.[col]??'');inp.blur();}
   if(e.key==='Enter'){e.preventDefault();inp.blur();navCell(inp,'down');}
   if(e.key==='Tab'){e.preventDefault();inp.blur();navCell(inp,e.shiftKey?'left':'right');}
 }
@@ -5905,8 +5919,8 @@ function commitEdits(){
   pending={};renderTable();renderDsList();toast(n+' cell'+(n!==1?'s':'')+' saved','success');
   G('undo-btn').style.display='none';updateEdCount();
 }
-function addRow(){const d=ds();if(!d)return;const nr={};d.columns.forEach(c=>nr[c.name]='');d.data.push(nr);renderTable();renderDsList();G('dscroll').scrollTop=G('dscroll').scrollHeight;toast('Row added','success');}
-function delSelRow(){const tr=document.querySelector('.dtbl tr.sel');if(!tr)return toast('Select a row first','info');const oi=+tr.id.replace('tr-','');const d=ds();if(!d)return;d.data.splice(oi,1);renderTable();renderDsList();toast('Row deleted','info');}
+function addRow(){if(isGPQLView()){const nr={};gpqlResultCols.forEach(c=>nr[c]='');gpqlResultRows.push(nr);renderTable();G('dscroll').scrollTop=G('dscroll').scrollHeight;toast('Row added to DFQL view','success');return;}const d=ds();if(!d)return;const nr={};d.columns.forEach(c=>nr[c.name]='');d.data.push(nr);renderTable();renderDsList();G('dscroll').scrollTop=G('dscroll').scrollHeight;toast('Row added','success');}
+function delSelRow(){const tr=document.querySelector('.dtbl tr.sel');if(!tr)return toast('Select a row first','info');const oi=+tr.id.replace('tr-','');if(isGPQLView()){gpqlResultRows.splice(oi,1);renderTable();toast('Row deleted from DFQL view','info');return;}const d=ds();if(!d)return;d.data.splice(oi,1);renderTable();renderDsList();toast('Row deleted','info');}
 
 // ═══════════════════════════ STATS PANEL ═══════════════════════════
 function toggleStats(){G('sp').classList.toggle('on');if(G('sp').classList.contains('on'))buildStats(ds()?.columns[0]?.name);}
@@ -10807,6 +10821,97 @@ function renderSQLResult(rows, cols) {
   h += '</tbody></table>';
   G('dscroll').innerHTML = h;
   G('row-info').textContent = rows.length + ' rows (SQL result) · ' + cols.length + ' cols';
+}
+
+function isGPQLView() {
+  return !!(gpqlViewActive && Array.isArray(gpqlResultRows) && Array.isArray(gpqlResultCols));
+}
+
+function getTableRowsForDisplay(sourceRows, cols) {
+  let rows = [...(sourceRows || [])];
+  if (search.term) {
+    const t = search.term.toLowerCase();
+    const scanCols = search.col ? [search.col] : cols;
+    rows = rows.filter(r => scanCols.some(c => String(r[c] ?? '').toLowerCase().includes(t)));
+  }
+  filters.forEach(f => {
+    rows = rows.filter(r => {
+      const v = r[f.col];
+      switch (f.op) {
+        case '=': return String(v) === f.val;
+        case '!=': return String(v) !== f.val;
+        case '>': return +v > +f.val;
+        case '<': return +v < +f.val;
+        case '>=': return +v >= +f.val;
+        case '<=': return +v <= +f.val;
+        case 'contains': return String(v).toLowerCase().includes(f.val.toLowerCase());
+        case 'startswith': return String(v).toLowerCase().startsWith(f.val.toLowerCase());
+        case 'notempty': return v != null && v !== '';
+        default: return true;
+      }
+    });
+  });
+  if (sortSt.col) {
+    rows.sort((a, b) => {
+      const av = a[sortSt.col], bv = b[sortSt.col];
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      return (typeof av === 'number' && typeof bv === 'number' ? av - bv : String(av).localeCompare(String(bv))) * sortSt.dir;
+    });
+  }
+  return rows;
+}
+
+function renderGPQLResult() {
+  const cols = gpqlResultCols || [];
+  const allRows = gpqlResultRows || [];
+  const rows = getTableRowsForDisplay(allRows, cols);
+  const fc = G('s-col');
+  if (fc) fc.innerHTML = '<option value="">All cols</option>' + cols.map(c => `<option value="${c}" ${c===search.col?'selected':''}>${c}</option>`).join('');
+  G('row-info').textContent = rows.length + ' / ' + allRows.length + ' rows · ' + cols.length + ' cols · DFQL view';
+  let h = '<table class="dtbl"><thead><tr><th style="width:38px;padding:8px 6px;text-align:center;color:var(--text-3)">#</th>';
+  cols.forEach((col, ci) => {
+    const type = allRows.length ? inferColTypeFromRows(allRows, col) : 'string';
+    const sc = sortSt.col === col ? (sortSt.dir > 0 ? 'sa' : 'sd') : '';
+    h += `<th class="${sc}" data-col="${col}" data-ci="${ci}" onclick="tSort('${col}')" title="Click to sort">${col}<span class="tbg ${type}">${type.slice(0,3)}</span></th>`;
+  });
+  h += '</tr></thead><tbody>';
+  rows.slice(0,2000).forEach((row, ri) => {
+    const oi = allRows.indexOf(row);
+    h += `<tr id="tr-${oi}" onclick="selRow(this)"><td><div class="tdi idx">${ri+1}</div></td>`;
+    cols.forEach(col => {
+      const v = row[col], isNull = v == null || v === '';
+      const type = inferColTypeFromRows(allRows, col);
+      const cls = isNull ? 'tdi nul' : (type === 'number' ? 'tdi num' : 'tdi');
+      const disp = isNull ? `<em style="opacity:.4">${escHtml(appPrefs.nullText||'null')}</em>` : (type === 'number' ? formatCellHTML(v,{name:col,type}) : escHtml(String(v)));
+      h += `<td data-oi="${oi}" data-col="${col}"><div class="${cls}" onclick="cellClick(this)" title="${editMode?'Click to edit':''}">${disp}</div><input class="td-inp" value="${escHtml(String(v??''))}" onblur="cellBlur(this,${oi},'${col}')" onkeydown="cellKey(event,this,${oi},'${col}')"></td>`;
+    });
+    h += '</tr>';
+  });
+  if (!rows.length) h += `<tr><td colspan="${cols.length+1}" style="text-align:center;color:var(--text-3);padding:20px;font-size:12px">No rows returned</td></tr>`;
+  if (rows.length > 2000) h += `<tr><td colspan="${cols.length+1}" style="text-align:center;color:var(--text-3);padding:10px;font-size:11px">Showing 2000 of ${rows.length} rows</td></tr>`;
+  h += '</tbody></table>';
+  G('dscroll').innerHTML = h;
+}
+
+function gpqlApplyRowsToDataset(rows, cols, silent) {
+  const d = ds();
+  if (!d) return toast('No dataset loaded', 'error');
+  const cleanRows = rows.map(r => {
+    const out = {};
+    cols.forEach(c => out[c] = r[c]);
+    return out;
+  });
+  d.data = cleanRows;
+  d.columns = cols.map(c => ({ name: c, type: inferColTypeFromRows(cleanRows, c), visible: true }));
+  gpqlViewActive = false;
+  gpqlResultRows = null;
+  gpqlResultCols = null;
+  G('gpql-result-bar')?.classList.remove('on');
+  renderTable();
+  renderDsList();
+  syncDDs();
+  if (!silent) toast(`Applied DFQL view to "${d.name}"`, 'success');
 }
 
 function clearSQLResult() {
@@ -17958,7 +18063,7 @@ const GPQL_KEYWORDS = [
   'SORT', 'LIMIT', 'SKIP', 'TOP',
   'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'STATS',
   'GROUP BY', 'GROUP',
-  'JOIN', 'MERGE',
+  'JOIN', 'MERGE', 'APPLY',
   'RENAME', 'ADD COL', 'ADD COLUMN',
   'UNIQUE', 'DEDUPE', 'DEDUPE BY', 'DEDUPLICATE',
   'FILL NULLS', 'FILL NULL',
@@ -18930,7 +19035,7 @@ window.addEventListener('beforeunload', () => {
 //  Simple, readable, line-by-line data query language
 // ═══════════════════════════════════════════════════════════════
 
-let gpqlResultRows = null, gpqlResultCols = null;
+let gpqlResultRows = null, gpqlResultCols = null, gpqlViewActive = false;
 let gpqlHistoryLog = [];
 
 // ── Toggle panel ──────────────────────────────────────────────
@@ -18999,6 +19104,7 @@ function gpqlSnip(cmd) {
     'SORT':       'SORT ColumnName DESC',
     'GROUP':      'GROUP BY ColumnName COUNT, SUM Revenue',
     'JOIN':       'JOIN OtherDataset ON id = other_id',
+    'APPLY':      'APPLY',
     'SAVE AS':    'SAVE AS NewDatasetName',
     'COUNT':      'COUNT',
     'SUM':        'SUM ColumnName',
@@ -19017,17 +19123,28 @@ function gpqlHistory() {
 }
 
 function clearGPQLResult() {
+  gpqlViewActive = false;
   gpqlResultRows = null; gpqlResultCols = null;
   G('gpql-result-bar')?.classList.remove('on');
   G('gpql-status').textContent = '';
   renderTable();
 }
 
+function gpqlApplyToDataset() {
+  if (!gpqlResultRows || !gpqlResultCols) return toast('Run a DFQL query first', 'info');
+  gpqlApplyRowsToDataset(gpqlResultRows, gpqlResultCols);
+}
+
 function gpqlSaveAsDS() {
   if (!gpqlResultRows || !gpqlResultCols) return toast('Run a DFQL query first', 'info');
   const name = prompt('Save result as dataset named:', 'DFQL Result');
   if (!name) return;
-  DS.push(normalizeDatasetColumns({ name, data: gpqlResultRows, columns: gpqlResultCols, id: Date.now(), color: DSC[DS.length%DSC.length] }));
+  const savedRows = gpqlResultRows.map(r => {
+    const out = {};
+    gpqlResultCols.forEach(c => out[c] = r[c]);
+    return out;
+  });
+  DS.push(normalizeDatasetColumns({ name, data: savedRows, columns: gpqlResultCols, id: Date.now(), color: DSC[DS.length%DSC.length] }));
   ACT = DS.length - 1;
   renderDsList(); renderTable(); updateAllDSSelects();
   toast(`Saved "${name}" (${gpqlResultRows.length} rows)`, 'success');
@@ -19053,10 +19170,18 @@ function runGPQL() {
     G('t-data').classList.add('on');
     G('gpql-bar').classList.add('on');
     G('gpql-toggle-btn').classList.add('on');
-    renderSQLResult(result.rows, result.cols); // reuse SQL result renderer
+    gpqlViewActive = !result.applyToDataset;
+    if (result.applyToDataset) {
+      gpqlApplyRowsToDataset(result.rows, result.cols, true);
+      G('gpql-result-bar').classList.remove('on');
+      G('gpql-result-msg').textContent = 'DFQL result applied to dataset';
+    } else {
+      renderTable();
+      G('gpql-result-bar').classList.add('on');
+      G('gpql-result-msg').textContent = 'DFQL Result: ' + result.rows.length + ' rows × ' + result.cols.length + ' cols (' + elapsed + 'ms)';
+    }
     G('gpql-status').textContent = '✓ ' + result.rows.length + ' rows · ' + elapsed + 'ms';
-    G('gpql-result-bar').classList.add('on');
-    G('gpql-result-msg').textContent = 'DFQL Result: ' + result.rows.length + ' rows × ' + result.cols.length + ' cols (' + elapsed + 'ms)';
+    if (result.applyToDataset) G('gpql-status').textContent += ' · applied';
     toast(result.rows.length + ' rows returned', 'success');
   } catch(err) {
     G('gpql-status').textContent = '✗ ' + err.message;
@@ -19078,6 +19203,7 @@ function executeGPQL(raw) {
   let fetchedName = null;
   let saveAsName = null;
   let exportCsvFlag = false;
+  let applyToDataset = false;
 
   // Helper: get dataset by name (exact, group-aware, or fuzzy)
   let currentGroup = null; // set by FETCH when a group parent is fetched
@@ -19119,12 +19245,18 @@ function executeGPQL(raw) {
   // Require rows loaded
   function requireRows() {
     if (rows === null) {
-      if (DS.length === 0) throw new Error('No datasets loaded. Use FETCH first.');
-      // Auto-fetch active dataset
-      const ds = DS[ACT];
-      rows = ds.data.map(r => Object.assign({}, r));
-      cols = ds.columns.map(c => c.name);
-      fetchedName = ds.name;
+      if (isGPQLView()) {
+        rows = gpqlResultRows.map(r => Object.assign({}, r));
+        cols = [...gpqlResultCols];
+        fetchedName = 'DFQL View';
+      } else {
+        if (DS.length === 0) throw new Error('No datasets loaded. Use FETCH first.');
+        // Auto-fetch active dataset
+        const ds = DS[ACT];
+        rows = cloneDatasetRowsWithPending();
+        cols = ds.columns.map(c => c.name);
+        fetchedName = ds.name;
+      }
     }
     return rows;
   }
@@ -19520,6 +19652,12 @@ function executeGPQL(raw) {
       saveAsName = rest;
     }
 
+    // ── APPLY ────────────────────────────────────────────────
+    else if (up === 'APPLY') {
+      requireRows();
+      applyToDataset = true;
+    }
+
     // ── Unknown command ───────────────────────────────────────
     else {
       throw new Error(`Unknown DFQL command: "${line}". Type a command like FETCH, SHOW WHERE, PICK, SORT, etc.`);
@@ -19549,7 +19687,7 @@ function executeGPQL(raw) {
     toast(`Saved "${saveAsName}" (${rows.length} rows)`, 'success');
   }
 
-  return { rows, cols };
+  return { rows, cols, applyToDataset };
 }
 
 // ── Expression evaluator for SHOW WHERE ──────────────────────
