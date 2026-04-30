@@ -5167,7 +5167,9 @@ const DSC=['#5b9cf6','#f97316','#a78bfa','#4ade80','#fbbf24','#f87171','#22d3ee'
 const SC=['#5b9cf6','#f97316','#a78bfa','#4ade80','#fbbf24','#f87171','#22d3ee','#84cc16'];
 let DS=[],ACT=0;
 let CB={type:'bar',dsIdx:0,xCol:'',agg:'sum',limit:0,series:[],y1:{min:'',max:'',label:''},y2:{en:false,min:'',max:'',label:''},refLines:[],title:'',subtitle:'',legend:'top',grid:true,smooth:true,fill:false,brad:4,bg:'surface',datalabels:false};
-let DASH=[],prevCh=null,editMode=false,pending={},cleanHist=[],condFmt=[],sortSt={col:null,dir:1},filters=[],search={term:'',col:''},selCol=null;
+let DASH=[],prevCh=null,editMode=false,pending={},cleanHist=[],condFmt=[],sortSt={col:null,dir:1},filters=[],search={term:'',col:''},selCol=null,selectedRows=new Set();
+const MERGE_SUM_COL_RE=/(^|[\s_-])(qty|quantity|count|counts|value|values|amount|amounts|total|totals|sales|revenue|cost|profit|units?|stock|inventory|volume|hours?|minutes?|seconds?|balance)(?=$|[\s_-])/i;
+const MERGE_SKIP_SUM_COL_RE=/(identifier|^id$|id$|^id[_-]?|[_-]id$|sku|code|zip|postal|phone|year|month|day|week|rank|order|position|index)/i;
 // App-wide preferences (new in v1.0.2)
 let appPrefs={autosave:true,confirmDel:true,autotype:true,csvDelim:'auto',autonav:true,decSep:'.',thouSep:',',nullText:'null',reduceMotion:false,hiCont:false,toastDur:2800,renderLimit:2000,dashCols:'auto',dashHeight:'220px',dashSub:true,dashGap:'12px',chartDefType:'bar',chartDefAgg:'sum',chartAnimDur:300,chartDefPalette:'default',pivotAgg:'sum',pivotTotals:true};
 const ds=()=>DS[ACT];
@@ -5364,7 +5366,7 @@ function addDataset(rows,cols,name){
   setTimeout(autosaveProject, 800);
   return d;
 }
-function switchDS(idx){if(isNaN(idx)||idx<0||idx>=DS.length)return;ACT=idx;filters=[];search={term:'',col:''};sortSt={col:null,dir:1};sqlResultRows=null;sqlResultCols=null;gpqlViewActive=false;gpqlResultRows=null;gpqlResultCols=null;G('sql-result-bar')?.classList.remove('on');G('gpql-result-bar')?.classList.remove('on');setSQLStatus&&setSQLStatus('','');renderDsList();renderTable();['active-ds','clean-ds','pv-ds','cb-ds'].forEach(id=>{const el=G(id);if(el)try{el.value=String(idx);}catch(e){}});}
+function switchDS(idx){if(isNaN(idx)||idx<0||idx>=DS.length)return;ACT=idx;filters=[];search={term:'',col:''};sortSt={col:null,dir:1};selectedRows.clear();sqlResultRows=null;sqlResultCols=null;gpqlViewActive=false;gpqlResultRows=null;gpqlResultCols=null;G('sql-result-bar')?.classList.remove('on');G('gpql-result-bar')?.classList.remove('on');setSQLStatus&&setSQLStatus('','');renderDsList();renderTable();['active-ds','clean-ds','pv-ds','cb-ds'].forEach(id=>{const el=G(id);if(el)try{el.value=String(idx);}catch(e){}});}
 function openDS(idx){if(isNaN(idx)||idx<0||idx>=DS.length)return;switchDS(idx);show('data');}
 function openDSByName(name){const idx=DS.findIndex(d=>d.name===name);if(idx>=0)openDS(idx);}
 let _dsListCache='';
@@ -5539,6 +5541,38 @@ function getRows(){
   filters.forEach(f=>{rows=rows.filter(r=>{const v=r[f.col];switch(f.op){case'=':return String(v)===f.val;case'!=':return String(v)!==f.val;case'>':return+v>+f.val;case'<':return+v<+f.val;case'>=':return+v>=+f.val;case'<=':return+v<=+f.val;case'contains':return String(v).toLowerCase().includes(f.val.toLowerCase());case'startswith':return String(v).toLowerCase().startsWith(f.val.toLowerCase());case'notempty':return v!=null&&v!=='';default:return true;}});});
   if(sortSt.col){rows.sort((a,b)=>{const av=a[sortSt.col],bv=b[sortSt.col];if(av==null)return 1;if(bv==null)return-1;return(typeof av==='number'&&typeof bv==='number'?av-bv:String(av).localeCompare(String(bv)))*sortSt.dir;});}
   return rows;
+}
+
+function currentRowsStore(){
+  return isGPQLView()?(gpqlResultRows||[]):data();
+}
+
+function getSelectedRowIdxs(){
+  const rows=currentRowsStore();
+  const idxs=[...selectedRows].filter(idx=>Number.isInteger(idx)&&idx>=0&&idx<rows.length).sort((a,b)=>a-b);
+  if(idxs.length!==selectedRows.size)selectedRows=new Set(idxs);
+  return idxs;
+}
+
+function syncRowSelectionUI(){
+  document.querySelectorAll('.dtbl tr.sel').forEach(tr=>tr.classList.remove('sel'));
+  getSelectedRowIdxs().forEach(idx=>G('tr-'+idx)?.classList.add('sel'));
+}
+
+function clearRowSelection(){
+  selectedRows.clear();
+  syncRowSelectionUI();
+}
+
+function getContextRowSelection(rowIdx){
+  const idxs=getSelectedRowIdxs();
+  return idxs.includes(rowIdx)?idxs:[rowIdx];
+}
+
+function prepareRowSelection(rowIdx, additive){
+  if(additive)selectedRows.add(rowIdx);
+  else if(!selectedRows.has(rowIdx)||selectedRows.size===0){selectedRows.clear();selectedRows.add(rowIdx);}
+  syncRowSelectionUI();
 }
 
 function cloneDatasetRowsWithPending() {
@@ -5752,7 +5786,7 @@ function ctxDeleteCol() {
 
 function renderTable(){
   if(isGPQLView()) return renderGPQLResult();
-  if(!ds()){G('dscroll').innerHTML='<div class="loading">No data loaded</div>';G('row-info').textContent='—';return;}
+  if(!ds()){selectedRows.clear();G('dscroll').innerHTML='<div class="loading">No data loaded</div>';G('row-info').textContent='—';return;}
   normalizeDatasetColumns(ds());
   const vis=ds().columns.filter(c=>c.visible),rows=getRows(),all=data();
   G('row-info').textContent=rows.length+' / '+all.length+' rows · '+vis.length+' cols';
@@ -5763,7 +5797,7 @@ function renderTable(){
   h+='</tr></thead><tbody>';
   rows.slice(0,2000).forEach((row,ri)=>{
     const oi=all.indexOf(row);
-    h+=`<tr id="tr-${oi}" onclick="selRow(this)" oncontextmenu="showRowCtxMenu(event,${oi})"><td><div class="tdi idx">${ri+1}</div></td>`;
+    h+=`<tr id="tr-${oi}" onclick="selRow(this,event)" oncontextmenu="showRowCtxMenu(event,${oi})"><td><div class="tdi idx">${ri+1}</div></td>`;
     vis.forEach(col=>{
       const v=row[col.name],isEd=pending[oi]&&pending[oi][col.name]!==undefined;
       const dispV=isEd?pending[oi][col.name]:v,isNull=dispV==null||dispV==='';
@@ -5780,6 +5814,7 @@ function renderTable(){
   G('dscroll').innerHTML=h;
   // Defer post-render work to next frame so scroll stays responsive
   requestAnimationFrame(()=>{
+    syncRowSelectionUI();
     if(tablePref.zebra)
       document.querySelectorAll('.dtbl tbody tr').forEach((tr,i)=>tr.classList.toggle('zebra',i%2===1));
     if(tablePref.freeze)
@@ -5796,7 +5831,18 @@ function filterTable(t){
   clearTimeout(_filterTmr);
   _filterTmr=setTimeout(renderTable, t.length>2?120:220);
 }
-function selRow(tr){document.querySelectorAll('.dtbl tr.sel').forEach(r=>r.classList.remove('sel'));tr.classList.add('sel');}
+function selRow(tr,e){
+  const oi=+(tr?.id||'').replace('tr-','');
+  if(!Number.isInteger(oi))return;
+  if(e?.shiftKey){
+    if(selectedRows.has(oi)&&selectedRows.size>1)selectedRows.delete(oi);
+    else selectedRows.add(oi);
+  }else{
+    selectedRows.clear();
+    selectedRows.add(oi);
+  }
+  syncRowSelectionUI();
+}
 
 // ═══════════════════════════ REAL-TIME CELL EDITING ═══════════════════════════
 function toggleEditMode(){
@@ -5991,14 +6037,75 @@ function navCell(inp,dir){
 }
 function updateEdCount(){const n=Object.values(pending).reduce((s,cols)=>s+Object.keys(cols).length,0);const el=G('ed-count');if(el)el.textContent=n>0?n+' edit'+(n!==1?'s':'')+' pending':'';G('undo-btn').style.display=n>0?'flex':'none';}
 function undoEdits(){pending={};renderTable();toast('Edits discarded','info');G('undo-btn').style.display='none';updateEdCount();}
-function commitEdits(){
-  const d=ds();if(!d)return;let n=0;
+function applyPendingEditsToDataset(d){
+  if(!d)return 0;
+  let n=0;
   Object.entries(pending).forEach(([ri,cols])=>{Object.entries(cols).forEach(([col,val])=>{if(d.data[+ri]){d.data[+ri][col]=val;n++;}});});
-  pending={};renderTable();renderDsList();toast(n+' cell'+(n!==1?'s':'')+' saved','success');
-  G('undo-btn').style.display='none';updateEdCount();
+  pending={};
+  G('undo-btn').style.display='none';
+  updateEdCount();
+  return n;
+}
+function commitEdits(){
+  const d=ds();if(!d)return 0;const n=applyPendingEditsToDataset(d);
+  renderTable();renderDsList();toast(n+' cell'+(n!==1?'s':'')+' saved','success');
+  return n;
 }
 function addRow(){if(isGPQLView()){const nr={};gpqlResultCols.forEach(c=>nr[c]='');gpqlResultRows.push(nr);renderTable();G('dscroll').scrollTop=G('dscroll').scrollHeight;toast('Row added to DFQL view','success');return;}const d=ds();if(!d)return;const nr={};d.columns.forEach(c=>nr[c.name]='');d.data.push(nr);renderTable();renderDsList();G('dscroll').scrollTop=G('dscroll').scrollHeight;toast('Row added','success');}
-function delSelRow(){const tr=document.querySelector('.dtbl tr.sel');if(!tr)return toast('Select a row first','info');const oi=+tr.id.replace('tr-','');if(isGPQLView()){gpqlResultRows.splice(oi,1);renderTable();toast('Row deleted from DFQL view','info');return;}const d=ds();if(!d)return;d.data.splice(oi,1);renderTable();renderDsList();toast('Row deleted','info');}
+function shouldSumMergedColumn(col){return!!(col&&col.type==='number'&&MERGE_SUM_COL_RE.test(String(col.name||''))&&!MERGE_SKIP_SUM_COL_RE.test(String(col.name||'')));}
+function normalizeMergedNumber(total){return Number.isInteger(total)?total:+total.toFixed(10);}
+function mergeRowFieldValues(values,col){
+  const nonEmpty=values.filter(v=>v!=null&&v!=='');
+  if(!nonEmpty.length)return col?.type==='number'?0:'';
+  if(col?.type==='number'){
+    const nums=nonEmpty.map(v=>typeof v==='number'?v:parseNumberInput(v)).filter(v=>v!=null);
+    if(!nums.length)return null;
+    return shouldSumMergedColumn(col)?normalizeMergedNumber(nums.reduce((sum,val)=>sum+val,0)):nums[0];
+  }
+  if(col?.type==='boolean'){
+    const norm=nonEmpty.map(v=>v===true||String(v).trim().toLowerCase()==='true'||String(v).trim()==='1');
+    return norm[0];
+  }
+  const uniq=[...new Set(nonEmpty.map(v=>String(v)))];
+  if(col?.type==='date')return uniq[0];
+  return uniq.length===1?nonEmpty[0]:uniq.join(' / ');
+}
+function mergeSelectedRows(rowIdx){
+  if(isGPQLView())return toast('Row merge is only available on datasets','info');
+  const d=ds();if(!d)return;
+  if(Object.keys(pending).length)applyPendingEditsToDataset(d);
+  normalizeDatasetColumns(d);
+  const idxs=(rowIdx==null?getSelectedRowIdxs():getContextRowSelection(rowIdx)).sort((a,b)=>a-b);
+  if(idxs.length<2)return toast('Select at least two rows to merge','info');
+  const rows=idxs.map(idx=>d.data[idx]).filter(Boolean);
+  if(rows.length<2)return toast('Select at least two rows to merge','info');
+  const mergedRow={};
+  d.columns.forEach(col=>mergedRow[col.name]=mergeRowFieldValues(rows.map(row=>row[col.name]),col));
+  const insertAt=idxs[0];
+  idxs.slice().sort((a,b)=>b-a).forEach(idx=>d.data.splice(idx,1));
+  d.data.splice(insertAt,0,mergedRow);
+  selectedRows.clear();
+  selectedRows.add(insertAt);
+  renderTable();renderDsList();autosaveProject();
+  toast('Merged '+rows.length+' rows into 1','success');
+}
+function deleteSelectedRows(rowIdx){
+  const rows=(rowIdx==null?getSelectedRowIdxs():getContextRowSelection(rowIdx)).sort((a,b)=>a-b);
+  if(!rows.length)return toast('Select a row first','info');
+  if(isGPQLView()){
+    const run=()=>{rows.slice().sort((a,b)=>b-a).forEach(idx=>gpqlResultRows.splice(idx,1));selectedRows.clear();renderTable();toast(rows.length>1?rows.length+' rows deleted from DFQL view':'Row deleted from DFQL view','info');};
+    if(appPrefs.confirmDel!==false&&rows.length>1)return openModal('Delete Rows','Delete '+rows.length+' selected rows? Cannot be undone.','',run);
+    if(appPrefs.confirmDel!==false)return openModal('Delete Row','Delete this row? Cannot be undone.','',run);
+    return run();
+  }
+  const d=ds();if(!d)return;
+  if(Object.keys(pending).length)applyPendingEditsToDataset(d);
+  const run=()=>{rows.slice().sort((a,b)=>b-a).forEach(idx=>d.data.splice(idx,1));selectedRows.clear();renderTable();renderDsList();autosaveProject();toast(rows.length>1?rows.length+' rows deleted':'Row deleted','info');};
+  if(appPrefs.confirmDel!==false&&rows.length>1)return openModal('Delete Rows','Delete '+rows.length+' selected rows? Cannot be undone.','',run);
+  if(appPrefs.confirmDel!==false)return openModal('Delete Row','Delete this row? Cannot be undone.','',run);
+  run();
+}
+function delSelRow(){deleteSelectedRows();}
 
 // ═══════════════════════════ STATS PANEL ═══════════════════════════
 function toggleStats(){G('sp').classList.toggle('on');if(G('sp').classList.contains('on'))buildStats(ds()?.columns[0]?.name);}
@@ -11284,7 +11391,7 @@ function renderGPQLResult() {
   h += '</tr></thead><tbody>';
   rows.slice(0,2000).forEach((row, ri) => {
     const oi = allRows.indexOf(row);
-    h += `<tr id="tr-${oi}" onclick="selRow(this)"><td><div class="tdi idx">${ri+1}</div></td>`;
+    h += `<tr id="tr-${oi}" onclick="selRow(this,event)"><td><div class="tdi idx">${ri+1}</div></td>`;
     cols.forEach(col => {
       const v = row[col], isNull = v == null || v === '';
       const type = inferColTypeFromRows(allRows, col);
@@ -11298,6 +11405,7 @@ function renderGPQLResult() {
   if (rows.length > 2000) h += `<tr><td colspan="${cols.length+1}" style="text-align:center;color:var(--text-3);padding:10px;font-size:11px">Showing 2000 of ${rows.length} rows</td></tr>`;
   h += '</tbody></table>';
   G('dscroll').innerHTML = h;
+  syncRowSelectionUI();
 }
 
 function gpqlApplyRowsToDataset(rows, cols, silent) {
@@ -18462,10 +18570,13 @@ function showDsCtxMenu(e, idx, isGroup, groupKey) {
 // ── Table row right-click ────────────────────────────────────
 function showRowCtxMenu(e, rowIdx) {
   e.preventDefault(); e.stopPropagation();
+  prepareRowSelection(rowIdx, !!e.shiftKey);
   _ctxMeta = {};
   const d = ds(); if (!d) return;
   const row = d.data[rowIdx];
   if (!row) return;
+  const selectedIdxs = getContextRowSelection(rowIdx);
+  const multi = selectedIdxs.length > 1;
 
   _ctxMeta['copy-row']    = () => { navigator.clipboard?.writeText(JSON.stringify(row, null, 2)); toast('Row copied as JSON', 'info'); };
   _ctxMeta['copy-tsv']    = () => {
@@ -18480,20 +18591,18 @@ function showRowCtxMenu(e, rowIdx) {
     filters.push({ col: firstCol.name, op: '=', val: String(val) });
     renderTable(); toast(`Filter: ${firstCol.name} = ${val}`, 'info');
   };
-  _ctxMeta['del-row']     = () => {
-    openModal('Delete Row', 'Delete this row? Cannot be undone.', '',
-      () => { d.data.splice(rowIdx, 1); renderTable(); renderDsList(); toast('Row deleted', 'info'); }
-    );
-  };
+  _ctxMeta['merge-rows']  = () => mergeSelectedRows(rowIdx);
+  _ctxMeta['del-row']     = () => deleteSelectedRows(rowIdx);
 
   _showCtxMenu(e, [
-    { label: `Row ${rowIdx + 1}` },
+    { label: multi ? `${selectedIdxs.length} rows selected` : `Row ${rowIdx + 1}` },
     { id:'copy-row',    icon:'📋', text:'Copy row as JSON' },
     { id:'copy-tsv',    icon:'📄', text:'Copy row as TSV' },
     '-',
     { id:'filter-like', icon:'🔍', text:'Filter rows like this' },
+    ...(multi ? ['-', { id:'merge-rows', icon:'🔀', text:'Merge Selected Rows' }] : []),
     '-',
-    { id:'del-row',     icon:'🗑️', text:'Delete Row', danger: true },
+    { id:'del-row',     icon:'🗑️', text: multi ? 'Delete Selected Rows' : 'Delete Row', danger: true },
   ]);
 }
 
