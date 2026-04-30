@@ -3148,6 +3148,7 @@ button, input, select { letter-spacing: 0; }
       <button class="tbtn" onclick="gpqlSnip('SHOW WHERE')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">SHOW WHERE</button>
       <button class="tbtn" onclick="gpqlSnip('SHOW BETWEEN WHERE')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">SHOW BETWEEN</button>
       <button class="tbtn" onclick="gpqlSnip('PICK')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">PICK</button>
+      <button class="tbtn" onclick="gpqlSnip('RECOL')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">RECOL</button>
       <button class="tbtn" onclick="gpqlSnip('SORT')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">SORT</button>
       <button class="tbtn" onclick="gpqlSnip('GROUP')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">GROUP</button>
       <button class="tbtn" onclick="gpqlSnip('JOIN')" style="font-size:10.5px;font-family:var(--mono);padding:2px 8px">JOIN</button>
@@ -17102,7 +17103,7 @@ SHOW WHERE Phone MATCHES "^\\+1"<button class="kb-copy-btn" onclick="kbCopy(this
 <tbody>
 <tr><td style="padding:6px 8px;font-family:var(--mono);color:var(--highlight)">PICK Col1, Col2, ...</td><td style="padding:6px 8px;color:var(--text-2)">Keep only these columns (in this order)</td></tr>
 <tr style="background:var(--surface-2)"><td style="padding:6px 8px;font-family:var(--mono);color:var(--highlight)">DROP COLS Col1, Col2</td><td style="padding:6px 8px;color:var(--text-2)">Remove these columns, keep everything else</td></tr>
-<tr><td style="padding:6px 8px;font-family:var(--mono);color:var(--highlight)">REORDER Col1, Col2, ...</td><td style="padding:6px 8px;color:var(--text-2)">Rearrange columns (unlisted cols appended after)</td></tr>
+<tr><td style="padding:6px 8px;font-family:var(--mono);color:var(--highlight)">RECOL = Col1, Col2, ...</td><td style="padding:6px 8px;color:var(--text-2)">Rearrange columns (unlisted cols appended after)</td></tr>
 </tbody></table>
 <div class="kb-callout tip"><div class="kb-callout-icon">💡</div><div>Use <strong>PICK</strong> when you want a few columns. Use <strong>DROP COLS</strong> when you want to remove a few and keep the rest.</div></div>`,
 
@@ -17115,7 +17116,7 @@ DROP COLS SSN, CreditCard, Password
 SAVE AS Customers_Public<button class="kb-copy-btn" onclick="kbCopy(this)">Copy</button></pre>
 <pre>-- Reorder: put key columns first, rest follow
 FETCH Orders
-REORDER Date, CustomerName, Total<button class="kb-copy-btn" onclick="kbCopy(this)">Copy</button></pre>`
+RECOL = Date, CustomerName, Total<button class="kb-copy-btn" onclick="kbCopy(this)">Copy</button></pre>`
     ]
   },
 
@@ -17953,7 +17954,7 @@ function showRowCtxMenu(e, rowIdx) {
 
 const GPQL_KEYWORDS = [
   'FETCH', 'FETCH SUB', 'SHOW ALL', 'SHOW WHERE', 'SHOW BETWEEN WHERE',
-  'PICK', 'DROP COLS', 'DROP COL',
+  'PICK', 'RECOL', 'REORDER', 'DROP COLS', 'DROP COL',
   'SORT', 'LIMIT', 'SKIP', 'TOP',
   'COUNT', 'SUM', 'AVG', 'MIN', 'MAX', 'STATS',
   'GROUP BY', 'GROUP',
@@ -18994,6 +18995,7 @@ function gpqlSnip(cmd) {
     'SHOW WHERE': 'SHOW WHERE ColumnName > value',
     'SHOW BETWEEN WHERE': 'SHOW BETWEEN WHERE Year = 1950,1960',
     'PICK':       'PICK Col1, Col2, Col3',
+    'RECOL':      'RECOL = Col1, Col2, Col3',
     'SORT':       'SORT ColumnName DESC',
     'GROUP':      'GROUP BY ColumnName COUNT, SUM Revenue',
     'JOIN':       'JOIN OtherDataset ON id = other_id',
@@ -19203,6 +19205,36 @@ function executeGPQL(raw) {
         return out;
       });
       cols = pickCols;
+    }
+
+    // ── RECOL = <col1, col2, ...> / REORDER <col1, col2, ...> ──
+    else if (up.startsWith('RECOL ') || up.startsWith('REORDER ')) {
+      requireRows();
+      const m = line.match(/^RECOL\s*=\s*(.+)$/i);
+      const orderSpec = m ? m[1] : line.replace(/^REORDER\s+/i, '').trim();
+      if (!orderSpec) throw new Error('RECOL syntax: RECOL = Col1, Col2, Col3');
+      const orderCols = orderSpec.split(',').map(c => c.trim()).filter(Boolean);
+      if (!orderCols.length) throw new Error('RECOL requires at least one column');
+      orderCols.forEach(c => {
+        if (!cols.includes(c)) throw new Error(`Column "${c}" not found. Available: ${cols.join(', ')}`);
+      });
+      const seen = new Set();
+      const reordered = [];
+      orderCols.forEach(c => {
+        if (!seen.has(c)) {
+          seen.add(c);
+          reordered.push(c);
+        }
+      });
+      cols.forEach(c => {
+        if (!seen.has(c)) reordered.push(c);
+      });
+      rows = rows.map(row => {
+        const out = {};
+        reordered.forEach(c => out[c] = row[c]);
+        return out;
+      });
+      cols = reordered;
     }
 
     // ── DROP COLS <col1, col2, ...> ──────────────────────────
