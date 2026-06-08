@@ -1538,17 +1538,18 @@ td.editing .td-inp { display: block; }
 .vz-atd:hover { opacity: .9; box-shadow: 0 4px 14px rgba(0,120,212,.38); }
 .vz-atd:active { transform: translateY(1px); opacity: .85; }
 .vz-canvas-wrap {
-  flex: 1; padding: 24px; display: flex; align-items: center; justify-content: center;
+  flex: 1; padding: 18px 24px 24px; display: flex; align-items: stretch; justify-content: center;
   overflow: hidden;
 }
 .vz-canvas-card {
   background: var(--surface); border: 1px solid var(--border);
-  border-radius: 10px; padding: 20px;
-  width: 100%; max-width: 960px;
+  border-radius: 16px; padding: 22px;
+  width: 100%; max-width: 1160px; min-height: 620px;
   box-shadow: 0 4px 24px rgba(0,0,0,.18);
-  position: relative; display: flex; align-items: center; justify-content: center;
+  position: relative; display: flex; align-items: stretch; justify-content: stretch;
+  background-image: radial-gradient(circle at top left, rgba(91,156,246,.08), transparent 34%);
 }
-.vz-canvas-card canvas { display: block; width: 100% !important; max-height: 70vh; }
+.vz-canvas-card canvas { display: block; width: 100% !important; height: 100% !important; min-height: 520px; max-height: 72vh; }
 .vz-canvas-card.custom-view { align-items: stretch; justify-content: stretch; }
 #preview-custom { display: none; width: 100%; min-height: 520px; }
 .vz-canvas-card.custom-view #preview-custom { display: flex; }
@@ -1624,6 +1625,43 @@ td.editing .td-inp { display: block; }
   border-bottom: 1px solid var(--border); flex-shrink: 0;
 }
 .vz-toolbar-info { font-size: 11px; color: var(--text-3); font-family: var(--mono); flex: 1; }
+.vz-toolbar-summary {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.vz-toolbar-actions {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+}
+.vz-stage-summary {
+  padding: 16px 24px 0;
+  display: flex; flex-direction: column; gap: 7px;
+}
+.vz-stage-kicker {
+  font-size: 10px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--text-3); font-weight: 700;
+}
+.vz-stage-title {
+  font-size: 24px; line-height: 1.1; font-weight: 800;
+  color: var(--text); letter-spacing: -.03em;
+}
+.vz-stage-sub {
+  font-size: 12px; line-height: 1.6; color: var(--text-2);
+  max-width: 780px;
+}
+.vz-stage-chips {
+  display: flex; flex-wrap: wrap; gap: 7px;
+}
+.vz-stage-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 10px; border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 11px; color: var(--text-2);
+  box-shadow: var(--shadow-xs);
+}
+.vz-stage-chip strong {
+  color: var(--text); font-weight: 700;
+}
 
 /* Right panel */
 .vz-panel {
@@ -1750,6 +1788,7 @@ td.editing .td-inp { display: block; }
 .dash-bar-right { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .dash-title { font-size: 13px; font-weight: 700; color: var(--text); }
 .dash-count { font-size: 11px; color: var(--text-3); font-family: var(--mono); }
+.dash-hint { font-size: 11px; color: var(--text-3); }
 .dash-sep { width: 1px; height: 18px; background: var(--border); margin: 0 2px; }
 
 .dcanvas {
@@ -1773,12 +1812,25 @@ td.editing .td-inp { display: block; }
   padding: 14px 16px 12px; border-bottom: 1px solid var(--border);
   background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%);
 }
+.dc-head-main {
+  display: flex; align-items: flex-start; gap: 10px; flex: 1; min-width: 0;
+}
+.dc-grip {
+  width: 28px; height: 28px; flex-shrink: 0;
+  border-radius: 7px; border: 1px dashed var(--border);
+  background: var(--surface); color: var(--text-3);
+  cursor: grab; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 13px; letter-spacing: -1px; transition: all .12s;
+}
+.dc-grip:hover { color: var(--highlight); border-color: rgba(91,156,246,.4); background: var(--highlight-dim); }
+.dc-grip:active { cursor: grabbing; }
+.dc-title-wrap { flex: 1; min-width: 0; }
 .dc-title { font-size: 13.5px; font-weight: 700; flex: 1; color: var(--text); letter-spacing: -.02em; }
 .dc-sub { font-size: 10.5px; color: var(--text-3); font-family: var(--mono); margin-top: 3px; }
 .dc-acts {
-  display: flex; gap: 3px; opacity: 0; transition: opacity .12s;
+  display: flex; gap: 3px; opacity: .35; transition: opacity .12s;
 }
-.dc:hover .dc-acts { opacity: 1; }
+.dc:hover .dc-acts, .dc:focus-within .dc-acts { opacity: 1; }
 .dc-act {
   width: 24px; height: 24px; border-radius: 5px;
   border: 1px solid var(--border); background: var(--surface-2);
@@ -1789,6 +1841,7 @@ td.editing .td-inp { display: block; }
 .dc-act:hover { color: var(--err); border-color: rgba(239,68,68,.4); background: rgba(239,68,68,.08); }
 .dc-act.edit:hover { color: var(--highlight); border-color: rgba(91,156,246,.4); background: var(--highlight-dim); }
 .dc-act.size:hover { color: #4ade80; border-color: rgba(74,222,128,.4); background: rgba(74,222,128,.08); }
+.dc-act.rename:hover { color: #f59e0b; border-color: rgba(245,158,11,.38); background: rgba(245,158,11,.1); }
 
 .dc-body { padding: 12px 14px; }
 .cbox { padding: 0 14px 14px; }
@@ -1796,6 +1849,14 @@ td.editing .td-inp { display: block; }
 .viz-card-custom .vz-custom-wrap { min-height: 100%; height: 100%; }
 .viz-card-custom .vz-country-map { min-height: 100%; }
 .viz-card-custom .vz-table-wrap { min-height: 100%; }
+.dc-resize-handle {
+  position: absolute; right: 10px; bottom: 10px; z-index: 4;
+  width: 18px; height: 18px; border-radius: 6px;
+  border: 1px solid var(--border);
+  background: linear-gradient(135deg, transparent 0 50%, var(--surface-2) 50% 100%);
+  cursor: nwse-resize; opacity: .45; transition: opacity .12s, border-color .12s;
+}
+.dc-resize-handle:hover { opacity: 1; border-color: rgba(91,156,246,.4); }
 
 /* Card sizes */
 .dc[data-size="sm"]  { grid-column: span 1; }
@@ -3306,18 +3367,28 @@ button, input, select { letter-spacing: 0; }
   <!-- ── CANVAS AREA (main left area) ── -->
   <div class="vz-canvas-area">
     <div class="vz-toolbar">
-      <span class="vz-toolbar-info" id="chart-info">Select data and a chart type to begin</span>
-      <button class="tbtn" onclick="exportChartPNG()" title="Export as PNG" style="font-size:11px">🖼 PNG</button>
-      <button class="tbtn" onclick="saveChartPreset()" title="Save as preset" style="font-size:11px">💾 Preset</button>
-      <button class="tbtn" onclick="dupLastChart()" title="Duplicate to dashboard" style="font-size:11px">📋 Dupe</button>
-      <button class="vz-atd" onclick="addToDash()" style="font-size:12px;padding:6px 16px">＋ Add to Dashboard</button>
-    </div>
-      <div class="vz-canvas-wrap">
-        <div class="vz-canvas-card" id="vz-canvas-card">
-          <canvas id="preview-canvas"></canvas>
-          <div id="preview-custom"></div>
-        </div>
+      <div class="vz-toolbar-summary">
+        <span class="vz-toolbar-info" id="chart-info">Select data and a chart type to begin</span>
       </div>
+      <div class="vz-toolbar-actions">
+        <button class="tbtn" onclick="exportChartPNG()" title="Export as PNG" style="font-size:11px">🖼 PNG</button>
+        <button class="tbtn" onclick="saveChartPreset()" title="Save as preset" style="font-size:11px">💾 Preset</button>
+        <button class="tbtn" onclick="dupLastChart()" title="Duplicate to dashboard" style="font-size:11px">📋 Dupe</button>
+        <button class="vz-atd" onclick="addToDash()" style="font-size:12px;padding:6px 16px">＋ Add to Dashboard</button>
+      </div>
+    </div>
+    <div class="vz-stage-summary">
+      <div class="vz-stage-kicker">Visualization Preview</div>
+      <div class="vz-stage-title" id="vz-stage-title">Choose a dataset and chart type</div>
+      <div class="vz-stage-sub" id="vz-stage-sub">Build your chart from left to right: dataset, X axis, one or more values, then format and analytics.</div>
+      <div class="vz-stage-chips" id="vz-stage-chips"></div>
+    </div>
+    <div class="vz-canvas-wrap">
+      <div class="vz-canvas-card" id="vz-canvas-card">
+        <canvas id="preview-canvas"></canvas>
+        <div id="preview-custom"></div>
+      </div>
+    </div>
   </div>
 
   <!-- ── RIGHT PANEL (Power BI-style) ── -->
@@ -3678,6 +3749,7 @@ button, input, select { letter-spacing: 0; }
     <div class="dash-bar-left">
       <span class="dash-title">Dashboard</span>
       <span class="dash-count" id="dash-card-count"></span>
+      <span class="dash-hint">Drag by the grip, resize from the corner, double-click a title to rename.</span>
     </div>
     <div class="dash-bar-right">
       <button class="tbtn" onclick="refreshDashboard()" title="Re-render all charts">🔄</button>
@@ -3706,7 +3778,7 @@ button, input, select { letter-spacing: 0; }
       <button class="tbtn" style="color:var(--err);border-color:var(--err)" onclick="clearDash()">🗑 Clear</button>
     </div>
   </div>
-  <div class="dcanvas" id="dcanvas">
+  <div class="dcanvas" id="dcanvas" ondragover="dcCanvasDragOver(event)" ondrop="dcCanvasDrop(event)">
     <div class="dash-empty">
       <div class="dash-empty-icon">
         <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -5379,7 +5451,7 @@ function show(name){
   if(name==='dashboard'){
     renderDashboard();
     if(G('dash-cols-sel')) G('dash-cols-sel').value=appPrefs.dashCols||'auto';
-    if(G('dash-height-sel')) G('dash-height-sel').value=appPrefs.dashHeight||'200px';
+    if(G('dash-height-sel')) G('dash-height-sel').value=appPrefs.dashHeight||'220px';
   }
 }
 function unlock(){['data','charts','dashboard','merge','clean','pivot'].forEach(n=>G('t-'+n)?.removeAttribute('disabled'));}
@@ -6556,7 +6628,7 @@ function executeMerge(){
   G('mg-preview').textContent='Result: '+result.length+' rows × '+allCols.length+' columns';
 }
 // ═══════════════════════════ CHART BUILDER ═══════════════════════════
-function populateCBFields(){const d=DS[CB.dsIdx]||ds();if(!d)return;G('cb-x').innerHTML=d.columns.map(c=>`<option value="${c.name}" ${c.name===CB.xCol?'selected':''}>${c.name}</option>`).join('');if(!CB.xCol)CB.xCol=d.columns[0]?.name;normalizeCBSeriesForType(CB.type);renderSeriesList();if(typeof renderAnnotList==='function')renderAnnotList();if(typeof renderGoalLines==='function')renderGoalLines();if(typeof renderPresetList==='function')renderPresetList();}
+function populateCBFields(){const d=DS[CB.dsIdx]||ds();if(!d){updateVizStageSummary();return;}G('cb-x').innerHTML=d.columns.map(c=>`<option value="${c.name}" ${c.name===CB.xCol?'selected':''}>${c.name}</option>`).join('');if(!CB.xCol)CB.xCol=d.columns[0]?.name;normalizeCBSeriesForType(CB.type);renderSeriesList();if(typeof renderAnnotList==='function')renderAnnotList();if(typeof renderGoalLines==='function')renderGoalLines();if(typeof renderPresetList==='function')renderPresetList();updateVizStageSummary();}
 function onCbDsChange(){CB.dsIdx=+G('cb-ds').value;CB.series=[];populateCBFields();rebuildPreview();}
 function addSeriesObj(col){CB.series.push({col,label:col,color:SC[CB.series.length%SC.length],chartType:'',yAxis:'y1',showTrend:false,trendType:'linear',opacity:85,bw:2,dashed:false});}
 function isCustomVisualType(type){return type==='table'||type==='country';}
@@ -6597,7 +6669,45 @@ function renderSeriesList(){
 function toggleSB(i){G('sb-'+i)?.classList.toggle('open');}
 function addRefLine(){CB.refLines.push({value:'',label:'Ref',color:'#fbbf24',axis:'y1'});renderRefLines();}
 function renderRefLines(){G('ref-lines').innerHTML=CB.refLines.map((rl,i)=>`<div style="display:flex;gap:5px;align-items:center;margin-bottom:5px"><input class="fin" type="number" value="${rl.value}" placeholder="Value" style="width:65px;margin:0" onchange="CB.refLines[${i}].value=+this.value;rebuildPreview()"><input class="fin" value="${rl.label}" placeholder="Label" style="flex:1;margin:0" oninput="CB.refLines[${i}].label=this.value;rebuildPreview()"><input type="color" value="${rl.color}" onchange="CB.refLines[${i}].color=this.value;rebuildPreview()" style="width:22px;height:22px;border:none;cursor:pointer;padding:0;background:none"><select class="fsel" style="width:52px;margin:0" onchange="CB.refLines[${i}].axis=this.value;rebuildPreview()"><option value="y1">Y1</option><option value="y2">Y2</option></select><button class="tbtn" style="padding:3px 6px;border-color:var(--err);color:var(--err)" onclick="CB.refLines.splice(${i},1);renderRefLines();rebuildPreview()">✕</button></div>`).join('');}
-function setCT(type,btn){CB.type=type;normalizeCBSeriesForType(type);document.querySelectorAll('.vz-viz-btn,.vz-type,.ctbtn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderSeriesList();rebuildPreview();}
+function setCT(type,btn){CB.type=type;normalizeCBSeriesForType(type);document.querySelectorAll('.vz-viz-btn,.vz-type,.ctbtn').forEach(b=>b.classList.remove('on'));btn.classList.add('on');renderSeriesList();updateVizStageSummary();rebuildPreview();}
+
+function visualTypeLabel(type){
+  const labels={
+    bar:'Bar',line:'Line',area:'Area',pie:'Pie',doughnut:'Donut',scatter:'Scatter',bubble:'Bubble',radar:'Radar',
+    polarArea:'Polar',bar_h:'Horizontal Bar','bar-h':'Horizontal Bar','bar-stacked':'Stacked Bar','bar-stacked-h':'Horizontal Stacked',
+    histogram:'Histogram',waterfall:'Waterfall',boxplot:'Box Plot',mixed:'Mixed',table:'Table',country:'Country Map'
+  };
+  return labels[type] || String(type||'Chart');
+}
+
+function updateVizStageSummary() {
+  const titleEl = G('vz-stage-title');
+  const subEl = G('vz-stage-sub');
+  const chipsEl = G('vz-stage-chips');
+  if (!titleEl || !subEl || !chipsEl) return;
+  const d = DS[CB.dsIdx] || ds();
+  if (!d) {
+    titleEl.textContent = 'Choose a dataset and chart type';
+    subEl.textContent = 'Build your chart from left to right: dataset, X axis, one or more values, then format and analytics.';
+    chipsEl.innerHTML = '';
+    return;
+  }
+  const series = (CB.series || []).map(s => s.label || s.col).filter(Boolean);
+  const metricText = series.length ? series.join(', ') : 'No values selected';
+  const autoTitle = series.length && CB.xCol ? `${metricText} by ${CB.xCol}` : `${visualTypeLabel(CB.type)} preview`;
+  titleEl.textContent = (CB.title || '').trim() || autoTitle;
+  subEl.textContent = `Using ${d.name} with ${d.data.length.toLocaleString()} rows. ${isCustomVisualType(CB.type) ? 'This visual renders as an interactive view instead of a Chart.js canvas.' : 'Use Build to change fields, Format to style it, and Analytics to add lines and markers.'}`;
+  const chips = [
+    ['Dataset', d.name],
+    ['Visual', visualTypeLabel(CB.type)],
+    ['X', CB.xCol || 'Not set'],
+    ['Y', metricText],
+    ['Agg', CB.agg === 'none' ? 'Raw values' : (CB.agg || 'sum')]
+  ];
+  chipsEl.innerHTML = chips.map(([label, value]) =>
+    `<span class="vz-stage-chip"><strong>${dashEsc(label)}:</strong> ${dashEsc(value)}</span>`
+  ).join('');
+}
 
 // Visualization panel tab switching
 function vzTab(name, el) {
@@ -6721,7 +6831,7 @@ function aggData(xCol, yCol, fn, dsIdx, cbOpts) {
   let labels = [...new Set(order)];
   const sortX = cbOpts?.sortX ?? CB.sortX;
   const sortXDesc = cbOpts?.sortXDesc ?? CB.sortXDesc;
-  if (sortX && !sortXDesc) labels.sort((a,b)=>a.localeCompare(a,undefined,{numeric:true}));
+  if (sortX && !sortXDesc) labels.sort((a,b)=>a.localeCompare(b,undefined,{numeric:true}));
   if (sortX && sortXDesc) labels.sort((a,b)=>b.localeCompare(a,undefined,{numeric:true}));
   if (skip > 0) labels = labels.slice(skip);
   const lim = +(cbOpts?.limit ?? G('cb-limit')?.value ?? CB.limit ?? 0);
@@ -7208,7 +7318,7 @@ function _applyChartDefaults() {
   const tooltipText = isDark ? '#e2e8f0' : '#1e293b';
 
   Chart.defaults.color = tickColor;
-  Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
+  Chart.defaults.font.family = "'DM Sans', system-ui, sans-serif";
   Chart.defaults.font.size   = 11;
   Chart.defaults.plugins.legend.labels.boxWidth = 12;
   Chart.defaults.plugins.legend.labels.padding  = 14;
@@ -7231,6 +7341,7 @@ let prevChInst=null;
 function _rebuildPreviewImmediate() {
   if(!ds()) return;
   syncCBUI();
+  updateVizStageSummary();
   const canvas=G('preview-canvas');
   const custom=G('preview-custom');
   const card=G('vz-canvas-card');
@@ -7343,6 +7454,31 @@ function renderAnnotList() {
 
 // ═══════════════════════════ DASHBOARD ═══════════════════════════
 let dcharts={};
+function dashPersist(render=true){
+  if(render) renderDashboard();
+  try{ autosaveProject(); }catch(e){}
+}
+function dashMaxCols(){
+  return appPrefs.dashCols==='auto' ? 4 : Math.max(1, parseInt(appPrefs.dashCols,10)||1);
+}
+function dashCardSpan(card){
+  if(card.colSpan) return Math.max(1, Math.min(dashMaxCols(), parseInt(card.colSpan,10)||1));
+  if(card.size==='full') return dashMaxCols();
+  if(card.size==='lg') return Math.min(2, dashMaxCols());
+  return 1;
+}
+function dashSyncLegacySize(card){
+  const span=dashCardSpan(card);
+  if(span>=dashMaxCols()) card.size='full';
+  else if(span>=2) card.size='lg';
+  else if(card.size==='sm') card.size='sm';
+  else card.size='md';
+  card.colSpan=span;
+}
+function dashCardHeight(card){
+  const base=card.height||appPrefs.dashHeight||'220px';
+  return /^\d+$/.test(String(base)) ? base+'px' : base;
+}
 function addToDash(){
   if(!ds())return toast('No data','error');
   syncCBUI();
@@ -7351,12 +7487,14 @@ function addToDash(){
   const id='c_'+Date.now();
   const cbState=JSON.parse(JSON.stringify(CB));
   cbState._cardId=id;
-  DASH.push({id,cb:cbState,size:isTableVisualType(CB.type)?'lg':'md'});
-  renderDashboard();
+  const card={id,cb:cbState,size:isTableVisualType(CB.type)?'lg':'md',colSpan:isTableVisualType(CB.type)?Math.min(2,dashMaxCols()):1,height:appPrefs.dashHeight||'220px'};
+  dashSyncLegacySize(card);
+  DASH.push(card);
+  dashPersist();
   show('dashboard');
   toast('Chart added to dashboard!','success');
 }
-function dupLastChart(){if(!DASH.length)return toast('No charts yet','error');const last=DASH[DASH.length-1];DASH.push({id:'c_'+Date.now(),cb:last.cb?JSON.parse(JSON.stringify(last.cb)):null,cardType:last.cardType,title:last.title,content:last.content,size:last.size||'md'});renderDashboard();toast('Duplicated','success');}
+function dupLastChart(){if(!DASH.length)return toast('No charts yet','error');const last=DASH[DASH.length-1];const copy={id:'c_'+Date.now(),cb:last.cb?JSON.parse(JSON.stringify(last.cb)):null,cardType:last.cardType,title:last.title,content:last.content,size:last.size||'md',colSpan:last.colSpan,height:last.height,titleOverride:last.titleOverride,subtitleOverride:last.subtitleOverride,hideSub:last.hideSub,dsIdx:last.dsIdx,col:last.col,agg:last.agg,label:last.label};if(copy.cb)copy.cb._cardId=copy.id;dashSyncLegacySize(copy);DASH.push(copy);dashPersist();toast('Duplicated','success');}
 function dashEsc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));}
 function dashSeries(col,i=0,extra={}){return Object.assign({col,label:col,color:SC[i%SC.length],chartType:'',yAxis:'y1',showTrend:false,trendType:'linear',opacity:85,bw:2,dashed:false},extra);}
 function dashBaseChart(type,xCol,yCol,title,extra={}){
@@ -7396,25 +7534,30 @@ function renderDashboard(){
     if(G('dash-card-count'))G('dash-card-count').textContent='';
     return;
   }
-  const cardH=appPrefs.dashHeight||'220px';
   canvas.innerHTML=DASH.map(card=>{
+    dashSyncLegacySize(card);
     const sz=card.size||'md';
+    const span=dashCardSpan(card);
+    const layoutStyle=span>=dashMaxCols()?'grid-column:1 / -1;':`grid-column:span ${span};`;
     const title=card.titleOverride||card.title||(card.cb?card.cb.title||card.cb.series?.map(s=>s.label).join(', ')||'Chart':'Card');
     const sub=card.subtitleOverride??(card.cb?`${card.cb.type} · ${card.cb.xCol}${card.cb.agg&&card.cb.agg!=='none'?' · '+card.cb.agg:''}`:card.cardType||'');
     const showSub=appPrefs.dashSub!==false&&!card.hideSub&&sub;
-    const h=card.height||cardH;
-    return `<div class="dc" id="${card.id}" data-size="${sz}" draggable="true"
-      ondragstart="dcDragStart(event,'${card.id}')" ondragover="dcDragOver(event,'${card.id}')"
-      ondragleave="dcDragLeave(event,'${card.id}')" ondrop="dcDrop(event,'${card.id}')">
+    const h=dashCardHeight(card);
+    return `<div class="dc" id="${card.id}" data-size="${sz}" data-span="${span}" style="${layoutStyle}"
+      ondragover="dcDragOver(event,'${card.id}')" ondragleave="dcDragLeave(event,'${card.id}')" ondrop="dcDrop(event,'${card.id}')">
       <div class="dc-head">
-        <div style="flex:1;min-width:0">
-          <div class="dc-title">${dashEsc(title)}</div>
-          <div class="dc-sub" style="${showSub?'':'display:none'}">${dashEsc(sub)}</div>
+        <div class="dc-head-main">
+          <button class="dc-grip" draggable="true" ondragstart="dcDragStart(event,'${card.id}')" ondragend="dcDragEnd(event)" title="Drag to move">⋮⋮</button>
+          <div class="dc-title-wrap" ondblclick="renameCard('${card.id}')">
+            <div class="dc-title">${dashEsc(title)}</div>
+            <div class="dc-sub" style="${showSub?'':'display:none'}">${dashEsc(sub)}</div>
+          </div>
         </div>
         <div class="dc-acts">
           ${card.cb?`<button class="dc-act edit" onclick="editCard('${card.id}')" title="Edit">✏</button>`:''}
+          <button class="dc-act rename" onclick="renameCard('${card.id}')" title="Rename">Aa</button>
           <button class="dc-act edit" onclick="customizeCard('${card.id}')" title="Customize">⚙</button>
-          <button class="dc-act size" onclick="cycleCardSize('${card.id}')" title="Resize">⊞</button>
+          <button class="dc-act size" onclick="cycleCardSize('${card.id}')" title="Quick resize">⊞</button>
           <button class="dc-act" onclick="duplicateCard('${card.id}')" title="Duplicate" style="font-size:12px">⧉</button>
           <button class="dc-act" onclick="removeCard('${card.id}')" title="Remove">✕</button>
         </div>
@@ -7424,11 +7567,12 @@ function renderDashboard(){
           ? `<div class="viz-card-custom" style="height:${h}"><div id="viz_${card.id}" style="height:100%"></div></div>`
           : `<div class="cbox" style="height:${h}"><canvas id="ch_${card.id}"></canvas></div>`)
         : card.cardType==='metric'
-          ? `<div class="metric-card" id="metric_${card.id}"></div>`
+          ? `<div class="metric-card" id="metric_${card.id}" style="min-height:${h}"></div>`
         : card.cardType==='kpi'
-          ? `<div class="kpi-grid" id="kg_${card.id}"></div>`
-          : `<div class="tc-body" style="white-space:pre-wrap">${dashEsc(card.content||'')}</div>`
+          ? `<div class="kpi-grid" id="kg_${card.id}" style="min-height:${h}"></div>`
+          : `<div class="tc-body" style="white-space:pre-wrap;min-height:${h}">${dashEsc(card.content||'')}</div>`
       }
+      <div class="dc-resize-handle" onmousedown="dcResizeStart(event,'${card.id}')" title="Drag to resize"></div>
     </div>`;
   }).join('');
 
@@ -7488,7 +7632,14 @@ let _dcDragId = null;
 function dcDragStart(e, id) {
   _dcDragId = id;
   e.dataTransfer.effectAllowed = 'move';
+  e.dataTransfer.setData('text/plain', id);
   setTimeout(()=>{ const el=G(id); if(el) el.style.opacity='.4'; }, 0);
+}
+function dcDragEnd() {
+  document.querySelectorAll('.dc').forEach(el=>{
+    el.classList.remove('drag-over');
+    el.style.opacity='';
+  });
 }
 
 function dcDragOver(e, id) {
@@ -7515,21 +7666,71 @@ function dcDrop(e, targetId) {
   const [moved]=DASH.splice(fromIdx,1);
   DASH.splice(toIdx,0,moved);
   _dcDragId=null;
-  renderDashboard();
+  dashPersist();
+}
+function dcCanvasDragOver(e) {
+  if(!_dcDragId) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect='move';
+}
+function dcCanvasDrop(e) {
+  if(!_dcDragId) return;
+  e.preventDefault();
+  const fromIdx=DASH.findIndex(c=>c.id===_dcDragId);
+  if(fromIdx<0){ _dcDragId=null; return; }
+  const [moved]=DASH.splice(fromIdx,1);
+  DASH.push(moved);
+  _dcDragId=null;
+  dashPersist();
+}
+function dcResizeStart(e, id) {
+  e.preventDefault();
+  e.stopPropagation();
+  const card=DASH.find(c=>c.id===id), el=G(id), canvas=G('dcanvas');
+  if(!card||!el||!canvas) return;
+  const rect=el.getBoundingClientRect();
+  const startX=e.clientX, startY=e.clientY;
+  const startWidth=rect.width;
+  const startHeight=parseInt(dashCardHeight(card),10)||rect.height;
+  const startSpan=dashCardSpan(card);
+  const unitWidth=Math.max(180, startWidth / Math.max(1,startSpan));
+  const maxCols=dashMaxCols();
+  function move(ev){
+    const nextHeight=Math.max(140, startHeight + (ev.clientY-startY));
+    const nextSpan=Math.max(1, Math.min(maxCols, Math.round((startWidth + (ev.clientX-startX)) / unitWidth)));
+    el.style.height='';
+    el.setAttribute('data-span', String(nextSpan));
+    el.style.gridColumn=nextSpan>=maxCols?'1 / -1':`span ${nextSpan}`;
+    const body=el.querySelector('.cbox,.viz-card-custom,.metric-card,.kpi-grid,.tc-body');
+    if(body){
+      if(body.classList.contains('metric-card')||body.classList.contains('kpi-grid')||body.classList.contains('tc-body')) body.style.minHeight=nextHeight+'px';
+      else body.style.height=nextHeight+'px';
+    }
+  }
+  function up(ev){
+    const nextHeight=Math.max(140, startHeight + (ev.clientY-startY));
+    const nextSpan=Math.max(1, Math.min(maxCols, Math.round((startWidth + (ev.clientX-startX)) / unitWidth)));
+    card.height=nextHeight+'px';
+    card.colSpan=nextSpan;
+    dashSyncLegacySize(card);
+    document.removeEventListener('mousemove', move);
+    document.removeEventListener('mouseup', up);
+    dashPersist();
+  }
+  document.addEventListener('mousemove', move);
+  document.addEventListener('mouseup', up);
 }
 
 function cycleCardSize(id) {
   const card=DASH.find(c=>c.id===id); if(!card) return;
-  const sizes=['md','lg','full','sm'];
+  const sizes=['sm','md','lg','full'];
   const cur=card.size||'md';
   const next=sizes[(sizes.indexOf(cur)+1)%sizes.length];
   card.size=next;
-  const el=G(id); if(el) el.setAttribute('data-size',next);
-  // Re-render chart if it's a chart card (size changed)
-  if(card.cb){
-    const chartInst=dcharts[id];
-    if(chartInst) { setTimeout(()=>chartInst.resize(),50); }
-  }
+  card.colSpan=next==='full'?dashMaxCols():(next==='lg'?Math.min(2,dashMaxCols()):1);
+  dashSyncLegacySize(card);
+  if(!card.height) card.height=appPrefs.dashHeight||'220px';
+  dashPersist();
   toast(`Card: ${next}`, 'info');
 }
 
@@ -7542,19 +7743,41 @@ function refreshDashboard(){
 function duplicateCard(id){
   const card=DASH.find(c=>c.id===id);
   if(!card) return;
-  const copy={id:'c_'+Date.now(),size:card.size||'md',cardType:card.cardType,title:card.title,content:card.content,titleOverride:card.titleOverride,subtitleOverride:card.subtitleOverride,hideSub:card.hideSub,height:card.height,dsIdx:card.dsIdx,col:card.col,agg:card.agg,label:card.label};
+  const copy={id:'c_'+Date.now(),size:card.size||'md',colSpan:card.colSpan,height:card.height,cardType:card.cardType,title:card.title,content:card.content,titleOverride:card.titleOverride,subtitleOverride:card.subtitleOverride,hideSub:card.hideSub,dsIdx:card.dsIdx,col:card.col,agg:card.agg,label:card.label};
   if(card.cb){copy.cb=JSON.parse(JSON.stringify(card.cb));copy.cb._cardId=copy.id;}
+  dashSyncLegacySize(copy);
   DASH.push(copy);
-  renderDashboard();
+  dashPersist();
   toast('Card duplicated','success');
 }
-function removeCard(id){DASH=DASH.filter(c=>c.id!==id);renderDashboard();}
-function editCard(id){const card=DASH.find(c=>c.id===id);if(!card)return;CB=JSON.parse(JSON.stringify(card.cb));populateCBFields();show('charts');setTimeout(()=>{document.querySelectorAll('.vz-viz-btn,.vz-type,.ctbtn').forEach(b=>{b.classList.remove('on');if(b.dataset.ct===CB.type)b.classList.add('on');});rebuildPreview();const atdBtn=document.querySelector('.vz-atd,.atd');if(atdBtn){atdBtn.textContent='💾 Update';atdBtn.onclick=()=>{syncCBUI();card.cb=JSON.parse(JSON.stringify(CB));renderDashboard();show('dashboard');atdBtn.textContent='＋ Add to Dashboard';atdBtn.onclick=addToDash;toast('Updated','success');};}},60);}
+function removeCard(id){DASH=DASH.filter(c=>c.id!==id);dashPersist();toast('Card removed','info');}
+function renameCard(id){
+  const card=DASH.find(c=>c.id===id); if(!card) return;
+  const currentTitle=card.titleOverride||card.title||card.cb?.title||'';
+  const currentSub=card.subtitleOverride||'';
+  openModal('Rename Card','Change the dashboard label without touching the underlying chart logic.',`
+    <div style="display:flex;flex-direction:column;gap:9px">
+      <div><div class="fin-label">Title</div><input class="fin" id="rc-title" value="${dashEsc(currentTitle)}" style="width:100%"></div>
+      <div><div class="fin-label">Subtitle</div><input class="fin" id="rc-sub" value="${dashEsc(currentSub)}" placeholder="Optional subtitle" style="width:100%"></div>
+    </div>`,()=>{
+      card.titleOverride=G('rc-title').value.trim();
+      card.subtitleOverride=G('rc-sub').value.trim();
+      if(card.cardType==='metric'){
+        card.label=card.titleOverride||card.label||card.col;
+        card.title=card.label;
+      }
+      dashPersist();
+      toast('Card renamed','success');
+    });
+}
+function editCard(id){const card=DASH.find(c=>c.id===id);if(!card)return;CB=JSON.parse(JSON.stringify(card.cb));populateCBFields();show('charts');setTimeout(()=>{document.querySelectorAll('.vz-viz-btn,.vz-type,.ctbtn').forEach(b=>{b.classList.remove('on');if(b.dataset.ct===CB.type)b.classList.add('on');});updateVizStageSummary();rebuildPreview();const atdBtn=document.querySelector('.vz-atd,.atd');if(atdBtn){atdBtn.textContent='💾 Update';atdBtn.onclick=()=>{syncCBUI();card.cb=JSON.parse(JSON.stringify(CB));card.cb._cardId=id;dashPersist();show('dashboard');atdBtn.textContent='＋ Add to Dashboard';atdBtn.onclick=addToDash;toast('Updated','success');};}},60);}
 function addKPICard(){
   if(!ds())return;
   const id='kpi_'+Date.now();
-  DASH.push({id,cardType:'kpi',title:'KPI Summary',size:'full',dsIdx:ACT});
-  renderDashboard();
+  const card={id,cardType:'kpi',title:'KPI Summary',size:'full',colSpan:dashMaxCols(),dsIdx:ACT};
+  dashSyncLegacySize(card);
+  DASH.push(card);
+  dashPersist();
   show('dashboard');
   toast('KPI card added','success');
 }
@@ -7572,8 +7795,10 @@ function addMetricCard(){
       <div><div class="fin-label">Label</div><input class="fin" id="mt-label" placeholder="Optional display label" style="width:100%"></div>
     </div>`,()=>{
       const col=G('mt-col').value,agg=G('mt-agg').value,label=G('mt-label').value.trim()||col;
-      DASH.push({id:'metric_'+Date.now(),cardType:'metric',title:label,label,col,agg,dsIdx:ACT,size:G('mt-size').value});
-      renderDashboard();show('dashboard');toast('Metric card added','success');
+      const card={id:'metric_'+Date.now(),cardType:'metric',title:label,label,col,agg,dsIdx:ACT,size:G('mt-size').value,colSpan:G('mt-size').value==='lg'?Math.min(2,dashMaxCols()):1};
+      dashSyncLegacySize(card);
+      DASH.push(card);
+      dashPersist();show('dashboard');toast('Metric card added','success');
     });
 }
 function autoBuildDashboard(){
@@ -7589,17 +7814,20 @@ function autoBuildDashboard(){
     if(G('ad-prep')?.checked) quickPrepData(true);
     const d2=ds(), ff=dashDetectFields(d2);
     if(G('ad-clear')?.checked) DASH=[];
-    DASH.push({id:'kpi_'+Date.now(),cardType:'kpi',title:'KPI Summary',size:'full',dsIdx:ACT});
-    ff.nums.slice(0,3).forEach((n,i)=>DASH.push({id:'metric_'+Date.now()+'_'+i,cardType:'metric',title:n.name,label:n.name,col:n.name,agg:'sum',dsIdx:ACT,size:'sm'}));
+    const kpiCard={id:'kpi_'+Date.now(),cardType:'kpi',title:'KPI Summary',size:'full',colSpan:dashMaxCols(),dsIdx:ACT};
+    dashSyncLegacySize(kpiCard);
+    DASH.push(kpiCard);
+    ff.nums.slice(0,3).forEach((n,i)=>{const c={id:'metric_'+Date.now()+'_'+i,cardType:'metric',title:n.name,label:n.name,col:n.name,agg:'sum',dsIdx:ACT,size:'sm',colSpan:1};dashSyncLegacySize(c);DASH.push(c);});
     const primaryNum=ff.nums[0]?.name;
-    if(ff.cats[0]&&primaryNum)DASH.push({id:'c_'+Date.now()+'_top',size:'lg',cb:dashBaseChart('bar',ff.cats[0].name,primaryNum,'Top '+ff.cats[0].name+' by '+primaryNum,{limit:10,sortX:true,sortXDesc:true})});
-    if(ff.dates[0]&&primaryNum)DASH.push({id:'c_'+Date.now()+'_trend',size:'lg',cb:dashBaseChart('line',ff.dates[0].name,primaryNum,primaryNum+' Trend',{agg:'sum',smooth:true,fill:false,series:[dashSeries(primaryNum,0,{showTrend:true})]})});
-    if(ff.cats[1]&&primaryNum)DASH.push({id:'c_'+Date.now()+'_share',size:'md',cb:dashBaseChart('doughnut',ff.cats[1].name,primaryNum,primaryNum+' Share',{limit:8,legend:'right'})});
-    DASH.push({id:'c_'+Date.now()+'_dist',size:'md',cb:dashBaseChart('histogram',ff.nums[0].name,ff.nums[0].name,ff.nums[0].name+' Distribution',{agg:'none',bins:20})});
-    renderDashboard();show('dashboard');toast('Auto dashboard built','success');saveConfig();
+    if(ff.cats[0]&&primaryNum){const c={id:'c_'+Date.now()+'_top',size:'lg',colSpan:Math.min(2,dashMaxCols()),cb:dashBaseChart('bar',ff.cats[0].name,primaryNum,'Top '+ff.cats[0].name+' by '+primaryNum,{limit:10,sortX:true,sortXDesc:true})};dashSyncLegacySize(c);c.cb._cardId=c.id;DASH.push(c);}
+    if(ff.dates[0]&&primaryNum){const c={id:'c_'+Date.now()+'_trend',size:'lg',colSpan:Math.min(2,dashMaxCols()),cb:dashBaseChart('line',ff.dates[0].name,primaryNum,primaryNum+' Trend',{agg:'sum',smooth:true,fill:false,series:[dashSeries(primaryNum,0,{showTrend:true})]})};dashSyncLegacySize(c);c.cb._cardId=c.id;DASH.push(c);}
+    if(ff.cats[1]&&primaryNum){const c={id:'c_'+Date.now()+'_share',size:'md',colSpan:1,cb:dashBaseChart('doughnut',ff.cats[1].name,primaryNum,primaryNum+' Share',{limit:8,legend:'right'})};dashSyncLegacySize(c);c.cb._cardId=c.id;DASH.push(c);}
+    const distCard={id:'c_'+Date.now()+'_dist',size:'md',colSpan:1,cb:dashBaseChart('histogram',ff.nums[0].name,ff.nums[0].name,ff.nums[0].name+' Distribution',{agg:'none',bins:20})};
+    dashSyncLegacySize(distCard);distCard.cb._cardId=distCard.id;DASH.push(distCard);
+    dashPersist();show('dashboard');toast('Auto dashboard built','success');
   });
 }
-function addTextCard(){openModal('Text Card','',`<input class="fin" id="tc-t" placeholder="Title" style="display:block;width:100%;margin-bottom:7px"><textarea class="fin" id="tc-b" placeholder="Content…" rows="4" style="display:block;width:100%;resize:vertical"></textarea>`,()=>{const title=G('tc-t').value||'Note',body=G('tc-b').value;const id='txt_'+Date.now();DASH.push({id,cardType:'text',title,content:body,size:'md'});renderDashboard();show('dashboard');toast('Text card added','success');});}
+function addTextCard(){openModal('Text Card','',`<input class="fin" id="tc-t" placeholder="Title" style="display:block;width:100%;margin-bottom:7px"><textarea class="fin" id="tc-b" placeholder="Content…" rows="4" style="display:block;width:100%;resize:vertical"></textarea>`,()=>{const title=G('tc-t').value||'Note',body=G('tc-b').value;const id='txt_'+Date.now();const card={id,cardType:'text',title,content:body,size:'md',colSpan:1};dashSyncLegacySize(card);DASH.push(card);dashPersist();show('dashboard');toast('Text card added','success');});}
 function customizeCard(id){
   const card=DASH.find(c=>c.id===id);if(!card)return;
   const isMetric=card.cardType==='metric';
@@ -7617,18 +7845,21 @@ function customizeCard(id){
       <div><div class="fin-label">Size</div><select class="fsel" id="cc-size"><option value="sm" ${card.size==='sm'?'selected':''}>Small</option><option value="md" ${(!card.size||card.size==='md')?'selected':''}>Medium</option><option value="lg" ${card.size==='lg'?'selected':''}>Large</option><option value="full" ${card.size==='full'?'selected':''}>Full width</option></select></div>
       <div><div class="fin-label">Chart height</div><select class="fsel" id="cc-height"><option value="">Dashboard default</option><option value="160px" ${card.height==='160px'?'selected':''}>Compact</option><option value="220px" ${card.height==='220px'?'selected':''}>Default</option><option value="300px" ${card.height==='300px'?'selected':''}>Tall</option><option value="400px" ${card.height==='400px'?'selected':''}>X-Tall</option></select></div>
     </div>
+    <div><div class="fin-label">Width columns</div><select class="fsel" id="cc-span">${Array.from({length:dashMaxCols()},(_,i)=>i+1).map(n=>`<option value="${n}" ${dashCardSpan(card)===n?'selected':''}>${n} column${n!==1?'s':''}</option>`).join('')}</select></div>
     <label style="display:flex;align-items:center;gap:7px;font-size:12px"><input type="checkbox" id="cc-hide-sub" ${card.hideSub?'checked':''} style="accent-color:var(--highlight)"> Hide subtitle</label>
   </div>`,()=>{
     card.titleOverride=G('cc-title').value.trim();
     card.subtitleOverride=G('cc-sub').value.trim();
     card.size=G('cc-size').value;
     card.height=G('cc-height').value;
+    card.colSpan=+G('cc-span').value;
     card.hideSub=G('cc-hide-sub').checked;
     if(isMetric){card.col=G('cc-col').value;card.agg=G('cc-agg').value;card.label=card.titleOverride||card.col;card.title=card.label;}
-    renderDashboard();saveConfig();toast('Card updated','success');
+    dashSyncLegacySize(card);
+    dashPersist();toast('Card updated','success');
   });
 }
-function clearDash(){openModal('Clear Dashboard','Remove all cards?','',()=>{DASH=[];renderDashboard();toast('Cleared','info');});}
+function clearDash(){openModal('Clear Dashboard','Remove all cards?','',()=>{DASH=[];dashPersist();toast('Cleared','info');});}
 function exportDashHTML(){const cards=document.querySelectorAll('.dc');let ch='';cards.forEach(card=>{const title=card.querySelector('.dc-title')?.textContent||'';const cv=card.querySelector('canvas'),kpi=card.querySelector('.kpi-grid'),txt=card.querySelector('[style*="pre-wrap"]'),custom=card.querySelector('.viz-card-custom');let inner='';if(cv)inner=`<img src="${cv.toDataURL()}" style="width:100%;height:200px;object-fit:contain">`;else if(kpi)inner=kpi.outerHTML;else if(custom)inner=custom.innerHTML;else if(txt)inner=`<div>${txt.textContent}</div>`;ch+=`<div style="background:#161b28;border:1px solid #2a3350;border-radius:10px;padding:14px;margin-bottom:12px"><h3 style="margin:0 0 10px;color:#f0f4ff">${title}</h3>${inner}</div>`;});dl(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Dashboard</title><style>body{background:#0d0f17;padding:24px;font-family:sans-serif;color:#f0f4ff}h1{color:#5b9cf6;margin-bottom:20px}.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.kpi-cell{background:#1d2436;border-radius:6px;padding:11px;border:1px solid #2a3350}.kpi-lbl{font-size:10px;color:#b8c8e8;margin-bottom:3px}.kpi-v{font-size:20px;font-weight:800;color:#5b9cf6}
 /* [Patch: Keyboard Shortcuts — Finder, Merge, Column Inspector] */
 /* ── FINDER PANEL ── */
@@ -9313,17 +9544,19 @@ function applyDashPref(key, val) {
     // Sync both selects
     if(G('dash-cols-sel')) G('dash-cols-sel').value=val;
     if(G('set-dash-cols')) G('set-dash-cols').value=val;
+    renderDashboard();
   }
   if(key==='height') {
-    document.querySelectorAll('.cbox,.viz-card-custom').forEach(b=>b.style.height=val);
     // Sync both selects
     if(G('dash-height-sel')) G('dash-height-sel').value=val;
     if(G('set-dash-height')) G('set-dash-height').value=val;
+    renderDashboard();
   }
-  if(key==='gap') { canvas.style.gap=val; }
+  if(key==='gap') { canvas.style.gap=val; renderDashboard(); }
   if(key==='sub') {
-    document.querySelectorAll('.dc-sub').forEach(el=>el.style.display=val?'':'none');
+    renderDashboard();
   }
+  try{ autosaveProject(); }catch(e){}
   saveConfig();
 }
 
